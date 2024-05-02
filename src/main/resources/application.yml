@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: moitda
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/userinfo
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: create
+  web:
+    resources:
+      static-locations: /static/
+  mvc:
+    exception-handling:
+      default-error-view:
+        status-code: 404
+        message: "Resource Not Found"
+
+
+springdoc:
+  version: '@project.version@'
+  api-docs:
+    path: /api-docs
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    operations-sorter: alpha
+    tags-sorter: alpha
+    path: /swagger
+    disable-swagger-default-url: true
+    display-query-params-without-oauth2: true
+    doc-expansion: none
+  paths-to-match:
+    - /v1/**
