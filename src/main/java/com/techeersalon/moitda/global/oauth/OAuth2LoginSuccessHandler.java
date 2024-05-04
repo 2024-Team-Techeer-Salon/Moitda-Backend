@@ -1,6 +1,7 @@
 package com.techeersalon.moitda.global.oauth;
 
 import com.techeersalon.moitda.domain.user.entity.Role;
+import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.global.jwt.Service.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +19,7 @@ import java.io.IOException;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -31,17 +33,26 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             if (role == Role.GUEST) {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), oAuth2User.getSocialType());
                 String refreshToken = jwtService.createRefreshToken();
-
+                userRepository.findBySocialTypeAndEmail(oAuth2User.getSocialType(), oAuth2User.getEmail())
+                        .ifPresent(user -> {
+                            user.updateRefreshToken(refreshToken);
+                            userRepository.saveAndFlush(user);
+                        });
 
                 String redirectUrl = "/signup.html?ac=" + accessToken + "&rt=" + refreshToken;
 
                 response.sendRedirect(redirectUrl); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
 
-
             } else {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), oAuth2User.getSocialType());
                 String refreshToken = jwtService.createRefreshToken();
-                String redirectUrl = "/signup.html?ac=" + accessToken + "&rt=" + refreshToken;
+                userRepository.findBySocialTypeAndEmail(oAuth2User.getSocialType(), oAuth2User.getEmail())
+                        .ifPresent(user -> {
+                            user.updateRefreshToken(refreshToken);
+                            userRepository.saveAndFlush(user);
+                        });
+
+                String redirectUrl = "/localhost:8080?ac=" + accessToken + "&rt=" + refreshToken;
 
                 response.sendRedirect(redirectUrl); // 메인 페이지로 리다이렉트
             }
@@ -49,18 +60,4 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             throw e;
         }
     }
-/*
-    private void loginSuccess(HttpServletRequest request, HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
-        String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), oAuth2User.getSocialType());
-        String refreshToken = jwtService.extractRefreshToken(request)
-                .filter(jwtService::isTokenValid)
-                .orElseGet(jwtService::createRefreshToken);
-
-        response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
-        response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
-
-        jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
-        jwtService.updateRefreshToken(oAuth2User.getEmail(), oAuth2User.getSocialType(), refreshToken);
-    }
- */
 }

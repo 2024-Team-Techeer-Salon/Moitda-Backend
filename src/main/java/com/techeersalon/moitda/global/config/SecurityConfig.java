@@ -39,19 +39,20 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/oauth2/**").permitAll()
+                        .requestMatchers("/", "/oauth2/**", "/signup.html").permitAll()
                         .anyRequest().authenticated()
+                )
 //                .authorizeHttpRequests(requests ->
 //                        requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
-                )
+//                )
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(endpoint -> endpoint
                                 .userService(customOAuth2UserService))
                         .successHandler(oAuth2LoginSuccessHandler) // 2.
                         .failureHandler(oAuth2LoginFailureHandler) // 3.
-                );
+                )
 
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtService, userRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService, userRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
