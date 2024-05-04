@@ -1,6 +1,5 @@
 package com.techeersalon.moitda.domain.meetings.dto.response;
 
-import com.techeersalon.moitda.domain.meetings.dto.request.GetMeetingDetailRequest;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,7 +27,7 @@ public class GetMeetingDetailResponse {
 
     private LocalDateTime createdAt;
 
-    public static GetMeetingDetailResponse from(Meeting meeting) {
+    public static GetMeetingDetailResponse of(Meeting meeting) {
         return GetMeetingDetailResponse.builder()
                 .title(meeting.getTitle())
                 .catagory_id(meeting.getCategory().getId())

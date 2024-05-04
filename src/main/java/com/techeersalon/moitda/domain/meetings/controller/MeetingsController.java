@@ -1,7 +1,9 @@
 package com.techeersalon.moitda.domain.meetings.controller;
 
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
+import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
+import com.techeersalon.moitda.global.common.SuccessCode;
 import com.techeersalon.moitda.global.common.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,8 +23,8 @@ public class MeetingsController {
 
     @Operation(summary = "findMeeting", description = "모임 상세 조회")
     @GetMapping("/{meetingId}")
-    public ResponseEntity<SuccessResponse> meetingDetail(@PathVariable Long meetingId){
+    public ResponseEntity<GetMeetingDetailResponse> meetingDetail(@PathVariable Long meetingId){
         GetMeetingDetailResponse result = meetingService.findMeetingById(meetingId);
-        return null;
+        return ResponseEntity.ok(result);
     }
 }

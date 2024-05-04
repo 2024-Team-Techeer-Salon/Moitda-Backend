@@ -25,9 +25,8 @@ public class Meeting extends BaseEntity {
     @Column(name = "meeting_id")
     private Long id;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    @Column(name = "category_id", nullable = false)
+    private Long category_id;
 
     @Column(name = "title",nullable = true)
     private String title;

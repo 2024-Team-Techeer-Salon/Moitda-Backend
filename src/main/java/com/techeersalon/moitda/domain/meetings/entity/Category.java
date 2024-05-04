@@ -23,10 +23,4 @@ public class Category extends BaseEntity {
     @Column(name = "category_id")
     private Long id;
 
-    @Column (name = "category_name")
-    private String name;
-
-    public String getCategory(){
-        return this.name;
-    }
 }
