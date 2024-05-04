@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.domain.meetings.dto.response;
+package com.techeersalon.moitda.domain.meetings.dto.request;
 
 import lombok.*;
 
@@ -7,6 +7,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetMeetingDetailResponse {
-    private int meetingId;
+public class GetMeetingDetailRequest {
+
+    private Long meetingId;
+
 }
