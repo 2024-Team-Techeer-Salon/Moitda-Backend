@@ -30,13 +30,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
             if (role == Role.GUEST) {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), oAuth2User.getSocialType());
-//                response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
-                // url에 담지 말고 세션을 통해서 해보자!!!!!!
-                String redirectUrl = "/signup.html?ac=" + accessToken;
+                String refreshToken = jwtService.createRefreshToken();
+
+
+                String redirectUrl = "/signup.html?ac=" + accessToken + "&rt=" + refreshToken;
 
                 response.sendRedirect(redirectUrl); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
 
-//                jwtService.sendAccessAndRefreshToken(response, accessToken, null);
 
             } else {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), oAuth2User.getSocialType());

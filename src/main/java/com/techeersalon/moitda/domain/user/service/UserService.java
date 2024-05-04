@@ -1,7 +1,6 @@
 package com.techeersalon.moitda.domain.user.service;
 
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
-import com.techeersalon.moitda.domain.user.dto.request.TokenReq;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
@@ -15,13 +14,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class AuthService {
+public class UserService {
 
     private final UserRepository userRepository;
     //나중에 리펙토링하기
     private final JwtService jwtService;
 
-    public void SignUp(SignUpReq signUpReq) {
+    public void signup(SignUpReq signUpReq) {
         //받아온 토큰을 활용하여 email과 socialtype을 가져와야 하나..?
         String accessToken = signUpReq.getAccessToken();
 
@@ -34,7 +33,7 @@ public class AuthService {
             if (optionalUser.isPresent()) {
                 // 이미 존재하는 사용자의 정보를 업데이트
                 User existingUser = optionalUser.get();
-                existingUser.SignUp(signUpReq);
+                existingUser.signupUser(signUpReq);
 
                 userRepository.save(existingUser);
             } else {
@@ -46,7 +45,7 @@ public class AuthService {
         }
     }
 
-    public void Logout(TokenReq tokenReq) {
+    public void logout() {
 
     }
 }
