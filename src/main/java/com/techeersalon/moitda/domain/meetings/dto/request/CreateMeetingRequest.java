@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -33,24 +36,27 @@ public class CreateMeetingRequest {
     @NotBlank(message = "location cannot be blank")
     private String location;
 
+    @NotBlank(message = "max_participants_count cannot be blank")
+    private Integer max_participants_count;
+
     @NotBlank(message = "max_approval_required cannot be blank")
     private Boolean approval_required;
 
     @NotBlank(message = "appointment time cannot be blank")
     private String appointment_time;
 
-    public Meeting toEntity(Meeting meeting){
+    public Meeting toEntity(Long user_id){
         return Meeting.builder()
                 .user_id(user_id)
-                .category_id(meeting.getCategory_id())
-                .title(meeting.getTitle())
-                .content(meeting.getContent())
-                .latitude(meeting.getLatitude())
-                .longitude(meeting.getLongitude())
-                .location(meeting.getLocation())
-                .maxParticipantsCount(getMax_approval_required())
-                .approvalRequired(meeting.getApprovalRequired())
-                .appointmentTime(meeting.)
+                .category_id(category_id)
+                .title(title)
+                .content(content)
+                .latitude(latitude)
+                .longitude(latitude)
+                .location(location)
+                .maxParticipantsCount(max_participants_count)
+                .approvalRequired(approval_required)
+                .appointmentTime(LocalDateTime.parse(appointment_time))
                 .build();
     }
 }

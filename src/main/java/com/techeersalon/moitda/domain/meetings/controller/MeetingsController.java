@@ -1,5 +1,6 @@
 package com.techeersalon.moitda.domain.meetings.controller;
 
+import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
@@ -21,16 +22,16 @@ public class MeetingsController {
 
     @Operation(summary = "createMeeting", description = "모임 생성")
     @PostMapping
-    public ResponseEntity<GetMeetingDetailResponse> meetingDetail(@Validated @RequestBody){
-
-        return ResponseEntity.ok();
+    public ResponseEntity<GetMeetingDetailResponse> meetingDetail(@Validated @RequestBody CreateMeetingResponse dto ,@CurrentUser User loginUser){
+        CreateMeetingResponse response = MeetingService.addMeeting(dto, loginUser);
+        return ResponseEntity.created(response);
     }
 
     @Operation(summary = "findMeeting", description = "모임 상세 조회")
     @GetMapping("/{meetingId}")
     public ResponseEntity<GetMeetingDetailResponse> meetingDetail(@PathVariable Long meetingId){
-        GetMeetingDetailResponse result = meetingService.findMeetingById(meetingId);
-        return ResponseEntity.ok(result);
+        GetMeetingDetailResponse response = meetingService.findMeetingById(meetingId);
+        return ResponseEntity.ok(response);
     }
 
 

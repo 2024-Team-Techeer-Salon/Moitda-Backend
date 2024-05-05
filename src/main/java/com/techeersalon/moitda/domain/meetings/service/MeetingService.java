@@ -1,6 +1,8 @@
 
 package com.techeersalon.moitda.domain.meetings.service;
 
+import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
+import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
@@ -14,6 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class MeetingService {
     private final MeetingRepository meetingRepository;
+
+    @Transactional
+    public CreateMeetingResponse addMeeting(CreateMeetingRequest dto, User loginUser) {
+        Meeting entity = dto.toEntity(loginUser.getId());
+        Meeting meeting = meetingRepository.save(entity);
+
+        return CreateMeetingResponse.from(meeting.getId());
+    }
 
     public GetMeetingDetailResponse findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
