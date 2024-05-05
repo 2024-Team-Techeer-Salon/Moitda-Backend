@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 public class GetMeetingDetailResponse {
     private String title;
 
+    private Long user_id;
+
     private Long catagory_id;
 
     private String content;
@@ -30,7 +32,8 @@ public class GetMeetingDetailResponse {
     public static GetMeetingDetailResponse of(Meeting meeting) {
         return GetMeetingDetailResponse.builder()
                 .title(meeting.getTitle())
-                .catagory_id(meeting.getCategory().getId())
+                .user_id(meeting.getUser_id())
+                .catagory_id(meeting.getCategory_id())
                 .content(meeting.getContent())
                 .max_participants_count(meeting.getMaxParticipantsCount())
                 .participants_count(meeting.getParticipantsCount())

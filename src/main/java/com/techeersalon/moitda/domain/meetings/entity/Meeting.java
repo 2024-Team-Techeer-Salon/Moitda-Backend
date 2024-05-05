@@ -25,6 +25,9 @@ public class Meeting extends BaseEntity {
     @Column(name = "meeting_id")
     private Long id;
 
+    @Column(name = "user_id", nullable = false)
+    private Long user_id;
+
     @Column(name = "category_id", nullable = false)
     private Long category_id;
 

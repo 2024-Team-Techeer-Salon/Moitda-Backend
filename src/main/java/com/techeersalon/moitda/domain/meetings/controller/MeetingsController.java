@@ -9,10 +9,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "MeetingsController", description = "모임 관련 API")
 @RestController
@@ -21,10 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class MeetingsController {
     private final MeetingService meetingService;
 
+    @Operation(summary = "createMeeting", description = "모임 생성")
+    @PostMapping
+    public ResponseEntity<GetMeetingDetailResponse> meetingDetail(@Validated @RequestBody){
+
+        return ResponseEntity.ok();
+    }
+
     @Operation(summary = "findMeeting", description = "모임 상세 조회")
     @GetMapping("/{meetingId}")
     public ResponseEntity<GetMeetingDetailResponse> meetingDetail(@PathVariable Long meetingId){
         GetMeetingDetailResponse result = meetingService.findMeetingById(meetingId);
         return ResponseEntity.ok(result);
     }
+
+
 }
