@@ -1,36 +1,26 @@
 package com.techeersalon.moitda.global.common;
 
 import jakarta.persistence.Column;
-import lombok.AccessLevel;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @MappedSuperclass
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-@ToString
-public abstract class BaseEntity {
-
+public class BaseEntity {
     @CreatedDate
-    @Column(name = "createdAt")
-    private LocalDateTime createdAt;
+    private String createAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 
     @LastModifiedDate
-    @Column(name = "updatedAt")
-    private LocalDateTime updatedAt;
+    private String updateAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 
-    private boolean isDeleted;
-
-    public void delete() {
-        this.isDeleted = true;
-    }
+    @Column(name = "is_deleted", nullable = false)
+    private boolean deleteAt = Boolean.FALSE;
 }
