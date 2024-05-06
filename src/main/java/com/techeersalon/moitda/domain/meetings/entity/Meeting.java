@@ -31,7 +31,7 @@ public class Meeting extends BaseEntity {
     @Column(name = "category_id", nullable = false)
     private Long category_id;
 
-    @Column(name = "title",nullable = true)
+    @Column(name = "title",nullable = false)
     private String title;
 
     @Column(name = "participants_count", nullable = false)

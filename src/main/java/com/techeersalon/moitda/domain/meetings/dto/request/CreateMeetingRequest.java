@@ -1,6 +1,7 @@
 package com.techeersalon.moitda.domain.meetings.dto.request;
 
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,9 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateMeetingRequest {
-
-    @NotBlank(message = "user id cannot be blank")
-    private Long user_id;
 
     @NotBlank(message = "category_id cannot be blank")
     private Long category_id;
@@ -45,9 +43,9 @@ public class CreateMeetingRequest {
     @NotBlank(message = "appointment time cannot be blank")
     private String appointment_time;
 
-    public Meeting toEntity(){
+    public Meeting toEntity(User user){
         return Meeting.builder()
-                .user_id(user_id)
+                .user_id(user.getId())
                 .category_id(category_id)
                 .title(title)
                 .content(content)

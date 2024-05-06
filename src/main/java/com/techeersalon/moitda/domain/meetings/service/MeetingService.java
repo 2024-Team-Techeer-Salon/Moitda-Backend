@@ -6,6 +6,8 @@ import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingRespons
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
+import com.techeersalon.moitda.domain.user.entity.User;
+import com.techeersalon.moitda.domain.user.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,14 +18,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class MeetingService {
     private final MeetingRepository meetingRepository;
-
+    private final UserService userService;
     public void addParticipantOfMeeting(Long meetingId, Long participantId) {
 
     }
 
-    public void addMeeting(CreateMeetingRequest dto) {
-        Meeting entity = dto.toEntity();
-        meetingRepository.save(entity);
+    public Long addMeeting(CreateMeetingRequest dto) {
+        User loginUser = userService.getLoginUser();
+        Meeting entity = dto.toEntity(loginUser);
+        Meeting meeting = meetingRepository.save(entity);
+        return meeting.getId();
     }
 
     public GetMeetingDetailResponse findMeetingById(Long meetingId) {

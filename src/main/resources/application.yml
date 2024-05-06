@@ -8,15 +8,19 @@ spring:
     password: 1234
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   web:
     resources:
-      static-locations: /static/
+      static-locations: classpath:/static/
   mvc:
     exception-handling:
       default-error-view:
         status-code: 404
         message: "Resource Not Found"
+    servlet:
+      multipart:
+        max-file-size: 20MB
+        max-request-size: 20MB
 
 
 springdoc:
