@@ -50,10 +50,10 @@ spring:
     password: 1234
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   web:
     resources:
-      static-locations: /static/
+      static-locations: classpath:/static/
   mvc:
     exception-handling:
       default-error-view:
