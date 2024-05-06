@@ -17,12 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class MeetingService {
     private final MeetingRepository meetingRepository;
 
-    @Transactional
-    public CreateMeetingResponse addMeeting(CreateMeetingRequest dto, User loginUser) {
-        Meeting entity = dto.toEntity(loginUser.getId());
-        Meeting meeting = meetingRepository.save(entity);
+    public void addParticipantOfMeeting(Long meetingId, Long participantId) {
 
-        return CreateMeetingResponse.from(meeting.getId());
+    }
+
+    public void addMeeting(CreateMeetingRequest dto) {
+        Meeting entity = dto.toEntity();
+        meetingRepository.save(entity);
     }
 
     public GetMeetingDetailResponse findMeetingById(Long meetingId) {

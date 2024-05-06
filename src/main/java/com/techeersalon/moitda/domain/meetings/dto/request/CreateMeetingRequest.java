@@ -45,7 +45,7 @@ public class CreateMeetingRequest {
     @NotBlank(message = "appointment time cannot be blank")
     private String appointment_time;
 
-    public Meeting toEntity(Long user_id){
+    public Meeting toEntity(){
         return Meeting.builder()
                 .user_id(user_id)
                 .category_id(category_id)

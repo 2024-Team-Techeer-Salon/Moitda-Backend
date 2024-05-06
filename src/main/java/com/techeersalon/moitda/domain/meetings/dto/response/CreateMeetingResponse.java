@@ -9,8 +9,7 @@ import lombok.*;
 public class CreateMeetingResponse {
     private Long meeting_id;
 
-    public static CreateMeetingResponse from(Long meeting_id){
-        return CreateMeetingResponse.builder()
-                .meeting_id(meeting_id).build();
+    public static CreateMeetingResponse from(){
+        return CreateMeetingResponse.builder().build();
     }
 }
