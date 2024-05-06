@@ -1,6 +1,7 @@
 package com.techeersalon.moitda.domain.user.entity;
 
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
+import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
 import com.techeersalon.moitda.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -30,7 +31,7 @@ public class User extends BaseEntity {
 
     private String bannerImage;
 
-    private String dataOfBirth;
+    private LocalDate dataOfBirth;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -52,7 +53,7 @@ public class User extends BaseEntity {
     private String refreshToken;
 
     @Builder
-    private User(String username, String email, String profileImage, String bannerImage, String dataOfBirth, Gender gender, String introduce, Integer mannerStat, String location, Role role, SocialType socialType, String refreshToken) {
+    private User(String username, String email, String profileImage, String bannerImage, LocalDate dataOfBirth, Gender gender, String introduce, Integer mannerStat, String location, Role role, SocialType socialType, String refreshToken) {
         this.username = username;
         this.email = email;
         this.profileImage = profileImage;
@@ -77,6 +78,19 @@ public class User extends BaseEntity {
         this.gender = signUpReq.getGender();
         this.location = signUpReq.getLocation();
         this.role = Role.USER;
+    }
+
+    public void onLogout() {
+        this.refreshToken = null;
+    }
+
+    public void updateProfile(UpdateUserReq updateUserReq) {
+        this.username = updateUserReq.getUsername();
+        this.profileImage = updateUserReq.getProfileImage();
+        this.bannerImage = updateUserReq.getBannerImage();
+        this.gender = updateUserReq.getGender();
+        this.introduce = updateUserReq.getIntroduce();
+        this.location = updateUserReq.getLocation();
     }
 }
 

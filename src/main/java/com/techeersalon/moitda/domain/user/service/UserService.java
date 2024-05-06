@@ -1,12 +1,16 @@
 package com.techeersalon.moitda.domain.user.service;
 
+import com.techeersalon.moitda.domain.user.dto.mapper.UserMapper;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
+import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
+import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
-import com.techeersalon.moitda.global.jwt.Service.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,35 +22,39 @@ public class UserService {
 
     private final UserRepository userRepository;
     //나중에 리펙토링하기
-    private final JwtService jwtService;
+    private final UserMapper userMapper;
 
     public void signup(SignUpReq signUpReq) {
-        //받아온 토큰을 활용하여 email과 socialtype을 가져와야 하나..?
-        String accessToken = signUpReq.getAccessToken();
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
+        user.signupUser(signUpReq);
 
-        Object[] result = jwtService.extractEmailAndSocialType(accessToken);
-        if (result != null && result.length == 2) {
-            String email = (String) result[0];
-            SocialType socialType = (SocialType) result[1];
-
-            Optional<User> optionalUser = userRepository.findBySocialTypeAndEmail(socialType, email);
-            if (optionalUser.isPresent()) {
-                // 이미 존재하는 사용자의 정보를 업데이트
-                User existingUser = optionalUser.get();
-                existingUser.signupUser(signUpReq);
-
-                userRepository.save(existingUser);
-            } else {
-                //예외 처리 수정하기(사용자가 없습니다)
-                throw new IllegalArgumentException("올바르지 않은 액세스 토큰입니다.");
-            }
-        } else {
-            throw new IllegalArgumentException("올바르지 않은 액세스 토큰입니다.");
-        }
+        userRepository.save(user);
     }
 
     public void logout() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
+        user.onLogout();
+        userRepository.save(user);
+    }
+
+
+    public UserProfileRes findUserProfile(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        User existingUser = optionalUser.get();
+
+        return userMapper.toUserProfile(existingUser);
+    }
+
+    public void updateUserProfile(UpdateUserReq updateUserReq) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
+        user.updateProfile(updateUserReq);
+
+        userRepository.save(user);
     }
 }
 
