@@ -23,6 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     //나중에 리펙토링하기
     private final UserMapper userMapper;
+    private UpdateUserReq updateUserReq;
 
     public void signup(SignUpReq signUpReq) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -47,14 +48,6 @@ public class UserService {
         User existingUser = optionalUser.get();
 
         return userMapper.toUserProfile(existingUser);
-    }
-
-    public void updateUserProfile(UpdateUserReq updateUserReq) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
-        user.updateProfile(updateUserReq);
-
-        userRepository.save(user);
     }
 
     public void updateUserProfile(UpdateUserReq updateUserReq) {
