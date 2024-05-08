@@ -20,7 +20,6 @@ public class SignUpReq {
     @NotBlank(message = "이름 입력하세요")
     private String username;
 
-    @NotBlank(message = "생년월일 입력하세요")
     private LocalDate dataOfBirth;
 
     @NotNull(message = "성별")

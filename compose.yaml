@@ -1,10 +1,26 @@
 services:
+  backend:
+    build:
+      context: .
+    container_name: backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3307/moitda
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+
   db:
     image: mysql:8.0
     container_name: mysqldb
     ports:
       - "3307:3306"
     environment:
-      MYSQL_DATABASE: "userinfo"
+      MYSQL_DATABASE: moitda
       MYSQL_ROOT_PASSWORD: "1234"
 

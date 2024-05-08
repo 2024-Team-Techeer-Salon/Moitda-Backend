@@ -38,7 +38,7 @@ public class GetMeetingDetailResponse {
                 .max_participants_count(meeting.getMaxParticipantsCount())
                 .participants_count(meeting.getParticipantsCount())
                 .image_url(meeting.getImage())
-                .createdAt(meeting.getCreatedAt())
+                .createdAt(LocalDateTime.parse(meeting.getCreateAt()))
                 .build();
     }
 }

@@ -25,6 +25,7 @@ public class UserService {
     private final UserMapper userMapper;
 
     public void signup(SignUpReq signUpReq) {
+//        수정필요
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
         user.signupUser(signUpReq);
@@ -52,13 +53,6 @@ public class UserService {
     public void updateUserProfile(UpdateUserReq updateUserReq) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
-        user.updateProfile(updateUserReq);
-
-        userRepository.save(user);
-    }
-
-    public void updateUserProfile(UpdateUserReq updateUserReq) {
-        User user = getLoginUser();
         user.updateProfile(updateUserReq);
 
         userRepository.save(user);
