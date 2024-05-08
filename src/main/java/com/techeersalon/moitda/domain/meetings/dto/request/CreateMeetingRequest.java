@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class CreateMeetingRequest {
 
     @NotBlank(message = "category_id cannot be blank")
-    private Long category_id;
+    private Long categoryId;
 
     @NotBlank(message = "title cannot be blank")
     private String title;
@@ -25,36 +25,32 @@ public class CreateMeetingRequest {
     @NotBlank(message = "content cannot be blank")
     private String content;
 
-    @NotBlank (message = "latitude cannot be blank")
-    private Float latitude;
+    @NotBlank(message = "builing_name cannot be blank")
+    private String buildingName;
 
-    @NotBlank(message = "iongitude cannot be blank")
-    private Float iongitude;
-
-    @NotBlank(message = "location cannot be blank")
-    private String location;
+    @NotBlank(message = "address cannot be blank")
+    private String address;
 
     @NotBlank(message = "max_participants_count cannot be blank")
-    private Integer max_participants_count;
+    private Integer maxParticipantsCount;
 
     @NotBlank(message = "max_approval_required cannot be blank")
-    private Boolean approval_required;
+    private Boolean approvalRequired;
 
     @NotBlank(message = "appointment time cannot be blank")
-    private String appointment_time;
+    private String appointmentTime;
 
     public Meeting toEntity(User user){
         return Meeting.builder()
-                .user_id(user.getId())
-                .category_id(category_id)
+                .userId(user.getId())
+                .categoryId(categoryId)
                 .title(title)
                 .content(content)
-                .latitude(latitude)
-                .longitude(latitude)
-                .location(location)
-                .maxParticipantsCount(max_participants_count)
-                .approvalRequired(approval_required)
-                .appointmentTime(LocalDateTime.parse(appointment_time))
+                .address(address)
+                .buildingName(buildingName)
+                .maxParticipantsCount(maxParticipantsCount)
+                .approvalRequired(approvalRequired)
+                .appointmentTime(LocalDateTime.parse(appointmentTime))
                 .build();
     }
 }

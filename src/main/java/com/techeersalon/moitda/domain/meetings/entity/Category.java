@@ -15,12 +15,12 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql = "UPDATE project SET is_deleted = true WHERE project_id = ?")
-@Where(clause = "is_deleted = false")
+@Where(clause = "isDeleted = false")
 public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
+    @Column(name = "categoryId")
     private Long id;
 
 }

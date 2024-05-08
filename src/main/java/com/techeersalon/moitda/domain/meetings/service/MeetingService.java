@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -47,13 +49,16 @@ public class MeetingService {
     }
 
     public void approvalParticipant(Long userIdOfParticipant, Boolean isApproval) {
-        MeetingParticipant p = meetingParticipantRepository.findById(userIdOfParticipant).orElse(null);
+        MeetingParticipant participant = meetingParticipantRepository.findById(userIdOfParticipant).orElse(null);
         if(isApproval){
-            p.setIsWaiting(false);
+            participant.setIsWaiting(false);
         }else{
-            p.delete();
+            participant.delete();
         }
-        meetingParticipantRepository.save(p);
+        meetingParticipantRepository.save(participant);
     }
 
+    public List<Meeting> getUserMeetingList(Long userId){
+        return meetingRepository.findByUserId(userId);
+    }
 }

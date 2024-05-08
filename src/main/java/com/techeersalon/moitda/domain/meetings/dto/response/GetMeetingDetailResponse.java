@@ -32,8 +32,8 @@ public class GetMeetingDetailResponse {
     public static GetMeetingDetailResponse of(Meeting meeting) {
         return GetMeetingDetailResponse.builder()
                 .title(meeting.getTitle())
-                .user_id(meeting.getUser_id())
-                .catagory_id(meeting.getCategory_id())
+                .user_id(meeting.getUserId())
+                .catagory_id(meeting.getCategoryId())
                 .content(meeting.getContent())
                 .max_participants_count(meeting.getMaxParticipantsCount())
                 .participants_count(meeting.getParticipantsCount())
