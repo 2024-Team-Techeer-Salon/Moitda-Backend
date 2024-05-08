@@ -57,5 +57,10 @@ public class UserService {
 
         userRepository.save(user);
     }
-}
 
+    public User getLoginUser(){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User loginUser = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
+        return loginUser;
+    }
+}
