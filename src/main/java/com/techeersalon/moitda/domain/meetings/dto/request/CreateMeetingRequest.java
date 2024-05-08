@@ -1,5 +1,7 @@
 package com.techeersalon.moitda.domain.meetings.dto.request;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CreateMeetingRequest {
 
     @NotBlank(message = "category_id cannot be blank")
