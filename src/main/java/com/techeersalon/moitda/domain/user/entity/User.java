@@ -48,6 +48,7 @@ public class User extends BaseEntity {
     private Role role;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private SocialType socialType; // KAKAO, NAVER, GOOGLE
 
     private String refreshToken;

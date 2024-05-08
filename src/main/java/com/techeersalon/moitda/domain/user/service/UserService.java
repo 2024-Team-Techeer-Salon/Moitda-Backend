@@ -25,6 +25,7 @@ public class UserService {
     private final UserMapper userMapper;
 
     public void signup(SignUpReq signUpReq) {
+//        수정필요
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
         user.signupUser(signUpReq);

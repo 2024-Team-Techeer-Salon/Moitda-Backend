@@ -39,7 +39,9 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/oauth2/**", "/index.html", "/swagger/**", "swagger-ui/**", "/api-docs/**").permitAll()
+                        .requestMatchers(
+                                "/", "/oauth2/**", "/index.html", "/swagger/**", "swagger-ui/**", "/api-docs/**", "/signup.html"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
 //                .authorizeHttpRequests(requests ->
