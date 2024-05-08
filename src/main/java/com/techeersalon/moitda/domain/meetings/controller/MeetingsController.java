@@ -32,10 +32,23 @@ public class MeetingsController {
         GetMeetingDetailResponse response = meetingService.findMeetingById(meetingId);
         return ResponseEntity.ok(response);
     }
+    //나중에 MeetingParticipantController로 이동
     @Operation(summary = "addParticipantToMeeting", description = "모임 신청")
-    @PostMapping("/{meetingId}")
+    @PostMapping("/participant/{meetingId}")
     public ResponseEntity<String> meetingAddParticipant(@PathVariable("meetingId") Long meetingId){
         meetingService.addParticipantOfMeeting(meetingId);
         return ResponseEntity.created(URI.create("/meetings/" + meetingId )).body("모임 신청 완료");
+    }
+    @Operation(summary = "ApprovalOfMeetingParticipants", description = "신청 승인 거절")
+    @PatchMapping("/participant/{userId}/{isApproval}")
+    public ResponseEntity<String> ApprovalOfMeetingParticipants(@PathVariable("userId") Long userIdOfparticipant,@PathVariable("isApproval") Boolean isApproval){
+        boolean isParticipant = meetingService.approvalParticipant(userIdOfparticipant, isApproval);
+
+        if(isParticipant == true){
+            return ResponseEntity.ok("모집 승인 완료");
+        }else if(isParticipant == false){
+            return ResponseEntity.ok("모집 거절 완료");
+        }
+
     }
 }

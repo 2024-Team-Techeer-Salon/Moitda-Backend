@@ -45,4 +45,8 @@ public class MeetingService {
         MeetingParticipant participant = new MeetingParticipant(meetingId, loginUser.getId());
         meetingParticipantRepository.save(participant);
     }
+
+    public boolean approvalParticipant(Long userIdOfparticipant, Boolean isApproval) {
+        return true;
+    }
 }
