@@ -34,4 +34,11 @@ public class MeetingParticipant extends BaseEntity {
 
     @Column(name = "is_waiting", nullable = false)
     private Boolean isWaiting;
+
+    public MeetingParticipant(Long meetingId, Long userId){
+        this.meetingId = meetingId;
+        this.userId = userId;
+        this.isHost = false;
+        this.isWaiting =true;
+    }
 }

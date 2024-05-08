@@ -2,10 +2,7 @@ package com.techeersalon.moitda.domain.meetings.controller;
 
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
-import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
-import com.techeersalon.moitda.global.common.SuccessCode;
-import com.techeersalon.moitda.global.common.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -34,5 +31,11 @@ public class MeetingsController {
     public ResponseEntity<GetMeetingDetailResponse> meetingDetail(@PathVariable Long meetingId){
         GetMeetingDetailResponse response = meetingService.findMeetingById(meetingId);
         return ResponseEntity.ok(response);
+    }
+    @Operation(summary = "addParticipantToMeeting", description = "모임 신청")
+    @PostMapping("/{meetingId}")
+    public ResponseEntity<String> meetingAddParticipant(@PathVariable("meetingId") Long meetingId){
+        meetingService.addParticipantOfMeeting(meetingId);
+        return ResponseEntity.created(URI.create("/meetings/" + meetingId )).body("모임 신청 완료");
     }
 }
