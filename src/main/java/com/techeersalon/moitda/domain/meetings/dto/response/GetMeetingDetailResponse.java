@@ -27,7 +27,7 @@ public class GetMeetingDetailResponse {
     //참여자 리스트 줘야 되는데.. 수정필요
     private String image_url;
 
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     public static GetMeetingDetailResponse of(Meeting meeting) {
         return GetMeetingDetailResponse.builder()
@@ -38,7 +38,7 @@ public class GetMeetingDetailResponse {
                 .max_participants_count(meeting.getMaxParticipantsCount())
                 .participants_count(meeting.getParticipantsCount())
                 .image_url(meeting.getImage())
-                .createdAt(meeting.getCreateAt())
+                .createdAt(LocalDateTime.parse(meeting.getCreateAt()))
                 .build();
     }
 }

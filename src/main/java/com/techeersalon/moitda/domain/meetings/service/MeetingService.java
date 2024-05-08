@@ -46,7 +46,14 @@ public class MeetingService {
         meetingParticipantRepository.save(participant);
     }
 
-    public boolean approvalParticipant(Long userIdOfparticipant, Boolean isApproval) {
-        return true;
+    public void approvalParticipant(Long userIdOfParticipant, Boolean isApproval) {
+        MeetingParticipant p = meetingParticipantRepository.findById(userIdOfParticipant).orElse(null);
+        if(isApproval){
+            p.setIsWaiting(false);
+        }else{
+            p.delete();
+        }
+        meetingParticipantRepository.save(p);
     }
+
 }
