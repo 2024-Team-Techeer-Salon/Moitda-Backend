@@ -1,12 +1,10 @@
 package com.techeersalon.moitda.chat.service;
 
-import com.techeersalon.moitda.chat.dao.*;
-import com.techeersalon.moitda.chat.domain.ChatMessage;
-import com.techeersalon.moitda.chat.domain.ChatRoom;
-import com.techeersalon.moitda.chat.dto.ChatMessageRequestDto;
-import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
-import com.techeersalon.moitda.chat.dto.ChatRoomRequestDto;
-import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
+import com.techeersalon.moitda.chat.repository.*;
+import com.techeersalon.moitda.chat.domain.chatMessage.ChatMessage;
+import com.techeersalon.moitda.chat.domain.chatRoom.ChatRoom;
+import com.techeersalon.moitda.chat.domain.chatMessage.dto.ChatMessageRequestDto;
+import com.techeersalon.moitda.chat.domain.chatMessage.dto.ChatMessageResponseDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,7 +32,7 @@ public class ChatMessageService {
     public Long save(final Long chatRoomId, final ChatMessageRequestDto requestDto) {
         ChatRoom chatRoomEntity = this.chatRoomRepository.findById(chatRoomId).orElseThrow(
                 () -> new IllegalArgumentException("해당 ChatRoom이 존재하지 않습니다. chatRoomId = " + chatRoomId));
-        requestDto.setChatRoom(chatRoomEntity);
+        requestDto.setRoomId(chatRoomEntity.getId());
         return this.chatMessageRepository.save(requestDto.toEntity()).getId();
     }
 

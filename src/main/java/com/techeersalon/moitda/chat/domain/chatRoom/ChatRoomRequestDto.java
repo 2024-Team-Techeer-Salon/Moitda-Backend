@@ -1,6 +1,5 @@
-package com.techeersalon.moitda.chat.dto;
+package com.techeersalon.moitda.chat.domain.chatRoom;
 
-import com.techeersalon.moitda.chat.domain.ChatRoom;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

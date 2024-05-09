@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.chat.dto;
+package com.techeersalon.moitda.chat.domain.chatMessage.dto;
 
 import lombok.*;
 

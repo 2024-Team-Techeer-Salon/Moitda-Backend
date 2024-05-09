@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.chat;
+package com.techeersalon.moitda.chat.config.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;

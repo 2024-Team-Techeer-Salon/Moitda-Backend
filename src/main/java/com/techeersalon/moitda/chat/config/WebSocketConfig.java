@@ -1,7 +1,7 @@
 package com.techeersalon.moitda.chat.config;
 
-import com.techeersalon.moitda.chat.StompExceptionHandler;
-import com.techeersalon.moitda.chat.StompHandler;
+import com.techeersalon.moitda.chat.config.handler.StompExceptionHandler;
+import com.techeersalon.moitda.chat.config.handler.StompHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -30,8 +30,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(final StompEndpointRegistry registry) {
         registry.setErrorHandler(stompExceptionHandler)
                 .addEndpoint("/ws")     // 엔드포인트: /ws
-                .setAllowedOrigins("*");
-        //.withSockJS();
+                .setAllowedOrigins("*")
+                .withSockJS();
     }
 
     /* 이 코드 이해 잘 안됨*/

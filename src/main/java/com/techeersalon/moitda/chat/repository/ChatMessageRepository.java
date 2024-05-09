@@ -1,7 +1,7 @@
-package com.techeersalon.moitda.chat.dao;
+package com.techeersalon.moitda.chat.repository;
 
-import com.techeersalon.moitda.chat.domain.ChatMessage;
-import com.techeersalon.moitda.chat.domain.ChatRoom;
+import com.techeersalon.moitda.chat.domain.chatMessage.ChatMessage;
+import com.techeersalon.moitda.chat.domain.chatRoom.ChatRoom;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
