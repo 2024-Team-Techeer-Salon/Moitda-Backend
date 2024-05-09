@@ -27,16 +27,12 @@ public class MeetingParticipant extends BaseEntity {
     @Column(name = "userId", nullable = false)
     private Long userId;
 
-    @Column(name = "isHost", nullable = false)
-    private Boolean isHost;
-
     @Column(name = "isWaiting", nullable = false)
     private Boolean isWaiting;
 
     public MeetingParticipant(Long meetingId, Long userId){
         this.meetingId = meetingId;
         this.userId = userId;
-        this.isHost = false;
-        this.isWaiting =true;
+        this.isWaiting = true;
     }
 }

@@ -44,6 +44,7 @@ public class CreateMeetingRequest {
     private String appointmentTime;
 
     public Meeting toEntity(User user){
+
         return Meeting.builder()
                 .userId(user.getId())
                 .categoryId(categoryId)

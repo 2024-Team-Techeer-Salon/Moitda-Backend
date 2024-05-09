@@ -26,15 +26,21 @@ public class MeetingService {
 
     public Long addMeeting(CreateMeetingRequest dto) {
         User loginUser = userService.getLoginUser();
+
         Meeting entity = dto.toEntity(loginUser);
         Meeting meeting = meetingRepository.save(entity);
+
+        MeetingParticipant participant = new MeetingParticipant(meeting.getId(), loginUser.getId());
+        participant.setIsWaiting(false);
+        meetingParticipantRepository.save(participant);
+
         return meeting.getId();
     }
 
     public GetMeetingDetailResponse findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
-
-        return GetMeetingDetailResponse.of(meeting);
+        List<MeetingParticipant> participantList = meetingParticipantRepository.findByMeetingId(meetingId);
+        return GetMeetingDetailResponse.of(meeting, participantList);
     }
 
     public Meeting getMeetingById(Long id) {
@@ -58,7 +64,8 @@ public class MeetingService {
         meetingParticipantRepository.save(participant);
     }
 
-    public List<Meeting> getUserMeetingList(Long userId){
-        return meetingRepository.findByUserId(userId);
+    public List<Meeting> getUserMeetingList(){
+        Long loginUserId = userService.getLoginUser().getId();
+        return meetingRepository.findByUserId(loginUserId);
     }
 }
