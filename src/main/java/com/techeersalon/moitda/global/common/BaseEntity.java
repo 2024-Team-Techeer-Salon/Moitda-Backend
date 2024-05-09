@@ -23,4 +23,8 @@ public class BaseEntity {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean deleteAt = Boolean.FALSE;
+
+    public void delete() {
+        this.deleteAt = Boolean.TRUE;
+    }
 }

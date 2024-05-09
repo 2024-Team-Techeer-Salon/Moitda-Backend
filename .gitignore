@@ -35,4 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
 /src/main/resources/secret.properties
+
+/src/main/resources/application.yml
+
+.env
