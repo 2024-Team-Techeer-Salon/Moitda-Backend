@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @Service
@@ -67,5 +68,9 @@ public class MeetingService {
     public List<Meeting> getUserMeetingList(){
         Long loginUserId = userService.getLoginUser().getId();
         return meetingRepository.findByUserId(loginUserId);
+    }
+
+    public List<Meeting> lastMeetingList(Pageable pageable) {
+        return meetingRepository.findByCreatedAtContains(pageable);
     }
 }
