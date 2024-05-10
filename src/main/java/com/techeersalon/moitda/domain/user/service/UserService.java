@@ -23,7 +23,6 @@ public class UserService {
     private final UserRepository userRepository;
     //나중에 리펙토링하기
     private final UserMapper userMapper;
-    private UpdateUserReq updateUserReq;
 
     public void signup(SignUpReq signUpReq) {
 //        수정필요
@@ -36,7 +35,6 @@ public class UserService {
 
     public void logout() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
         user.onLogout();
         userRepository.save(user);

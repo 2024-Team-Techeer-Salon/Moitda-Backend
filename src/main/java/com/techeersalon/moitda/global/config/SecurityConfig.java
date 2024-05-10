@@ -33,14 +33,20 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
-
                 .httpBasic(HttpBasicConfigurer::disable)
                 .sessionManagement(configurer -> configurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/", "/oauth2/**", "/index.html", "/swagger/**", "swagger-ui/**", "/api-docs/**", "/signup.html"
+                                "/", "/oauth2/**",
+                                "/index.html",
+                                "/swagger/**",
+                                "swagger-ui/**",
+                                "/api-docs/**",
+                                "/signup.html",
+                                "/users/**",
+                                "localhost:3000/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
