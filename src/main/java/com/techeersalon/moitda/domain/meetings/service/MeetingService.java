@@ -18,7 +18,7 @@ import java.awt.print.Pageable;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class MeetingService {
     private final MeetingRepository meetingRepository;

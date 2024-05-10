@@ -50,4 +50,5 @@ public class GetMeetingDetailResponse {
                 .createdAt(LocalDateTime.parse(meeting.getCreateAt()))
                 .build();
     }
+    // "2024-05-07T10:15:30" --> createAt
 }
