@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CreateMeetingRequest {
 
-    @NotBlank(message = "category_id cannot be blank")
+    @NotNull(message = "category_id cannot be blank")
     private Long categoryId;
 
     @NotBlank(message = "title cannot be blank")
@@ -34,16 +35,19 @@ public class CreateMeetingRequest {
     @NotBlank(message = "address cannot be blank")
     private String address;
 
-    @NotBlank(message = "max_participants_count cannot be blank")
+    @NotNull(message = "max_participants_count cannot be blank")
     private Integer maxParticipantsCount;
 
-    @NotBlank(message = "max_approval_required cannot be blank")
+    @NotNull(message = "max_approval_required cannot be blank")
     private Boolean approvalRequired;
 
     @NotBlank(message = "appointment time cannot be blank")
     private String appointmentTime;
 
-    public Meeting toEntity(User user){
+    @NotBlank(message = "image")
+    private String image;
+
+    public Meeting toEntity(User user) {
 
         return Meeting.builder()
                 .userId(user.getId())
@@ -55,6 +59,8 @@ public class CreateMeetingRequest {
                 .maxParticipantsCount(maxParticipantsCount)
                 .approvalRequired(approvalRequired)
                 .appointmentTime(LocalDateTime.parse(appointmentTime))
+                .image(image)
+                .participantsCount(1)
                 .build();
     }
 }
