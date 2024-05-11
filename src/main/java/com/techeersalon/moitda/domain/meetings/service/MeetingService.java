@@ -2,6 +2,7 @@
 package com.techeersalon.moitda.domain.meetings.service;
 
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
+import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
@@ -11,11 +12,16 @@ import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 @Transactional
@@ -24,7 +30,7 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final UserService userService;
-
+    private final int pageSize = 32;
     public Long addMeeting(CreateMeetingRequest dto) {
         User loginUser = userService.getLoginUser();
 
@@ -70,7 +76,13 @@ public class MeetingService {
         return meetingRepository.findByUserId(loginUserId);
     }
 
-    public List<Meeting> lastMeetingList(Pageable pageable) {
-        return meetingRepository.findByCreatedAtContains(pageable);
+    public Page<GetLatestMeetingListResponse> findMeetings(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createAt"));
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
+
+        Page<Meeting> meetings = meetingRepository.findAll(pageable);
+
+        return meetings.map(GetLatestMeetingListResponse::of);
     }
 }
