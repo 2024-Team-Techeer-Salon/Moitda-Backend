@@ -60,7 +60,7 @@ public class ChatController {
 
         ChatRoom chatRoom = chatRoomService.createChatRoom(RoomName); // 서비스 계층에 이름을 전달
         chatRoomService.createUserChatRoom(user, chatRoom.getId());
-        chatRoomService.addUserToRoom(chatRoom.getId(), user.getId());
+        //chatRoomService.addUserToRoom(chatRoom.getId(), user.getId());
 
         ChatRoomResponseDto chatRoomRes = ChatRoomResponseDto.builder()
                 .id(chatRoom.getId())
