@@ -52,8 +52,8 @@ public class MeetingsController {
 
     @Operation(summary = "ChangeMeetingInfo", description = "미팅 수정")
     @PutMapping("/{meetingId}")
-    public String ChangeMeetingInfo(@Validated @RequestBody ChangeMeetingInfoRequest dto){
-
+    public String ChangeMeetingInfo(@PathVariable Long meetingId, @Validated @RequestBody ChangeMeetingInfoRequest dto){
+        meetingService.modifyMeeting(meetingId, dto);
         return "미팅 수정";
     }
 

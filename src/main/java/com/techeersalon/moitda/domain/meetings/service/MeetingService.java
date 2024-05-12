@@ -2,6 +2,7 @@
 package com.techeersalon.moitda.domain.meetings.service;
 
 import com.techeersalon.moitda.domain.meetings.dto.MeetingParticipantDto;
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
@@ -47,8 +48,7 @@ public class MeetingService {
         return meeting.getId();
     }
     public GetMeetingDetailResponse findMeetingById(Long meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 모임이 존재하지 않습니다."));
+        Meeting meeting = this.getMeetingById(meetingId);
         List<MeetingParticipantDto> participantDtoList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE)
                 .stream()
                 .map(this::mapToDto)
@@ -130,12 +130,15 @@ public class MeetingService {
         meetingRepository.save(meeting);
     }
 
+    private Meeting getMeetingById(Long meetingId) {
+        return meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 모임이 존재하지 않습니다."));
+    }
 
-
-//  상훈이가 사용한다고 해서 따로 만들
-//    public List<Meeting> getUserMeetingList(){
-//        Long loginUserId = userService.getLoginUser().getId();
-//        return meetingRepository.findByUserId(loginUserId);
-//    }
+    public void modifyMeeting(Long meetingId, ChangeMeetingInfoRequest dto) {
+        Meeting meeting = this.getMeetingById(meetingId);
+        meeting.updateInfo(dto);
+        meetingRepository.save(meeting);
+    }
 
 }

@@ -24,11 +24,14 @@ public class ChangeMeetingInfoRequest {
     @NotBlank(message = "content cannot be blank")
     private String content;
 
-    @NotBlank(message = "builing_name cannot be blank")
-    private String buildingName;
-
     @NotBlank(message = "address cannot be blank")
     private String address;
+
+    @NotBlank(message = "address_detail cannot be blank")
+    private String addressDetail;
+
+    @NotBlank(message = "builing_name cannot be blank")
+    private String buildingName;
 
     @NotNull(message = "max_participants_count cannot be blank")
     private Integer maxParticipantsCount;

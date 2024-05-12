@@ -1,5 +1,6 @@
 package com.techeersalon.moitda.domain.meetings.entity;
 
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
 import com.techeersalon.moitda.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -67,5 +66,17 @@ public class Meeting extends BaseEntity {
 
     public void increaseParticipantsCnt() {
         this.participantsCount++;
+    }
+
+    public void updateInfo(ChangeMeetingInfoRequest dto){
+        this.categoryId = dto.getCategoryId();
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+        this.buildingName = dto.getBuildingName();
+        this.address = dto.getBuildingName();
+        this.addressDetail = dto.getAddressDetail();
+        this.maxParticipantsCount = dto.getMaxParticipantsCount();
+        this.appointmentTime = dto.getAppointmentTime();
+        this.image = dto.getImage();
     }
 }
