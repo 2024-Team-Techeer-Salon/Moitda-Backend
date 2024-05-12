@@ -11,8 +11,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
 @NoArgsConstructor
@@ -58,7 +56,7 @@ public class CreateMeetingRequest {
                 .buildingName(buildingName)
                 .maxParticipantsCount(maxParticipantsCount)
                 .approvalRequired(approvalRequired)
-                .appointmentTime(LocalDateTime.parse(appointmentTime))
+                .appointmentTime(appointmentTime)
                 .image(image)
                 .participantsCount(1)
                 .build();

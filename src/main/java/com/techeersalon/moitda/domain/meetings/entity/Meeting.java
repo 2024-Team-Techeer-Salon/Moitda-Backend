@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Builder
@@ -28,7 +26,7 @@ public class Meeting extends BaseEntity {
     @Column(name = "userId", nullable = false)
     private Long userId;
 
-    @Column(name = "categoryId", nullable = false)
+    @Column(name = "categoryId")
     private Long categoryId;
 
     @Column(name = "title", nullable = false)
@@ -37,7 +35,7 @@ public class Meeting extends BaseEntity {
     @Column(name = "participantsCount", nullable = false)
     private Integer participantsCount;
 
-    @Column(name = "max_participantsCount", nullable = false)
+    @Column(name = "maxParticipantsCount", nullable = false)
     private Integer maxParticipantsCount;
 
     @Column(name = "address", nullable = false)
@@ -47,17 +45,17 @@ public class Meeting extends BaseEntity {
     private String buildingName;
 
     @Lob
-    @Column(name = "content", nullable = false)
+    @Column(name = "content")
     private String content;
 
-    @Column(name = "image", length = 256, nullable = false)
+    @Column(name = "image")
     private String image;
 
     @Column(name = "approvalRequired", nullable = false)
     private Boolean approvalRequired;
 
-    @Column(name = "appointmentTime", nullable = false)
-    private LocalDateTime appointmentTime;
+    @Column(name = "appointmentTime")
+    private String appointmentTime;
 
     @Column(name = "endTime")
     private LocalDateTime endTime;
