@@ -3,6 +3,7 @@ package com.techeersalon.moitda.domain.meetings.service;
 
 import com.techeersalon.moitda.domain.meetings.dto.MeetingParticipantDto;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
+import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
@@ -12,12 +13,18 @@ import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Service
 @Transactional
@@ -26,7 +33,7 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final UserService userService;
-
+    private final int pageSize = 32;
     public Long addMeeting(CreateMeetingRequest dto) {
         User loginUser = userService.getLoginUser();
 
@@ -97,9 +104,25 @@ public class MeetingService {
         }
         meetingParticipantRepository.save(participant);
     }
-//  이 부분이 뭔지 잘 몰라서 안썼는데 이 메서드가 사용되야 한다고 하면 말씀해주세요
+
+    public List<Meeting> getUserMeetingList(){
+        Long loginUserId = userService.getLoginUser().getId();
+        return meetingRepository.findByUserId(loginUserId);
+    }
+
+    public Page<GetLatestMeetingListResponse> findMeetings(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createAt"));
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
+
+        Page<Meeting> meetings = meetingRepository.findAll(pageable);
+
+        return meetings.map(GetLatestMeetingListResponse::of);
+    }
+//  상훈이가 사용한다고 해서 따로 만들
 //    public List<Meeting> getUserMeetingList(){
 //        Long loginUserId = userService.getLoginUser().getId();
 //        return meetingRepository.findByUserId(loginUserId);
 //    }
+
 }

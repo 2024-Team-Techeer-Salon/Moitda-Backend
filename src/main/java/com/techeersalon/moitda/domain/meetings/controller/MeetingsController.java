@@ -1,11 +1,13 @@
 package com.techeersalon.moitda.domain.meetings.controller;
 
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
+import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,14 @@ public class MeetingsController {
         GetMeetingDetailResponse response = meetingService.findMeetingById(meetingId);
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "findMeetingsList", description = "모임 조회")
+    @GetMapping("/search/latest")
+    public Page<GetLatestMeetingListResponse> findMeetingsList(@RequestParam(value="page", defaultValue="0")int page){
+        Page<GetLatestMeetingListResponse>  response = meetingService.findMeetings(page);
+        return response;
+    }
+
 
     //나중에 MeetingParticipantController로 이동
     @Operation(summary = "addParticipantToMeeting", description = "모임 신청")

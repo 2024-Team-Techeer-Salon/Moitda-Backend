@@ -37,7 +37,7 @@ public class Meeting extends BaseEntity {
     @Column(name = "participantsCount", nullable = false)
     private Integer participantsCount;
 
-    @Column(name = "max_participantsCount", nullable = false)
+    @Column(name = "maxParticipantsCount", nullable = false)
     private Integer maxParticipantsCount;
 
     @Column(name = "address", nullable = false)
@@ -63,10 +63,9 @@ public class Meeting extends BaseEntity {
     private String appointmentTime;
 
     @Column(name = "endTime")
-    private String endTime;
+    private LocalDateTime endTime;
 
     public void increaseParticipantsCnt() {
         this.participantsCount++;
     }
-
 }

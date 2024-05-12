@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.global.common;
+package com.techeersalon.moitda.chat.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -9,22 +9,20 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseEntity {
+public abstract class BaseTime {
     @CreatedDate
-    private LocalDateTime createAt = LocalDateTime.now();
+    @Column(updatable = false)
+    protected LocalDateTime createdDate;
 
     @LastModifiedDate
-    private LocalDateTime updateAt = LocalDateTime.now();
+    @Column(updatable = true)
+    private LocalDateTime updatedDate;
 
-    @Column(name = "is_deleted", nullable = false)
-    private boolean is_deleted = Boolean.FALSE;
-
-    public void delete() {
-        this.is_deleted = Boolean.TRUE;
-    }
+    @LastModifiedDate
+    @Column(updatable = true)
+    private LocalDateTime deletedDate;
 }

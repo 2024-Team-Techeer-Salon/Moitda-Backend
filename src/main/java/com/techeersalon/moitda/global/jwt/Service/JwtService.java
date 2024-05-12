@@ -14,10 +14,18 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -46,6 +54,7 @@ public class JwtService {
     private static final String EMAIL_CLAIM = "email";
     private static final String SOCIAL_TYPE_CLAIM = "socialType";
     private static final String BEARER = "Bearer ";
+
 
     private final UserRepository userRepository;
     private Key key;
@@ -77,6 +86,7 @@ public class JwtService {
                 .compact();
     }
 
+
     public void sendAccessToken(HttpServletResponse response, String accessToken) {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setHeader(accessHeader, accessToken);
@@ -100,6 +110,19 @@ public class JwtService {
         return Optional.ofNullable(request.getHeader(accessHeader))
                 .filter(refreshToken -> refreshToken.startsWith(BEARER))
                 .map(refreshToken -> refreshToken.replace(BEARER, ""));
+    }
+
+    public static String extractJwt(final StompHeaderAccessor accessor) {
+        String headerValue = accessor.getFirstNativeHeader("Authorization");
+        if (headerValue != null && headerValue.startsWith("Bearer ")) {
+            String token = headerValue.substring(7); // "Bearer " 부분을 제외하고 JWT 토큰만 추출
+            log.info("Extracted JWT token: {}", token);
+            return token;
+        }
+
+        log.info("안됨");
+
+        return null;
     }
 
     public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
@@ -126,6 +149,28 @@ public class JwtService {
             log.error("유효하지 않은 토큰입니다. {}", e.getMessage());
             return false;
         }
+    }
+
+    public UserDetails tokentoUserDetials(List<String> authorizationHeaders){
+        if (authorizationHeaders != null && !authorizationHeaders.isEmpty()) {
+            String jwtToken = authorizationHeaders.get(0).replace("Bearer ", "");
+
+            JwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
+                            new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName()))
+                    .build();
+
+            // JWT 토큰을 디코딩합니다.
+            Jwt jwt = jwtDecoder.decode(jwtToken);
+
+            // UserDetails를 생성하여 필요한 정보를 추가합니다.
+            UserDetails userDetails = User.builder()
+                    .username(jwt.getClaim("username")) // 예시: 토큰에서 username 클레임을 가져와 username으로 설정
+                    .password("") // 비밀번호는 토큰에서 가져오지 않으므로 빈 문자열로 설정
+                    .build();
+            // 이제 UserDetails에 정상적인 값이 추가되었습니다.
+            return userDetails;
+        }
+        return null;
     }
 
     public Object[] extractEmailAndSocialType(String accessToken) {

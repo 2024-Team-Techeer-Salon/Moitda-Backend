@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByRefreshToken(String refreshToken);
 
-    Optional<User> findById(Long id);
+    //Optional<User> findById(Long id);
 
     /**
      * 소셜 타입과 소셜의 식별값으로 회원 찾는 메소드
