@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: .
-    container_name: backend
+    container_name: backend-moitda
     restart: always
     depends_on:
       - db
