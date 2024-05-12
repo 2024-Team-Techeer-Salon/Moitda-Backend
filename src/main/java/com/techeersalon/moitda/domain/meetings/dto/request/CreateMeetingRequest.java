@@ -62,7 +62,7 @@ public class CreateMeetingRequest {
                 .addressDetail(addressDetail)
                 .maxParticipantsCount(maxParticipantsCount)
                 .approvalRequired(approvalRequired)
-                .appointmentTime(String.valueOf(LocalDateTime.parse(appointmentTime)))
+                .appointmentTime(appointmentTime)
                 .image(image)
                 .participantsCount(1)
                 .build();
