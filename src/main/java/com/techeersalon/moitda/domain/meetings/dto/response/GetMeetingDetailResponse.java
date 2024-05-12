@@ -2,6 +2,7 @@ package com.techeersalon.moitda.domain.meetings.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.techeersalon.moitda.domain.meetings.dto.MeetingParticipantDto;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Getter
@@ -31,14 +31,13 @@ public class GetMeetingDetailResponse {
 
     private Integer participantsCount;
 
-    private List<MeetingParticipant> participantList;
+    private List<MeetingParticipantDto> participantList;
 
     private String imageUrl;
 
     private LocalDateTime createdAt;
 
-    public static GetMeetingDetailResponse of(Meeting meeting, List<MeetingParticipant> participantList) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+    public static GetMeetingDetailResponse of(Meeting meeting, List<MeetingParticipantDto> participantList) {
         return GetMeetingDetailResponse.builder()
                 .title(meeting.getTitle())
                 .userId(meeting.getUserId())
@@ -48,7 +47,7 @@ public class GetMeetingDetailResponse {
                 .participantsCount(meeting.getParticipantsCount())
                 .participantList(participantList)
                 .imageUrl(meeting.getImage())
-                .createdAt(LocalDateTime.parse(meeting.getCreateAt(), formatter))
+                .createdAt(meeting.getCreateAt())
                 .build();
     }
 }

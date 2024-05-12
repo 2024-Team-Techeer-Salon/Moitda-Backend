@@ -14,6 +14,7 @@ public class UserProfileRes {
 
     private String username;
     private int mannerStat;
+    private String profileImage;
     private String bannerImage;
     private Gender gender;
     private String introduce;

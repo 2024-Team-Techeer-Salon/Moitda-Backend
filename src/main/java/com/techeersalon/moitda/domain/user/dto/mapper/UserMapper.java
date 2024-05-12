@@ -11,6 +11,7 @@ public class UserMapper {
         return UserProfileRes.builder()
                 .username(user.getUsername())
                 .mannerStat(user.getMannerStat())
+                .profileImage(user.getProfileImage())
                 .bannerImage(user.getBannerImage())
                 .gender(user.getGender())
                 .introduce(user.getIntroduce())
