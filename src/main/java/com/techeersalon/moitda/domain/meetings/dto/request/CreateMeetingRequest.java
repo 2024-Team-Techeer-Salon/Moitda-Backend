@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -33,6 +35,9 @@ public class CreateMeetingRequest {
     @NotBlank(message = "address cannot be blank")
     private String address;
 
+    @NotBlank(message = "address_detail cannot be blank")
+    private String addressDetail;
+
     @NotNull(message = "max_participants_count cannot be blank")
     private Integer maxParticipantsCount;
 
@@ -54,6 +59,7 @@ public class CreateMeetingRequest {
                 .content(content)
                 .address(address)
                 .buildingName(buildingName)
+                .addressDetail(addressDetail)
                 .maxParticipantsCount(maxParticipantsCount)
                 .approvalRequired(approvalRequired)
                 .appointmentTime(appointmentTime)

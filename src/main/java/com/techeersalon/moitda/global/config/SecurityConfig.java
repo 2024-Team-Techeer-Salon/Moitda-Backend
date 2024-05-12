@@ -16,6 +16,10 @@ import org.springframework.security.config.annotation.web.configurers.HttpBasicC
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity //시큐리티 활성화 -> 기본 스프링 필터 체인에 등록
@@ -28,11 +32,22 @@ public class SecurityConfig {
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
+    CorsConfigurationSource corsConfigurationSource() {
+        return request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedHeaders(Collections.singletonList("*"));
+            config.setAllowedMethods(Collections.singletonList("*"));
+            config.setAllowedOriginPatterns(Collections.singletonList("http://localhost:3000")); // ⭐️ 허용할 origin
+            config.setAllowCredentials(true);
+            return config;
+        };
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .httpBasic(HttpBasicConfigurer::disable)
                 .sessionManagement(configurer -> configurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -45,8 +60,7 @@ public class SecurityConfig {
                                 "swagger-ui/**",
                                 "/api-docs/**",
                                 "/signup.html",
-                                "/users/**",
-                                "localhost:3000/**"
+                                "/users/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
