@@ -22,9 +22,9 @@ public class BaseEntity {
     private String updateAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean deleteAt = Boolean.FALSE;
+    private boolean is_deleted = Boolean.FALSE;
 
     public void delete() {
-        this.deleteAt = Boolean.TRUE;
+        this.is_deleted = Boolean.TRUE;
     }
 }
