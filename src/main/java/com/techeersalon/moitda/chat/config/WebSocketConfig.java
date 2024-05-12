@@ -30,8 +30,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(final StompEndpointRegistry registry) {
         registry.setErrorHandler(stompExceptionHandler)
                 .addEndpoint("/ws")     // 엔드포인트: /ws
-                .setAllowedOrigins("*")
-                .withSockJS();
+                //setAllowedOrigins("*");
+                .setAllowedOriginPatterns("*");
+                //.withSockJS();
     }
 
     /* 이 코드 이해 잘 안됨*/

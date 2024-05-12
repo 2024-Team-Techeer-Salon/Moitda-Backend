@@ -32,7 +32,8 @@ public class ChatMapper {
                 .user(user)
                 .chatRoom(chatRoom)
                 .message(request.getMessage())
-                .sendDate(LocalDateTime.from(now()))
+                .sendDate(LocalDateTime.now())
+                //.sendDate(LocalDateTime.from(now()))
                 .build();
     }
 

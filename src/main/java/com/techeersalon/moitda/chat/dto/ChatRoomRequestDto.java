@@ -1,5 +1,6 @@
-package com.techeersalon.moitda.chat.domain.chatRoom;
+package com.techeersalon.moitda.chat.dto;
 
+import com.techeersalon.moitda.chat.domain.UserChatRoom;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,11 +13,5 @@ public class ChatRoomRequestDto {
     @Builder
     public ChatRoomRequestDto(String roomName) {
         this.roomName = roomName;
-    }
-
-    public ChatRoom toEntity() {
-        return ChatRoom.builder()
-                .roomName(this.roomName)
-                .build();
     }
 }
