@@ -39,7 +39,7 @@ public class MeetingService {
         Meeting meeting = meetingRepository.save(entity);
 
         MeetingParticipant participant = new MeetingParticipant(meeting.getId(), loginUser.getId());
-        participant.setIsWaiting(false);
+        participant.notNeedToApprove();
         meetingParticipantRepository.save(participant);
 
         return meeting.getId();
@@ -90,7 +90,7 @@ public class MeetingService {
     public void approvalParticipant(Long userIdOfParticipant, Boolean isApproval) {
         MeetingParticipant participant = meetingParticipantRepository.findById(userIdOfParticipant).orElse(null);
         if (isApproval) {
-            participant.setIsWaiting(false);
+            participant.notNeedToApprove();
         } else {
             participant.delete();
         }
@@ -111,6 +111,20 @@ public class MeetingService {
 
         return meetings.map(GetLatestMeetingListResponse::of);
     }
+
+    public void deleteMeeting(Long meetingId) {
+        Meeting meeting = this.getMeetingById(meetingId);
+        List<MeetingParticipant> participantList = meetingParticipantRepository.findByMeetingId(meetingId);
+        meeting.delete();
+        for(MeetingParticipant participant : participantList){
+            participant.delete();
+            meetingParticipantRepository.save(participant);
+        }
+        meetingRepository.save(meeting);
+    }
+
+
+
 //  상훈이가 사용한다고 해서 따로 만들
 //    public List<Meeting> getUserMeetingList(){
 //        Long loginUserId = userService.getLoginUser().getId();

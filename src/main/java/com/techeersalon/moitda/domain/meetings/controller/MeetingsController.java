@@ -1,5 +1,6 @@
 package com.techeersalon.moitda.domain.meetings.controller;
 
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
@@ -42,6 +43,19 @@ public class MeetingsController {
         return response;
     }
 
+    @Operation(summary = "cancelMeeting", description = "모임 취소")
+    @DeleteMapping("/{meetingId}")
+    public String cancelMeeting(@PathVariable Long meetingId){
+        meetingService.deleteMeeting(meetingId);
+        return "미팅 취소";
+    }
+
+    @Operation(summary = "ChangeMeetingInfo", description = "미팅 수정")
+    @PutMapping("/{meetingId}")
+    public String ChangeMeetingInfo(@Validated @RequestBody ChangeMeetingInfoRequest dto){
+
+        return "미팅 수정";
+    }
 
     //나중에 MeetingParticipantController로 이동
     @Operation(summary = "addParticipantToMeeting", description = "모임 신청")

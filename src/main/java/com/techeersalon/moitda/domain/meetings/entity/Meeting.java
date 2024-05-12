@@ -14,7 +14,7 @@ import org.hibernate.annotations.Where;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE project SET is_deleted = true WHERE project_id = ?")
+@SQLDelete(sql = "UPDATE Meeting SET is_deleted = true WHERE meeting_id = ?")
 @Where(clause = "is_deleted = false")
 public class Meeting extends BaseEntity {
 
@@ -58,7 +58,7 @@ public class Meeting extends BaseEntity {
     private String appointmentTime;
 
     @Column(name = "endTime")
-    private LocalDateTime endTime;
+    private String endTime;
 
     public void increaseParticipantsCnt() {
         this.participantsCount++;
