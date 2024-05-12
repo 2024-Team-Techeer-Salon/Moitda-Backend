@@ -3,12 +3,16 @@ package com.techeersalon.moitda.domain.meetings.dto.response;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -17,31 +21,34 @@ import java.time.LocalDateTime;
 public class GetMeetingDetailResponse {
     private String title;
 
-    private Long user_id;
+    private Long userId;
 
-    private Long catagory_id;
+    private Long categoryId;
 
     private String content;
 
-    private Integer max_participants_count;
+    private Integer maxParticipantsCount;
 
-    private Integer participants_count;
+    private Integer participantsCount;
 
-    //참여자 리스트 줘야 되는데.. 수정필요
-    private String image_url;
+    private List<MeetingParticipant> participantList;
+
+    private String imageUrl;
 
     private LocalDateTime createdAt;
 
-    public static GetMeetingDetailResponse of(Meeting meeting) {
+    public static GetMeetingDetailResponse of(Meeting meeting, List<MeetingParticipant> participantList) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         return GetMeetingDetailResponse.builder()
                 .title(meeting.getTitle())
-                .user_id(meeting.getUserId())
-                .catagory_id(meeting.getCategoryId())
+                .userId(meeting.getUserId())
+                .categoryId(meeting.getCategoryId())
                 .content(meeting.getContent())
-                .max_participants_count(meeting.getMaxParticipantsCount())
-                .participants_count(meeting.getParticipantsCount())
-                .image_url(meeting.getImage())
-                .createdAt(LocalDateTime.parse(meeting.getCreateAt()))
+                .maxParticipantsCount(meeting.getMaxParticipantsCount())
+                .participantsCount(meeting.getParticipantsCount())
+                .participantList(participantList)
+                .imageUrl(meeting.getImage())
+                .createdAt(LocalDateTime.parse(meeting.getCreateAt(), formatter))
                 .build();
     }
 }
