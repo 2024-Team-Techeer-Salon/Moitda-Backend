@@ -44,9 +44,9 @@ public class UserService {
     public UserProfileRes findUserProfile(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
 
-        User existingUser = optionalUser.get();
+        User user = optionalUser.get();
 
-        return userMapper.toUserProfile(existingUser);
+        return userMapper.toUserProfile(user);
     }
 
     public void updateUserProfile(UpdateUserReq updateUserReq) {

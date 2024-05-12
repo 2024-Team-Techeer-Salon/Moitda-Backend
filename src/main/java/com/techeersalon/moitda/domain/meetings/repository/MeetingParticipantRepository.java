@@ -5,8 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MeetingParticipantRepository extends JpaRepository<MeetingParticipant, Long> {
-    public List<MeetingParticipant> findByMeetingId(Long MeetingId);
+    List<MeetingParticipant> findByMeetingIdAndIsWaiting(Long MeetingId, Boolean bool);
+
+    Boolean existsByMeetingIdAndUserId(Long meetingId, Long UserId);
 }

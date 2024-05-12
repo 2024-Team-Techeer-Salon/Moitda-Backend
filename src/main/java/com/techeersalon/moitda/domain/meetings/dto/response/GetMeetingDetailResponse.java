@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Getter
@@ -20,35 +21,34 @@ import java.util.List;
 public class GetMeetingDetailResponse {
     private String title;
 
-    private Long user_id;
+    private Long userId;
 
-    private Long catagory_id;
+    private Long categoryId;
 
     private String content;
 
-    private Integer max_participants_count;
+    private Integer maxParticipantsCount;
 
-    private Integer participants_count;
+    private Integer participantsCount;
 
     private List<MeetingParticipant> participantList;
 
-    private String image_url;
+    private String imageUrl;
 
     private LocalDateTime createdAt;
 
     public static GetMeetingDetailResponse of(Meeting meeting, List<MeetingParticipant> participantList) {
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         return GetMeetingDetailResponse.builder()
                 .title(meeting.getTitle())
-                .user_id(meeting.getUserId())
-                .catagory_id(meeting.getCategoryId())
+                .userId(meeting.getUserId())
+                .categoryId(meeting.getCategoryId())
                 .content(meeting.getContent())
-                .max_participants_count(meeting.getMaxParticipantsCount())
-                .participants_count(meeting.getParticipantsCount())
+                .maxParticipantsCount(meeting.getMaxParticipantsCount())
+                .participantsCount(meeting.getParticipantsCount())
                 .participantList(participantList)
-                .image_url(meeting.getImage())
-                .createdAt(LocalDateTime.parse(meeting.getCreateAt()))
+                .imageUrl(meeting.getImage())
+                .createdAt(LocalDateTime.parse(meeting.getCreateAt(), formatter))
                 .build();
     }
-    // "2024-05-07T10:15:30" --> createAt
 }

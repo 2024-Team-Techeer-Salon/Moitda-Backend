@@ -23,14 +23,14 @@ public class MeetingsController {
 
     @Operation(summary = "createMeeting", description = "모임 생성")
     @PostMapping
-    public ResponseEntity<String> meetingCreated(@Validated @RequestBody CreateMeetingRequest dto){
+    public ResponseEntity<String> meetingCreated(@Validated @RequestBody CreateMeetingRequest dto) {
         Long meetingId = meetingService.addMeeting(dto);
         return ResponseEntity.created(URI.create("/meetings/" + meetingId)).body("모임 생성 완료");
     }
 
     @Operation(summary = "findMeeting", description = "모임 상세 조회")
     @GetMapping("/{meetingId}")
-    public ResponseEntity<GetMeetingDetailResponse> meetingDetail(@PathVariable Long meetingId){
+    public ResponseEntity<GetMeetingDetailResponse> meetingDetail(@PathVariable Long meetingId) {
         GetMeetingDetailResponse response = meetingService.findMeetingById(meetingId);
         return ResponseEntity.ok(response);
     }
@@ -42,21 +42,23 @@ public class MeetingsController {
         return response;
     }
 
+
     //나중에 MeetingParticipantController로 이동
     @Operation(summary = "addParticipantToMeeting", description = "모임 신청")
     @PostMapping("/{meetingId}")
-    public ResponseEntity<String> meetingAddParticipant(@PathVariable("meetingId") Long meetingId){
+    public ResponseEntity<String> meetingAddParticipant(@PathVariable("meetingId") Long meetingId) {
         meetingService.addParticipantOfMeeting(meetingId);
-        return ResponseEntity.created(URI.create("/meetings/" + meetingId )).body("모임 신청 완료");
+        return ResponseEntity.created(URI.create("/meetings/" + meetingId)).body("모임 신청 완료");
     }
+
     @Operation(summary = "ApprovalOfMeetingParticipants", description = "신청 승인 거절")
     @PatchMapping("/{userId}/{isApproval}")
-    public ResponseEntity<String> ApprovalOfMeetingParticipants(@PathVariable("userId") Long userIdOfparticipant,@PathVariable("isApproval") Boolean isApproval){
+    public ResponseEntity<String> ApprovalOfMeetingParticipants(@PathVariable("userId") Long userIdOfparticipant, @PathVariable("isApproval") Boolean isApproval) {
         meetingService.approvalParticipant(userIdOfparticipant, isApproval);
 
-        if(isApproval){
+        if (Boolean.TRUE.equals(isApproval)) {
             return ResponseEntity.ok("모집 승인 완료");
-        }else{
+        } else {
             return ResponseEntity.ok("모집 거절 완료");
         }
     }

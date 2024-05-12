@@ -35,4 +35,8 @@ public class MeetingParticipant extends BaseEntity {
         this.userId = userId;
         this.isWaiting = true;
     }
+
+    public void notNeedToApprove() {
+        this.isWaiting = false;
+    }
 }

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -46,7 +47,8 @@ public class MeetingService {
 
     public GetMeetingDetailResponse findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
-        List<MeetingParticipant> participantList = meetingParticipantRepository.findByMeetingId(meetingId);
+        List<MeetingParticipant> participantList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
+//        filter
         return GetMeetingDetailResponse.of(meeting, participantList);
     }
 
@@ -57,15 +59,39 @@ public class MeetingService {
 
     public void addParticipantOfMeeting(Long meetingId) {
         User loginUser = userService.getLoginUser();
-        MeetingParticipant participant = new MeetingParticipant(meetingId, loginUser.getId());
-        meetingParticipantRepository.save(participant);
+        if (!meetingParticipantRepository.existsByMeetingIdAndUserId(meetingId, loginUser.getId())) {
+            Optional<Meeting> meetingOptional = meetingRepository.findById(meetingId);
+
+            if (meetingOptional.isPresent()) {
+                Meeting meeting = meetingOptional.get();
+
+                if (meeting.getParticipantsCount() < meeting.getMaxParticipantsCount()) {
+
+                    MeetingParticipant participant = new MeetingParticipant(meetingId, loginUser.getId());
+
+                    if (meeting.getApprovalRequired() != true) {
+                        participant.notNeedToApprove();
+                        // 인원 수 추가 해야할듯..
+                    }
+
+                    meetingParticipantRepository.save(participant);
+
+                } else {
+                    throw new IllegalStateException("가득참.");
+                }
+            } else {
+                throw new IllegalStateException("존재하지 않은 미팅");
+            }
+        } else {
+            throw new IllegalStateException("이미 존재하는 회원");
+        }
     }
 
     public void approvalParticipant(Long userIdOfParticipant, Boolean isApproval) {
         MeetingParticipant participant = meetingParticipantRepository.findById(userIdOfParticipant).orElse(null);
-        if(isApproval){
+        if (isApproval) {
             participant.setIsWaiting(false);
-        }else{
+        } else {
             participant.delete();
         }
         meetingParticipantRepository.save(participant);
@@ -85,4 +111,10 @@ public class MeetingService {
 
         return meetings.map(GetLatestMeetingListResponse::of);
     }
+//  상훈이가 사용한다고 해서 따로 만들
+//    public List<Meeting> getUserMeetingList(){
+//        Long loginUserId = userService.getLoginUser().getId();
+//        return meetingRepository.findByUserId(loginUserId);
+//    }
+
 }
