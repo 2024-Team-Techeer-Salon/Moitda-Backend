@@ -46,6 +46,9 @@ public class Meeting extends BaseEntity {
     @Column(name = "buildingName", nullable = false)
     private String buildingName;
 
+    @Column(name = "addressDetail", nullable = false)
+    private String addressDetail;
+
     @Lob
     @Column(name = "content", nullable = false)
     private String content;
@@ -57,12 +60,13 @@ public class Meeting extends BaseEntity {
     private Boolean approvalRequired;
 
     @Column(name = "appointmentTime", nullable = false)
-    private LocalDateTime appointmentTime;
+    private String appointmentTime;
 
     @Column(name = "endTime")
-    private LocalDateTime endTime;
+    private String endTime;
 
     public void increaseParticipantsCnt() {
         this.participantsCount++;
     }
+
 }

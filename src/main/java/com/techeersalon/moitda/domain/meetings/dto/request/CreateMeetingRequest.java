@@ -35,6 +35,9 @@ public class CreateMeetingRequest {
     @NotBlank(message = "address cannot be blank")
     private String address;
 
+    @NotBlank(message = "address_detail cannot be blank")
+    private String addressDetail;
+
     @NotNull(message = "max_participants_count cannot be blank")
     private Integer maxParticipantsCount;
 
@@ -56,9 +59,10 @@ public class CreateMeetingRequest {
                 .content(content)
                 .address(address)
                 .buildingName(buildingName)
+                .addressDetail(addressDetail)
                 .maxParticipantsCount(maxParticipantsCount)
                 .approvalRequired(approvalRequired)
-                .appointmentTime(LocalDateTime.parse(appointmentTime))
+                .appointmentTime(String.valueOf(LocalDateTime.parse(appointmentTime)))
                 .image(image)
                 .participantsCount(1)
                 .build();
