@@ -31,7 +31,7 @@ public class Meeting extends BaseEntity {
     @Column(name = "categoryId", nullable = false)
     private Long categoryId;
 
-    @Column(name = "title",nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "participantsCount", nullable = false)
@@ -61,4 +61,8 @@ public class Meeting extends BaseEntity {
 
     @Column(name = "endTime")
     private LocalDateTime endTime;
+
+    public void increaseParticipantsCnt() {
+        this.participantsCount++;
+    }
 }

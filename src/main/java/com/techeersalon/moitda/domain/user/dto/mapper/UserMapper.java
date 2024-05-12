@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-    public UserProfileRes toUserProfile(User user){
+    public UserProfileRes toUserProfile(User user) {
         return UserProfileRes.builder()
                 .username(user.getUsername())
                 .mannerStat(user.getMannerStat())
