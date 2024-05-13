@@ -1,6 +1,8 @@
 package com.techeersalon.moitda.chat.controller;
 
 import com.techeersalon.moitda.chat.domain.ChatMessage;
+import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
+import com.techeersalon.moitda.chat.mapper.ChatMapper;
 import com.techeersalon.moitda.chat.repository.ChatMessageRepository;
 import com.techeersalon.moitda.chat.dto.ChatMessageRequestDto;
 import com.techeersalon.moitda.chat.service.ChatMessageService;
@@ -10,6 +12,7 @@ import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import com.techeersalon.moitda.global.jwt.Service.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -34,10 +37,9 @@ import java.util.Objects;
 public class StompChatController {
     private final SimpMessagingTemplate template; //특정 Broker로 메세지를 전달
     private final ChatMessageService chatMessageService;
-    private final ChatRoomService chatRoomService;
-    private final ChatMessageRepository chatRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final ChatMapper chatMapper;
 
 //    @EventListener
 //    public void handleWebSocketConnectListener(StompHeaderAccessor headerAccessor) {
@@ -67,12 +69,13 @@ public class StompChatController {
         User user = userRepository.findBySocialTypeAndEmail(socialType, email).get();
 
         log.info("# roomId = {}", roomId);
-        //messageDto.setMessage(messageDto.getSender() + "님이 입장하셨습니다.");
+        ChatMessage chatMessage = ChatMapper.toChatMessage(user, Long.valueOf(roomId), messageDto);
+        ChatMessageResponseDto responseDto = chatMapper.toChatMessageDto(chatMessage);
             /* 채팅방에 유저 추가하는 것만 하면 될 듯*/
-        template.convertAndSend("/sub/chat/room/" + roomId, messageDto); /*채팅방으로*/
+        template.convertAndSend("/sub/chat/room/" + roomId,responseDto); /*채팅방으로*/
         /*채팅 저장*/
         chatMessageService.save(user, Long.valueOf(roomId), messageDto);
-        log.info("pub success" + messageDto.getMessage());
+        log.info("pub success " + messageDto.getMessage());
         //return;
     }
 

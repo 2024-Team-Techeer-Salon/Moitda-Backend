@@ -1,6 +1,6 @@
 package com.techeersalon.moitda.chat.dto;
 
-import com.techeersalon.moitda.chat.domain.UserChatRoom;
+import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ChatRoomRequestDto {
-    private String roomName;
+    private Long id;
 
-    @Builder
-    public ChatRoomRequestDto(String roomName) {
-        this.roomName = roomName;
-    }
+//    @Builder
+//    public ChatRoomRequestDto(Long id) {
+//        this.id = id;
+//    }
 }

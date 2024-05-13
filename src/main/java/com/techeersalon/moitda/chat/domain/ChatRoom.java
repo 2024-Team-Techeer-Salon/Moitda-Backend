@@ -1,5 +1,7 @@
 package com.techeersalon.moitda.chat.domain;
 
+import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,26 +24,21 @@ public class ChatRoom extends BaseEntity {
     @Column(name = "chat_room_id")
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;  // 채팅방 이름 필드 추가
+    @Column(name = "meetingId", nullable = false)
+    private Long meetingId;
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    private final List<ChatMessage> chatMessageList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "chatRoom", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private final List<UserChatRoom> userChatRoomList = new ArrayList<>();
+    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    private final List<User> members = new ArrayList<>();
 
     // Lombok의 @Builder를 사용할 때 필드 추가를 반영하기 위한 빌더 패턴 설정
     @Builder
-    public ChatRoom(Long id, String name, List<ChatMessage> chatMessageList, List<UserChatRoom> userChatRoomList) {
+    public ChatRoom(Long id, Long meetingId, List<ChatMessage> chatMessageList, List<User> members) {
         this.id = id;
-        this.name = name;
-        if (chatMessageList != null) {
-            this.chatMessageList.addAll(chatMessageList);
+        this.meetingId = meetingId;
+        if (members != null) {
+            this.members.addAll(members);
         }
-        if (userChatRoomList != null) {
-            this.userChatRoomList.addAll(userChatRoomList);
-        }
+
     }
 
 }
