@@ -94,10 +94,12 @@ public class MeetingService {
         }
     }
 
-    public void approvalParticipant(Long userIdOfParticipant, Boolean isApproval) {
-        MeetingParticipant participant = meetingParticipantRepository.findById(userIdOfParticipant).orElse(null);
+    public void approvalParticipant(Long participantId, Boolean isApproval) {
+        MeetingParticipant participant = meetingParticipantRepository.findById(participantId).orElse(null);
+        participant.notNeedToApprove();
         if (isApproval) {
-            participant.notNeedToApprove();
+            Meeting meeting = getMeetingById(participant.getMeetingId());
+            meeting.increaseParticipantsCnt();
         } else {
             meetingParticipantRepository.delete(participant);
             //participant.delete();
@@ -139,5 +141,6 @@ public class MeetingService {
         meeting.updateInfo(dto);
         meetingRepository.save(meeting);
     }
+
 
 }

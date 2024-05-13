@@ -25,7 +25,7 @@ public class StartConfig implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        registerMeeting();
+        //registerMeeting();
     }
 
     private void registerMeeting() {

@@ -72,9 +72,9 @@ public class MeetingsController {
     }
 
     @Operation(summary = "ApprovalOfMeetingParticipants", description = "신청 승인 거절")
-    @PatchMapping("/Participant/{userId}/{isApproval}")
-    public ResponseEntity<String> ApprovalOfMeetingParticipants(@PathVariable("userId") Long userIdOfparticipant, @PathVariable("isApproval") Boolean isApproval) {
-        meetingService.approvalParticipant(userIdOfparticipant, isApproval);
+    @PatchMapping("/Participant/{participantId}/{isApproval}")
+    public ResponseEntity<String> ApprovalOfMeetingParticipants(@PathVariable("participantId") Long participantId, @PathVariable("isApproval") Boolean isApproval) {
+        meetingService.approvalParticipant(participantId, isApproval);
 
         if (Boolean.TRUE.equals(isApproval)) {
             /*채팅방에 인원 추가하는 로직*/
