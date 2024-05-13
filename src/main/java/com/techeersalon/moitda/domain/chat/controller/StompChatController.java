@@ -47,7 +47,7 @@ public class StompChatController {
 //
 //        // 추가적인 처리를 수행할 수 있습니다.
 //    }
-    @MessageMapping(value = "/chat/room/{roomId}")
+    @MessageMapping(value = "/com/techeersalon/moitda/chat/room/{roomId}")
     @SendToUser("/sub/chat/room/{roomId}")
     public void send_message(StompHeaderAccessor headerAccessor,
                              @DestinationVariable String roomId,

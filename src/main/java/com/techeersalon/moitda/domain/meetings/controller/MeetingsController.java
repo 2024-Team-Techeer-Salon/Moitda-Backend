@@ -2,7 +2,7 @@ package com.techeersalon.moitda.domain.meetings.controller;
 
 import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
 import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
-import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
@@ -50,31 +50,39 @@ public class MeetingsController {
     }
 
     @Operation(summary = "cancelMeeting", description = "모임 취소")
-    @DeleteMapping("/{meetingId}")
+    @DeleteMapping("cancel/{meetingId}")
     public String cancelMeeting(@PathVariable Long meetingId){
         meetingService.deleteMeeting(meetingId);
         return "미팅 취소";
     }
 
+    @Operation(summary = "endMeeting", description = "모임 취소")
+    @DeleteMapping("end/{meetingId}")
+    public String endMeeting(@PathVariable Long meetingId){
+        meetingService.endMeeting(meetingId);
+        meetingService.deleteMeeting(meetingId);
+        return "미팅 종료";
+    }
+
     @Operation(summary = "ChangeMeetingInfo", description = "미팅 수정")
     @PutMapping("/{meetingId}")
-    public String ChangeMeetingInfo(@PathVariable Long meetingId, @Validated @RequestBody ChangeMeetingInfoRequest dto){
+    public String ChangeMeetingInfo(@PathVariable Long meetingId, @Validated @RequestBody ChangeMeetingInfoReq dto){
         meetingService.modifyMeeting(meetingId, dto);
         return "미팅 수정";
     }
 
     //나중에 MeetingParticipantController로 이동
     @Operation(summary = "addParticipantToMeeting", description = "모임 신청")
-    @PostMapping("/{meetingId}")
+    @PostMapping("/Participant/{meetingId}")
     public ResponseEntity<String> meetingAddParticipant(@PathVariable("meetingId") Long meetingId) {
         meetingService.addParticipantOfMeeting(meetingId);
         return ResponseEntity.created(URI.create("/meetings/" + meetingId)).body("모임 신청 완료");
     }
 
     @Operation(summary = "ApprovalOfMeetingParticipants", description = "신청 승인 거절")
-    @PatchMapping("/{userId}/{isApproval}")
-    public ResponseEntity<String> ApprovalOfMeetingParticipants(@PathVariable("userId") Long userIdOfparticipant, @PathVariable("isApproval") Boolean isApproval) {
-        meetingService.approvalParticipant(userIdOfparticipant, isApproval);
+    @PatchMapping("/Participant/{participantId}/{isApproval}")
+    public ResponseEntity<String> ApprovalOfMeetingParticipants(@PathVariable("participantId") Long participantId, @PathVariable("isApproval") Boolean isApproval) {
+        meetingService.approvalParticipant(participantId, isApproval);
 
         if (Boolean.TRUE.equals(isApproval)) {
             /*채팅방에 인원 추가하는 로직*/

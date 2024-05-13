@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 public class GetLatestMeetingListResponse {
     private Long meetingId;
 
+    private Long userId;
+
     private String title;
 
     private String imageUrl;
@@ -27,8 +29,10 @@ public class GetLatestMeetingListResponse {
     private Integer maxParticipantsCount;
 
     public static GetLatestMeetingListResponse of(Meeting meeting){
+
         return GetLatestMeetingListResponse.builder()
                 .meetingId(meeting.getId())
+                .userId(meeting.getUserId())
                 .title(meeting.getTitle())
                 .imageUrl(meeting.getImage())
                 .address(meeting.getAddress())

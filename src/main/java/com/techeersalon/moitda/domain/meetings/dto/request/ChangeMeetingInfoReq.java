@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ChangeMeetingInfoRequest {
+public class ChangeMeetingInfoReq {
     @NotNull(message = "category_id cannot be blank")
     private Long categoryId;
 
