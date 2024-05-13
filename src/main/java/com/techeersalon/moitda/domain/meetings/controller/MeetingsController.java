@@ -2,7 +2,7 @@ package com.techeersalon.moitda.domain.meetings.controller;
 
 import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
 import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
-import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
@@ -66,7 +66,7 @@ public class MeetingsController {
 
     @Operation(summary = "ChangeMeetingInfo", description = "미팅 수정")
     @PutMapping("/{meetingId}")
-    public String ChangeMeetingInfo(@PathVariable Long meetingId, @Validated @RequestBody ChangeMeetingInfoRequest dto){
+    public String ChangeMeetingInfo(@PathVariable Long meetingId, @Validated @RequestBody ChangeMeetingInfoReq dto){
         meetingService.modifyMeeting(meetingId, dto);
         return "미팅 수정";
     }

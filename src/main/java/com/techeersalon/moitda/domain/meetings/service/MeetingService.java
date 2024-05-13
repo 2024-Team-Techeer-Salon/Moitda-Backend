@@ -2,7 +2,7 @@
 package com.techeersalon.moitda.domain.meetings.service;
 
 import com.techeersalon.moitda.domain.meetings.dto.MeetingParticipantDto;
-import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
@@ -137,7 +137,7 @@ public class MeetingService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 모임이 존재하지 않습니다."));
     }
 
-    public void modifyMeeting(Long meetingId, ChangeMeetingInfoRequest dto) {
+    public void modifyMeeting(Long meetingId, ChangeMeetingInfoReq dto) {
         Meeting meeting = this.getMeetingById(meetingId);
         meeting.updateInfo(dto);
         meetingRepository.save(meeting);

@@ -1,6 +1,6 @@
 package com.techeersalon.moitda.domain.meetings.entity;
 
-import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -68,7 +68,7 @@ public class Meeting extends BaseEntity {
         this.participantsCount++;
     }
 
-    public void updateInfo(ChangeMeetingInfoRequest dto){
+    public void updateInfo(ChangeMeetingInfoReq dto){
         this.categoryId = dto.getCategoryId();
         this.title = dto.getTitle();
         this.content = dto.getContent();
