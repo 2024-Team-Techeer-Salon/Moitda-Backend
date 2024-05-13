@@ -124,10 +124,8 @@ public class MeetingService {
         Meeting meeting = this.getMeetingById(meetingId);
         List<MeetingParticipant> participantList = meetingParticipantRepository.findByMeetingId(meetingId);
         meetingRepository.delete(meeting);
-        for(MeetingParticipant participant : participantList){
-            meetingParticipantRepository.delete(participant);
-            //meetingParticipantRepository.save(participant);
-        }
+        //meetingParticipantRepository.save(participant);
+        meetingParticipantRepository.deleteAll(participantList);
         //meetingRepository.save(meeting);
     }
 
