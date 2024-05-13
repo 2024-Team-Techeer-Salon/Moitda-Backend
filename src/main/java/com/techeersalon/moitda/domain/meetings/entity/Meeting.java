@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE Meeting SET is_deleted = true WHERE meeting_id = ?")
+@SQLDelete(sql = "UPDATE meeting SET is_deleted = true WHERE meeting_id = ?")
 @Where(clause = "is_deleted = false")
 public class Meeting extends BaseEntity {
 
@@ -44,17 +44,17 @@ public class Meeting extends BaseEntity {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "buildingName", nullable = false)
+    @Column(name = "buildingName")
     private String buildingName;
 
-    @Column(name = "addressDetail", nullable = false)
+    @Column(name = "addressDetail")
     private String addressDetail;
 
     @Lob
-    @Column(name = "content", nullable = false)
+    @Column(name = "content")
     private String content;
 
-    @Column(name = "image", length = 256, nullable = false)
+    @Column(name = "image")
     private String image;
 
     @Column(name = "approvalRequired", nullable = false)

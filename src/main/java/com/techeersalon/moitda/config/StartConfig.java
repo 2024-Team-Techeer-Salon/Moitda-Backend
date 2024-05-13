@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 @Slf4j // Import for logging
 public class StartConfig implements CommandLineRunner {
 
-    @Autowired // Inject MeetingRepository dependency
+    @Autowired
     private MeetingRepository meetingRepository;
 
     @Override
-    @Transactional // Ensure data consistency across multiple saves
+    @Transactional
     public void run(String... args) throws Exception {
         //registerMeeting();
     }
@@ -34,6 +34,7 @@ public class StartConfig implements CommandLineRunner {
                     .participantsCount(1)
                     .maxParticipantsCount(i % 5)
                     .address("building" + i)
+                    .addressDetail("1 floor")
                     .buildingName("starbucks" + i)
                     .approvalRequired(true)
                     .appointmentTime(LocalDateTime.now().toString())
