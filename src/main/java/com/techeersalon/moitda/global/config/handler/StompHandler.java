@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.config.handler;
+package com.techeersalon.moitda.global.config.handler;
 
 import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
 import com.techeersalon.moitda.global.jwt.Service.JwtService;

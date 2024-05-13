@@ -9,6 +9,7 @@ import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.global.jwt.Service.JwtService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -26,6 +27,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class StompChatController {
+    @Autowired
     private final SimpMessagingTemplate template; //특정 Broker로 메세지를 전달
     private final ChatMessageService chatMessageService;
     private final UserRepository userRepository;
