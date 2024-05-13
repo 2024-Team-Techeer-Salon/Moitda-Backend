@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +25,9 @@ import java.net.URI;
 @RequestMapping("api/v1/meetings")
 @RequiredArgsConstructor
 public class MeetingsController {
+    @Autowired
     private final MeetingService meetingService;
+    @Autowired
     private final ChatRoomService chatRoomService;
 
     @Operation(summary = "createMeeting", description = "모임 생성")

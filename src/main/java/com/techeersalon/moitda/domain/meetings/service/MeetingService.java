@@ -15,6 +15,7 @@ import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +34,11 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class MeetingService {
+    @Autowired
     private final MeetingRepository meetingRepository;
+    @Autowired
     private final MeetingParticipantRepository meetingParticipantRepository;
+    @Autowired
     private final UserService userService;
 
 
