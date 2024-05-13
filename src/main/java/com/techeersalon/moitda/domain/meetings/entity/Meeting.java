@@ -1,5 +1,6 @@
 package com.techeersalon.moitda.domain.meetings.entity;
 
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
 import com.techeersalon.moitda.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE project SET is_deleted = true WHERE project_id = ?")
+@SQLDelete(sql = "UPDATE Meeting SET is_deleted = true WHERE meeting_id = ?")
 @Where(clause = "is_deleted = false")
 public class Meeting extends BaseEntity {
 
@@ -28,7 +29,7 @@ public class Meeting extends BaseEntity {
     @Column(name = "userId", nullable = false)
     private Long userId;
 
-    @Column(name = "categoryId")
+    @Column(name = "categoryId", nullable = false)
     private Long categoryId;
 
     @Column(name = "title", nullable = false)
@@ -46,17 +47,20 @@ public class Meeting extends BaseEntity {
     @Column(name = "buildingName", nullable = false)
     private String buildingName;
 
+    @Column(name = "addressDetail", nullable = false)
+    private String addressDetail;
+
     @Lob
-    @Column(name = "content")
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "image")
+    @Column(name = "image", length = 256, nullable = false)
     private String image;
 
     @Column(name = "approvalRequired", nullable = false)
     private Boolean approvalRequired;
 
-    @Column(name = "appointmentTime")
+    @Column(name = "appointmentTime", nullable = false)
     private String appointmentTime;
 
     @Column(name = "endTime")
@@ -64,5 +68,17 @@ public class Meeting extends BaseEntity {
 
     public void increaseParticipantsCnt() {
         this.participantsCount++;
+    }
+
+    public void updateInfo(ChangeMeetingInfoRequest dto){
+        this.categoryId = dto.getCategoryId();
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+        this.buildingName = dto.getBuildingName();
+        this.address = dto.getBuildingName();
+        this.addressDetail = dto.getAddressDetail();
+        this.maxParticipantsCount = dto.getMaxParticipantsCount();
+        this.appointmentTime = dto.getAppointmentTime();
+        this.image = dto.getImage();
     }
 }

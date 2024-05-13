@@ -1,6 +1,8 @@
 
 package com.techeersalon.moitda.domain.meetings.service;
 
+import com.techeersalon.moitda.domain.meetings.dto.MeetingParticipantDto;
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -39,22 +42,26 @@ public class MeetingService {
         Meeting meeting = meetingRepository.save(entity);
 
         MeetingParticipant participant = new MeetingParticipant(meeting.getId(), loginUser.getId());
-        participant.setIsWaiting(false);
+        participant.notNeedToApprove();
         meetingParticipantRepository.save(participant);
 
         return meeting.getId();
     }
-
     public GetMeetingDetailResponse findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
-        List<MeetingParticipant> participantList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
-//        filter
-        return GetMeetingDetailResponse.of(meeting, participantList);
+        List<MeetingParticipantDto> participantDtoList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+        return GetMeetingDetailResponse.of(meeting, participantDtoList);
     }
-
-    public Meeting getMeetingById(Long id) {
-        // 아직 예외처리는 안함
-        return meetingRepository.findById(id).orElse(null);
+    private MeetingParticipantDto mapToDto(MeetingParticipant meetingParticipant) {
+        return new MeetingParticipantDto(
+                // getId가 필요한가요?
+                meetingParticipant.getId(),
+                meetingParticipant.getMeetingId(),
+                meetingParticipant.getUserId()
+        );
     }
 
     public void addParticipantOfMeeting(Long meetingId) {
@@ -71,7 +78,7 @@ public class MeetingService {
 
                     if (meeting.getApprovalRequired() != true) {
                         participant.notNeedToApprove();
-                        // 인원 수 추가 해야할듯..
+                        meeting.increaseParticipantsCnt();
                     }
 
                     meetingParticipantRepository.save(participant);
@@ -86,11 +93,11 @@ public class MeetingService {
             throw new IllegalStateException("이미 존재하는 회원");
         }
     }
-
+// 해주시면 됩니다~~~~~~
     public void approvalParticipant(Long userIdOfParticipant, Boolean isApproval) {
         MeetingParticipant participant = meetingParticipantRepository.findById(userIdOfParticipant).orElse(null);
         if (isApproval) {
-            participant.setIsWaiting(false);
+            participant.notNeedToApprove();
         } else {
             participant.delete();
         }
@@ -111,10 +118,27 @@ public class MeetingService {
 
         return meetings.map(GetLatestMeetingListResponse::of);
     }
-//  상훈이가 사용한다고 해서 따로 만들
-//    public List<Meeting> getUserMeetingList(){
-//        Long loginUserId = userService.getLoginUser().getId();
-//        return meetingRepository.findByUserId(loginUserId);
-//    }
+
+    public void deleteMeeting(Long meetingId) {
+        Meeting meeting = this.getMeetingById(meetingId);
+        List<MeetingParticipant> participantList = meetingParticipantRepository.findByMeetingId(meetingId);
+        meeting.delete();
+        for(MeetingParticipant participant : participantList){
+            participant.delete();
+            meetingParticipantRepository.save(participant);
+        }
+        meetingRepository.save(meeting);
+    }
+
+    private Meeting getMeetingById(Long meetingId) {
+        return meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 모임이 존재하지 않습니다."));
+    }
+
+    public void modifyMeeting(Long meetingId, ChangeMeetingInfoRequest dto) {
+        Meeting meeting = this.getMeetingById(meetingId);
+        meeting.updateInfo(dto);
+        meetingRepository.save(meeting);
+    }
 
 }

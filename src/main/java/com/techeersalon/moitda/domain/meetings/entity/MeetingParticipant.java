@@ -9,7 +9,6 @@ import jakarta.persistence.*;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +17,7 @@ import jakarta.persistence.*;
 public class MeetingParticipant extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "meeting_participantId")
+    @Column(name = "meetingParticipantId")
     private Long id;
 
     @Column(name = "meetingId", nullable = false)
