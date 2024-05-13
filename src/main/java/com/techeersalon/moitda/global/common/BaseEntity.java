@@ -9,7 +9,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Getter
 @MappedSuperclass
@@ -22,9 +21,9 @@ public class BaseEntity {
     private LocalDateTime updateAt = LocalDateTime.now();
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isdeleted = Boolean.FALSE;
+    private Boolean isdeleted = Boolean.FALSE;
 
-    public void delete() {
-        this.isdeleted = Boolean.TRUE;
-    }
+//    public void delete() {
+//        this.is_deleted = Boolean.TRUE;
+//    }
 }

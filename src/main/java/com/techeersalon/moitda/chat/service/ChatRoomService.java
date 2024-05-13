@@ -60,11 +60,11 @@ public class ChatRoomService {
     @Transactional
     public void deleteRoomAndMessages(Long roomId){
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElse(null);
-        chatRoom.delete();
+        chatRoomRepository.delete(chatRoom);
+        //chatRoom.delete();
         List<ChatMessage> chatMessageList = chatMessageRepository.findByMeetingId(roomId);
-        for (ChatMessage chatMessage : chatMessageList) {
-            chatMessage.delete();
-        }
+        //chatMessage.delete();
+        chatMessageRepository.deleteAll(chatMessageList);
     }
 
 //    public boolean duplicatedUserChatRoom(Member member) {
