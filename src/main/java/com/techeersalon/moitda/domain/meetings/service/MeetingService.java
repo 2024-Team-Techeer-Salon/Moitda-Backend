@@ -76,7 +76,7 @@ public class MeetingService {
 
                     MeetingParticipant participant = new MeetingParticipant(meetingId, loginUser.getId());
 
-                    if (meeting.getApprovalRequired() != true) {
+                    if (!meeting.getApprovalRequired()) {
                         participant.notNeedToApprove();
                         meeting.increaseParticipantsCnt();
                     }
@@ -93,7 +93,7 @@ public class MeetingService {
             throw new IllegalStateException("이미 존재하는 회원");
         }
     }
-// 해주시면 됩니다~~~~~~
+
     public void approvalParticipant(Long userIdOfParticipant, Boolean isApproval) {
         MeetingParticipant participant = meetingParticipantRepository.findById(userIdOfParticipant).orElse(null);
         if (isApproval) {

@@ -1,30 +1,22 @@
 package com.techeersalon.moitda.domain.meetings.controller;
 
 import com.techeersalon.moitda.chat.domain.ChatRoom;
-import com.techeersalon.moitda.chat.dto.ChatRoomRequestDto;
-import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
 import com.techeersalon.moitda.chat.service.ChatRoomService;
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
-import com.techeersalon.moitda.domain.user.entity.SocialType;
-import com.techeersalon.moitda.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Optional;
 
 @Slf4j
 @Tag(name = "MeetingsController", description = "모임 관련 API")
@@ -73,14 +65,14 @@ public class MeetingsController {
 
     //나중에 MeetingParticipantController로 이동
     @Operation(summary = "addParticipantToMeeting", description = "모임 신청")
-    @PostMapping("/{meetingId}")
+    @PostMapping("/Participant/{meetingId}")
     public ResponseEntity<String> meetingAddParticipant(@PathVariable("meetingId") Long meetingId) {
         meetingService.addParticipantOfMeeting(meetingId);
         return ResponseEntity.created(URI.create("/meetings/" + meetingId)).body("모임 신청 완료");
     }
 
     @Operation(summary = "ApprovalOfMeetingParticipants", description = "신청 승인 거절")
-    @PatchMapping("/{userId}/{isApproval}")
+    @PatchMapping("/Participant/{userId}/{isApproval}")
     public ResponseEntity<String> ApprovalOfMeetingParticipants(@PathVariable("userId") Long userIdOfparticipant, @PathVariable("isApproval") Boolean isApproval) {
         meetingService.approvalParticipant(userIdOfparticipant, isApproval);
 
