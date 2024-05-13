@@ -1,6 +1,6 @@
 package com.techeersalon.moitda.domain.meetings.entity;
 
-import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,31 +21,31 @@ public class Meeting extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "meetingId")
+    @Column(name = "meeting_id")
     private Long id;
 
-    @Column(name = "userId", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "categoryId", nullable = false)
+    @Column(name = "category_id", nullable = false)
     private Long categoryId;
 
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "participantsCount", nullable = false)
+    @Column(name = "participants_count", nullable = false)
     private Integer participantsCount;
 
-    @Column(name = "maxParticipantsCount", nullable = false)
+    @Column(name = "max_participants_count", nullable = false)
     private Integer maxParticipantsCount;
 
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "buildingName")
+    @Column(name = "building_name")
     private String buildingName;
 
-    @Column(name = "addressDetail")
+    @Column(name = "address_detail")
     private String addressDetail;
 
     @Lob
@@ -57,20 +55,20 @@ public class Meeting extends BaseEntity {
     @Column(name = "image")
     private String image;
 
-    @Column(name = "approvalRequired", nullable = false)
+    @Column(name = "approval_required", nullable = false)
     private Boolean approvalRequired;
 
-    @Column(name = "appointmentTime", nullable = false)
+    @Column(name = "appointment_time", nullable = false)
     private String appointmentTime;
 
-    @Column(name = "endTime")
+    @Column(name = "end_time")
     private String endTime;
 
     public void increaseParticipantsCnt() {
         this.participantsCount++;
     }
 
-    public void updateInfo(ChangeMeetingInfoRequest dto){
+    public void updateInfo(ChangeMeetingInfoReq dto){
         this.categoryId = dto.getCategoryId();
         this.title = dto.getTitle();
         this.content = dto.getContent();
@@ -80,5 +78,9 @@ public class Meeting extends BaseEntity {
         this.maxParticipantsCount = dto.getMaxParticipantsCount();
         this.appointmentTime = dto.getAppointmentTime();
         this.image = dto.getImage();
+    }
+
+    public void updateEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }

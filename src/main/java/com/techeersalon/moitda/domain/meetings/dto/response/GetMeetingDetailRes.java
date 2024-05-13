@@ -2,7 +2,7 @@ package com.techeersalon.moitda.domain.meetings.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.techeersalon.moitda.domain.meetings.dto.MeetingParticipantDto;
+import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class GetMeetingDetailResponse {
+public class GetMeetingDetailRes {
     private String title;
 
     private Long userId;
@@ -36,7 +36,7 @@ public class GetMeetingDetailResponse {
 
     private Integer participantsCount;
 
-    private List<MeetingParticipantDto> participantList;
+    private List<MeetingParticipantMapper> participantList;
 
     private String image;
 
@@ -44,8 +44,8 @@ public class GetMeetingDetailResponse {
 
     private LocalDateTime createdAt;
 
-    public static GetMeetingDetailResponse of(Meeting meeting, List<MeetingParticipantDto> participantList) {
-        return GetMeetingDetailResponse.builder()
+    public static GetMeetingDetailRes of(Meeting meeting, List<MeetingParticipantMapper> participantList) {
+        return GetMeetingDetailRes.builder()
                 .title(meeting.getTitle())
                 .userId(meeting.getUserId())
                 .categoryId(meeting.getCategoryId())

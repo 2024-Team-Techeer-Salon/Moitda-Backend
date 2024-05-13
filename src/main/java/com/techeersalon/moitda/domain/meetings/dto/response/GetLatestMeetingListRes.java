@@ -13,8 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class GetLatestMeetingListResponse {
+public class GetLatestMeetingListRes {
     private Long meetingId;
+
+    private Long userId;
 
     private String title;
 
@@ -26,9 +28,11 @@ public class GetLatestMeetingListResponse {
 
     private Integer maxParticipantsCount;
 
-    public static GetLatestMeetingListResponse of(Meeting meeting){
-        return GetLatestMeetingListResponse.builder()
+    public static GetLatestMeetingListRes of(Meeting meeting){
+
+        return GetLatestMeetingListRes.builder()
                 .meetingId(meeting.getId())
+                .userId(meeting.getUserId())
                 .title(meeting.getTitle())
                 .imageUrl(meeting.getImage())
                 .address(meeting.getAddress())

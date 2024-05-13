@@ -11,14 +11,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CreateMeetingRequest {
+public class CreateMeetingReq {
 
     @NotNull(message = "category_id cannot be blank")
     private Long categoryId;
@@ -26,7 +24,6 @@ public class CreateMeetingRequest {
     @NotBlank(message = "title cannot be blank")
     private String title;
 
-    @NotBlank(message = "content cannot be blank")
     private String content;
 
     @NotBlank(message = "builing_name cannot be blank")
@@ -47,7 +44,6 @@ public class CreateMeetingRequest {
     @NotBlank(message = "appointment time cannot be blank")
     private String appointmentTime;
 
-    @NotBlank(message = "image")
     private String image;
 
     public Meeting toEntity(User user) {
@@ -66,5 +62,27 @@ public class CreateMeetingRequest {
                 .image(image)
                 .participantsCount(1)
                 .build();
+    }
+
+    // 초기 데이터 생성용 생성자
+    public CreateMeetingReq(Long categoryId, String title,
+                            String buildingName, String address, String addressDetail,
+                            Integer maxParticipantsCount, Boolean approvalRequired, String appointmentTime){
+        this.categoryId = categoryId;
+
+        this.title = title;
+
+        this.buildingName = buildingName;
+
+        this.address = address;
+
+        this.addressDetail = addressDetail;
+
+        this.maxParticipantsCount = maxParticipantsCount;
+
+        this.approvalRequired = approvalRequired;
+
+        this.appointmentTime = appointmentTime;
+
     }
 }

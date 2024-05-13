@@ -9,10 +9,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CreateMeetingResponse {
+public class CreateMeetingRes {
     private Long meeting_id;
 
-    public static CreateMeetingResponse from(){
-        return CreateMeetingResponse.builder().build();
+    public static CreateMeetingRes from(){
+        return CreateMeetingRes.builder().build();
     }
 }

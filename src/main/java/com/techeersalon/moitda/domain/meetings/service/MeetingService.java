@@ -1,11 +1,11 @@
 
 package com.techeersalon.moitda.domain.meetings.service;
 
-import com.techeersalon.moitda.domain.meetings.dto.MeetingParticipantDto;
-import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
-import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
+import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
+import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
+import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
+import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailRes;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingParticipantRepository;
@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +36,7 @@ public class MeetingService {
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final UserService userService;
     private final int pageSize = 32;
-    public Long addMeeting(CreateMeetingRequest dto) {
+    public Long addMeeting(CreateMeetingReq dto) {
         User loginUser = userService.getLoginUser();
 
         Meeting entity = dto.toEntity(loginUser);
@@ -47,16 +48,16 @@ public class MeetingService {
 
         return meeting.getId();
     }
-    public GetMeetingDetailResponse findMeetingById(Long meetingId) {
+    public GetMeetingDetailRes findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
-        List<MeetingParticipantDto> participantDtoList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE)
+        List<MeetingParticipantMapper> participantDtoList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE)
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
-        return GetMeetingDetailResponse.of(meeting, participantDtoList);
+        return GetMeetingDetailRes.of(meeting, participantDtoList);
     }
-    private MeetingParticipantDto mapToDto(MeetingParticipant meetingParticipant) {
-        return new MeetingParticipantDto(
+    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
+        return new MeetingParticipantMapper(
                 // getId가 필요한가요?
                 meetingParticipant.getId(),
                 meetingParticipant.getMeetingId(),
@@ -76,7 +77,7 @@ public class MeetingService {
 
                     MeetingParticipant participant = new MeetingParticipant(meetingId, loginUser.getId());
 
-                    if (meeting.getApprovalRequired() != true) {
+                    if (!meeting.getApprovalRequired()) {
                         participant.notNeedToApprove();
                         meeting.increaseParticipantsCnt();
                     }
@@ -93,11 +94,13 @@ public class MeetingService {
             throw new IllegalStateException("이미 존재하는 회원");
         }
     }
-// 해주시면 됩니다~~~~~~
-    public void approvalParticipant(Long userIdOfParticipant, Boolean isApproval) {
-        MeetingParticipant participant = meetingParticipantRepository.findById(userIdOfParticipant).orElse(null);
+
+    public void approvalParticipant(Long participantId, Boolean isApproval) {
+        MeetingParticipant participant = meetingParticipantRepository.findById(participantId).orElse(null);
+        participant.notNeedToApprove();
         if (isApproval) {
-            participant.notNeedToApprove();
+            Meeting meeting = getMeetingById(participant.getMeetingId());
+            meeting.increaseParticipantsCnt();
         } else {
             meetingParticipantRepository.delete(participant);
             //participant.delete();
@@ -110,14 +113,14 @@ public class MeetingService {
 //        return meetingRepository.findByUserId(loginUserId);
 //    }
 
-    public Page<GetLatestMeetingListResponse> findMeetings(int page) {
+    public Page<GetLatestMeetingListRes> findMeetings(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createAt"));
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
 
         Page<Meeting> meetings = meetingRepository.findAll(pageable);
 
-        return meetings.map(GetLatestMeetingListResponse::of);
+        return meetings.map(GetLatestMeetingListRes::of);
     }
 
     public void deleteMeeting(Long meetingId) {
@@ -134,10 +137,14 @@ public class MeetingService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 ID의 모임이 존재하지 않습니다."));
     }
 
-    public void modifyMeeting(Long meetingId, ChangeMeetingInfoRequest dto) {
+    public void modifyMeeting(Long meetingId, ChangeMeetingInfoReq dto) {
         Meeting meeting = this.getMeetingById(meetingId);
         meeting.updateInfo(dto);
         meetingRepository.save(meeting);
     }
 
+    public void endMeeting(Long meetingId) {
+        Meeting meeting = this.getMeetingById(meetingId);
+        meeting.updateEndTime(LocalDateTime.now().toString());
+    }
 }
