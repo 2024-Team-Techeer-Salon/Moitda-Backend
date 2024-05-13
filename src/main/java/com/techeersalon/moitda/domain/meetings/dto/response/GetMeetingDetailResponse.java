@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -41,7 +42,7 @@ public class GetMeetingDetailResponse {
 
     private String appointmentTime;
 
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     public static GetMeetingDetailResponse of(Meeting meeting, List<MeetingParticipantDto> participantList) {
         return GetMeetingDetailResponse.builder()
@@ -57,7 +58,7 @@ public class GetMeetingDetailResponse {
                 .participantList(participantList)
                 .image(meeting.getImage())
                 .appointmentTime(meeting.getAppointmentTime())
-                .createdAt(meeting.getCreateAt().toString())
+                .createdAt(meeting.getCreateAt())
                 .build();
     }
 }

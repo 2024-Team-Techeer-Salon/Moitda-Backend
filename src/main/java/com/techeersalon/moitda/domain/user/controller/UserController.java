@@ -2,6 +2,8 @@ package com.techeersalon.moitda.domain.user.controller;
 
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
+import com.techeersalon.moitda.domain.user.dto.response.RecordsRes;
+import com.techeersalon.moitda.domain.user.dto.response.UserMeetingRecordRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +12,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,10 +53,10 @@ public class UserController {
         userService.updateUserProfile(updateUserReq);
         return ResponseEntity.ok("유저 정보 수정 완료");
     }
-
-//    @GetMapping("/users/{user_id}/records")
-//    public ResponseEntity<List<MeetingRecordDTO>> getUserMeetingRecords(@PathVariable("user_id") Long userId) {
-//        List<MeetingRecordDTO> meetingRecords = meetingRecordService.getUserMeetingRecords(userId);
-//        return ResponseEntity.ok(meetingRecords);
-//    }
+    @Operation(summary = "회원모임 내역 조회")
+    @GetMapping("/users/{user_id}/records")
+    public ResponseEntity<RecordsRes> getUserMeetingRecords(@PathVariable("user_id") Long userId) {
+        RecordsRes meetingRecords = userService.getUserMeetingRecords(userId);
+        return ResponseEntity.ok(meetingRecords);
+    }
 }
