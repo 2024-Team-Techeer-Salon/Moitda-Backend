@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.chat.domain;
+package com.techeersalon.moitda.domain.chat.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

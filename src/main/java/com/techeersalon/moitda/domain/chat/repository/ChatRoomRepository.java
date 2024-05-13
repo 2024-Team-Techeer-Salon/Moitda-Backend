@@ -1,8 +1,7 @@
-package com.techeersalon.moitda.chat.repository;
+package com.techeersalon.moitda.domain.chat.repository;
 
-import com.techeersalon.moitda.chat.domain.ChatRoom;
+import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
 import com.techeersalon.moitda.domain.user.entity.User;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

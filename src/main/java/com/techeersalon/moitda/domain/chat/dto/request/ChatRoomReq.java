@@ -1,13 +1,11 @@
-package com.techeersalon.moitda.chat.dto;
+package com.techeersalon.moitda.domain.chat.dto.request;
 
-import com.techeersalon.moitda.domain.meetings.entity.Meeting;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class ChatRoomRequestDto {
+public class ChatRoomReq {
     private Long id;
 
 //    @Builder

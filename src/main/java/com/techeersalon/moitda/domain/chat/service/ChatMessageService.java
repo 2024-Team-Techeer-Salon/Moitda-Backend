@@ -1,26 +1,20 @@
-package com.techeersalon.moitda.chat.service;
+package com.techeersalon.moitda.domain.chat.service;
 
-import com.techeersalon.moitda.chat.domain.*;
-import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
-import com.techeersalon.moitda.chat.dto.GetLatestMessageListResponseDto;
-import com.techeersalon.moitda.chat.mapper.ChatMapper;
+import com.techeersalon.moitda.chat.entity.*;
+import com.techeersalon.moitda.domain.chat.dto.mapper.ChatMapper;
 import com.techeersalon.moitda.chat.repository.*;
-import com.techeersalon.moitda.chat.dto.ChatMessageRequestDto;
-import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
-import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.chat.dto.request.ChatMessageReq;
+import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
+import com.techeersalon.moitda.domain.chat.entity.ChatMessage;
+import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
+import com.techeersalon.moitda.domain.chat.repository.ChatMessageRepository;
+import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
 import com.techeersalon.moitda.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -43,7 +37,7 @@ public class ChatMessageService {
      * ChatMessage 생성
      */
     @Transactional
-    public void save(User sender, Long roomId, ChatMessageRequestDto messageRequestDto) {
+    public void save(User sender, Long roomId, ChatMessageReq messageRequestDto) {
         ChatRoom chatRoomEntity = this.chatRoomRepository.findById(roomId).orElseThrow(
                 () -> new IllegalArgumentException("해당 ChatRoom이 존재하지 않습니다. chatRoomId = " + roomId));
         //messageRequestDto.setRoomId(chatRoomEntity.getId());
@@ -63,7 +57,7 @@ public class ChatMessageService {
 
     /*채팅방의 메시지 조회*/
     @Transactional
-    public List<ChatMessageResponseDto> findChatMessage(Long roomId) {
+    public List<ChatMessageRes> findChatMessage(Long roomId) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByMeetingId(roomId);
         return chatMapper.toChatMessageDtoList(chatMessages);
     }

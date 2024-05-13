@@ -1,11 +1,11 @@
-package com.techeersalon.moitda.chat.service;
+package com.techeersalon.moitda.domain.chat.service;
 
-import com.techeersalon.moitda.chat.domain.ChatMessage;
-import com.techeersalon.moitda.chat.domain.ChatRoom;
-import com.techeersalon.moitda.chat.mapper.ChatMapper;
-import com.techeersalon.moitda.chat.repository.ChatMessageRepository;
-import com.techeersalon.moitda.chat.repository.ChatRoomRepository;
-import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
+import com.techeersalon.moitda.domain.chat.entity.ChatMessage;
+import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
+import com.techeersalon.moitda.domain.chat.dto.mapper.ChatMapper;
+import com.techeersalon.moitda.domain.chat.repository.ChatMessageRepository;
+import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
+import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -51,9 +51,9 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public List<ChatRoomResponseDto> getChatRoomsByUser(User user) {
+    public List<ChatRoomRes> getChatRoomsByUser(User user) {
         List<ChatRoom> chatRooms = chatRoomRepository.findByMembers(user);
-        List<ChatRoomResponseDto> chatRoomDtoList = ChatMapper.toChatRoomDtoList(chatRooms);
+        List<ChatRoomRes> chatRoomDtoList = ChatMapper.toChatRoomDtoList(chatRooms);
         return chatRoomDtoList;
     }
 

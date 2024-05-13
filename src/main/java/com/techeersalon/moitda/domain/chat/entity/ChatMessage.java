@@ -1,13 +1,10 @@
-package com.techeersalon.moitda.chat.domain;
+package com.techeersalon.moitda.domain.chat.entity;
 
-import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder
