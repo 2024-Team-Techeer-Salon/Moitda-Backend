@@ -5,6 +5,8 @@ import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
 import com.techeersalon.moitda.chat.dto.ChatRoomRequestDto;
 import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
 import com.techeersalon.moitda.chat.service.*;
+import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.meetings.service.MeetingService;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
@@ -38,42 +40,10 @@ public class ChatController {
     private final UserRepository userRepository;
     private final JwtService tokenProvider;
 
-    @Operation(summary = "chatroom create", description = "채팅방 생성")
-    @PostMapping
-    public ResponseEntity<?> createChatRoom(@RequestHeader("Authorization") String authHeader, @RequestBody ChatRoomRequestDto roomRequestDto) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: No token provided");
-        }
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<User> optionalUser = userRepository.findBySocialTypeAndEmail(
-                SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername());
-        User user = optionalUser.get();
-//        if (user == null) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-//        }
-
-        String RoomName = roomRequestDto.getRoomName();
-        if (RoomName == null || RoomName.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Chat room name is required");
-        }
-
-
-        ChatRoom chatRoom = chatRoomService.createChatRoom(RoomName); // 서비스 계층에 이름을 전달
-        chatRoomService.createUserChatRoom(user, chatRoom.getId());
-        //chatRoomService.addUserToRoom(chatRoom.getId(), user.getId());
-
-        ChatRoomResponseDto chatRoomRes = ChatRoomResponseDto.builder()
-                .id(chatRoom.getId())
-                .roomName(RoomName)// 채팅방 이름 포함
-                //.members()
-                .build();
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(chatRoomRes);
-    }
     // 나중에 합쳐야 할 수도?
-
+    /*이건 유저의 채팅방 id 조회를 하는 로직을 저쪽에서 짜면 필요없을 수도*/
     //@Transactional
-    @Operation(summary = "ChatRoomList read", description = "채팅방 목록 조회")
+    @Operation(summary = "ChatRoomList read", description = "유저의 채팅방 목록 조회")
     @GetMapping("/list")
     public ResponseEntity<List<ChatRoomResponseDto>> getChatRoomList(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -85,25 +55,33 @@ public class ChatController {
                 SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername());
         User user = optionalUser.get();
 
+        List<ChatRoomResponseDto> chatRoomDtos = chatRoomService.getChatRoomsByUser(user);
 
-        List<ChatRoomResponseDto> chatRoomList = chatRoomService.findUserChatRoomByUserId(user.getId());
-        return ResponseEntity.ok(chatRoomList);
+        return (ResponseEntity<List<ChatRoomResponseDto>>) chatRoomDtos;
     }
 
-
+    /*채팅방의 채팅 내역 조회*/
     @Operation(summary = "GetMessagesByRoom", description = "채팅방의 채팅 내역 조회")
     @GetMapping("/rooms/chatmessages/{room_id}")
-    public ResponseEntity<?> getChatMessagesByChatRoom(@PathVariable Long room_id) {
+    public ResponseEntity<?> getChatMessagesByChatRoom(@PathVariable("room_id") Long roomid) {
         //room_id
-        Optional<ChatRoom> chatRoomOptional = chatRoomService.findById(room_id);
+        Optional<ChatRoom> chatRoomOptional = chatRoomService.findById(roomid);
 
         // 채팅방이 존재하는지 확인
         if (chatRoomOptional.isPresent()) {
-            ChatRoom chatRoom = chatRoomOptional.get();
-            List<ChatMessageResponseDto> chatmessages = chatMessageService.findChatMessage(chatRoom);
+            List<ChatMessageResponseDto> chatmessages = chatMessageService.findChatMessage(roomid);
             return ResponseEntity.ok().body(chatmessages);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    /*채팅방 삭제 이때 채팅방 메시지도 동시에 삭제되어야 함*/
+    @Operation(summary="ChatRoom delete", description = "채팅방 삭제")
+    @DeleteMapping("/rooms/{room_id}")
+    public ResponseEntity<?> deleteChatRoom(@PathVariable Long room_id){
+        chatRoomService.deleteRoomAndMessages(room_id);
+
+        return ResponseEntity.ok("채팅방 및 채팅방의 채팅 내역 삭제 완료");
     }
 
 //    @Operation(summary = "GetRoomByUser", description = "유저의 채팅방 조회")

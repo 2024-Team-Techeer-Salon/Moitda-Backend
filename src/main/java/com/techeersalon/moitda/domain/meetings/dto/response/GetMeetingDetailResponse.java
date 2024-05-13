@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.techeersalon.moitda.domain.meetings.dto.MeetingParticipantDto;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
-import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,13 +26,21 @@ public class GetMeetingDetailResponse {
 
     private String content;
 
+    private String address;
+
+    private String addressDetail;
+
+    private String buildingName;
+
     private Integer maxParticipantsCount;
 
     private Integer participantsCount;
 
     private List<MeetingParticipantDto> participantList;
 
-    private String imageUrl;
+    private String image;
+
+    private String appointmentTime;
 
     private LocalDateTime createdAt;
 
@@ -43,10 +50,14 @@ public class GetMeetingDetailResponse {
                 .userId(meeting.getUserId())
                 .categoryId(meeting.getCategoryId())
                 .content(meeting.getContent())
+                .address(meeting.getAddress())
+                .addressDetail(meeting.getAddressDetail())
+                .buildingName(meeting.getBuildingName())
                 .maxParticipantsCount(meeting.getMaxParticipantsCount())
                 .participantsCount(meeting.getParticipantsCount())
                 .participantList(participantList)
-                .imageUrl(meeting.getImage())
+                .image(meeting.getImage())
+                .appointmentTime(meeting.getAppointmentTime())
                 .createdAt(meeting.getCreateAt())
                 .build();
     }

@@ -15,6 +15,7 @@ import java.util.Optional;
 @Repository
 public interface MeetingRepository extends PagingAndSortingRepository<Meeting, Long>, JpaRepository<Meeting, Long>{
     List<Meeting> findByUserId(Long userId);
+    //List<Meeting> getUserMeetingList();
 
     //최신순
     Page<Meeting> findAll(Pageable pageable);

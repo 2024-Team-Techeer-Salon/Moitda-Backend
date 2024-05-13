@@ -1,19 +1,20 @@
 package com.techeersalon.moitda.domain.meetings.entity;
 
 import com.techeersalon.moitda.global.common.BaseEntity;
-import jakarta.persistence.Entity;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import jakarta.persistence.*;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE project SET is_deleted = true WHERE project_id = ?")
+@SQLDelete(sql = "UPDATE meeting_participant SET is_deleted = true WHERE meeting_participant_id = ?")
 @Where(clause = "is_deleted = false")
 public class MeetingParticipant extends BaseEntity {
     @Id

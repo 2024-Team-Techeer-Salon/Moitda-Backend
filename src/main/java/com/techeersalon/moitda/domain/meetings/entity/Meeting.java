@@ -1,5 +1,6 @@
 package com.techeersalon.moitda.domain.meetings.entity;
 
+import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
 import com.techeersalon.moitda.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE project SET is_deleted = true WHERE project_id = ?")
+@SQLDelete(sql = "UPDATE meeting SET is_deleted = true WHERE meeting_id = ?")
 @Where(clause = "is_deleted = false")
 public class Meeting extends BaseEntity {
 
@@ -43,17 +44,17 @@ public class Meeting extends BaseEntity {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "buildingName", nullable = false)
+    @Column(name = "buildingName")
     private String buildingName;
 
-    @Column(name = "addressDetail", nullable = false)
+    @Column(name = "addressDetail")
     private String addressDetail;
 
     @Lob
-    @Column(name = "content", nullable = false)
+    @Column(name = "content")
     private String content;
 
-    @Column(name = "image", length = 256, nullable = false)
+    @Column(name = "image")
     private String image;
 
     @Column(name = "approvalRequired", nullable = false)
@@ -63,9 +64,21 @@ public class Meeting extends BaseEntity {
     private String appointmentTime;
 
     @Column(name = "endTime")
-    private LocalDateTime endTime;
+    private String endTime;
 
     public void increaseParticipantsCnt() {
         this.participantsCount++;
+    }
+
+    public void updateInfo(ChangeMeetingInfoRequest dto){
+        this.categoryId = dto.getCategoryId();
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
+        this.buildingName = dto.getBuildingName();
+        this.address = dto.getBuildingName();
+        this.addressDetail = dto.getAddressDetail();
+        this.maxParticipantsCount = dto.getMaxParticipantsCount();
+        this.appointmentTime = dto.getAppointmentTime();
+        this.image = dto.getImage();
     }
 }

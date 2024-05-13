@@ -22,20 +22,17 @@ public class ChatMessage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // pk
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    private LocalDateTime sendDate;
+    @Column(name = "userId")
+    private Long userid;
 
 
     @Column(columnDefinition = "TEXT")
     private String message; // comment
 
+    @Column(name = "meetingId")
+    private Long meetingId;
 
-    @ManyToOne
-    @JoinColumn(name = "chat_room_id")
-    private ChatRoom chatRoom;
-
+    @Column(name = "sendDate")
+    private String sendDate;
 
 }

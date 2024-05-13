@@ -2,15 +2,21 @@ package com.techeersalon.moitda.chat.mapper;
 
 import com.techeersalon.moitda.chat.domain.ChatMessage;
 import com.techeersalon.moitda.chat.domain.ChatRoom;
-import com.techeersalon.moitda.chat.domain.UserChatRoom;
+
 import com.techeersalon.moitda.chat.dto.ChatMessageRequestDto;
 import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
 import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
+import com.techeersalon.moitda.chat.dto.GetLatestMessageListResponseDto;
+import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.entity.User;
+import com.techeersalon.moitda.domain.user.repository.UserRepository;
+import com.techeersalon.moitda.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,49 +26,62 @@ import static java.time.LocalTime.now;
 @RequiredArgsConstructor
 public class ChatMapper {
 
-    public UserChatRoom toUserChatRoom(User user, ChatRoom chatRoom) {
-        return UserChatRoom.builder()
-                .user(user)
-                .chatRoom(chatRoom)
-                .build();
-    }
+    @Autowired
+    private UserService userService;
 
-    public ChatMessage toChatMessage(User user, ChatRoom chatRoom, ChatMessageRequestDto request) {
+    public static ChatMessage toChatMessage(User user, Long meetingId, ChatMessageRequestDto request) {
         return ChatMessage.builder()
-                .user(user)
-                .chatRoom(chatRoom)
+                .userid(user.getId())
+                .meetingId(meetingId)
                 .message(request.getMessage())
-                .sendDate(LocalDateTime.now())
+                .sendDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 //.sendDate(LocalDateTime.from(now()))
                 .build();
     }
 
     public ChatMessageResponseDto toChatMessageDto(ChatMessage chatMessage) {
+        Long userId = chatMessage.getUserid();
+        // userId를 사용하여 사용자 정보를 조회합니다.
+        UserProfileRes userProfile = userService.findUserProfile(userId);
+
         return ChatMessageResponseDto.builder()
-                .sender(chatMessage.getUser().getUsername())
+                .userid(chatMessage.getUserid())
+                .sender(userProfile.getUsername())
+                .profileImage(userProfile.getProfileImage())
                 .content(chatMessage.getMessage())
                 .sendDate(chatMessage.getSendDate())
                 .build();
     }
 
-    public ChatRoomResponseDto toChatRoomDto(ChatRoom chatRoom, List<User> otherUsers) {
+    public static ChatRoomResponseDto toChatRoomDto(ChatRoom chatRoom) {
         return ChatRoomResponseDto.builder()
                 .id(chatRoom.getId())
-                .roomName(chatRoom.getName())
-                .members(otherUsers.stream().map(this::toMemberDetail).collect(Collectors.toList()))
+                .members(chatRoom.getMembers())
+                        //.stream().map(this::toMemberDetail).collect(Collectors.toList()))
                 .build();
     }
-
-    private ChatRoomResponseDto.MemberDetail toMemberDetail(User user) {
-        return ChatRoomResponseDto.MemberDetail.builder()
-                .id(user.getId())
-                .name(user.getUsername())
-                .bannerImage(user.getBannerImage())
-                .build();
+    public static List<ChatRoomResponseDto> toChatRoomDtoList(List<ChatRoom> rooms) {
+        return rooms.stream()
+                .map(ChatMapper::toChatRoomDto)
+                .collect(Collectors.toList());
     }
 
 
-        public List<ChatMessageResponseDto> toChatMessageList(List<ChatMessage> messages) {
-            return messages.stream().map(this::toChatMessageDto).collect(Collectors.toList());
-        }
+    public static List<ChatMessageResponseDto> toChatMessageDtoList(List<ChatMessage> messages) {
+        ChatMapper chatMapper = new ChatMapper();;
+        return messages.stream()
+                .map(chatMapper::toChatMessageDto)
+                .collect(Collectors.toList());
+    }
+
+
+//     public static GetLatestMessageListResponseDto of(ChatMessage chatMessage){
+//        return GetLatestMessageListResponseDto.builder()
+//                .userid(chatMessage.getUserid())
+//                .sender(userService.findUserProfile(chatMessage.getUserid()).getUsername())
+//                .profileImage(userService.findUserProfile(chatMessage.getUserid()).getProfileImage())
+//                .content(chatMessage.getMessage())
+//                .sendDate(chatMessage.getSendDate())
+//                .build();
+//    }
 }
