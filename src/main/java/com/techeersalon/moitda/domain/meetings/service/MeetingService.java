@@ -99,15 +99,16 @@ public class MeetingService {
         if (isApproval) {
             participant.notNeedToApprove();
         } else {
-            participant.delete();
+            meetingParticipantRepository.delete(participant);
+            //participant.delete();
         }
-        meetingParticipantRepository.save(participant);
+        //meetingParticipantRepository.save(participant);
     }
 
-    public List<Meeting> getUserMeetingList(){
-        Long loginUserId = userService.getLoginUser().getId();
-        return meetingRepository.findByUserId(loginUserId);
-    }
+//    public List<Meeting> getUserMeetingList(){
+//        Long loginUserId = userService.getLoginUser().getId();
+//        return meetingRepository.findByUserId(loginUserId);
+//    }
 
     public Page<GetLatestMeetingListResponse> findMeetings(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
@@ -122,12 +123,12 @@ public class MeetingService {
     public void deleteMeeting(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
         List<MeetingParticipant> participantList = meetingParticipantRepository.findByMeetingId(meetingId);
-        meeting.delete();
+        meetingRepository.delete(meeting);
         for(MeetingParticipant participant : participantList){
-            participant.delete();
-            meetingParticipantRepository.save(participant);
+            meetingParticipantRepository.delete(participant);
+            //meetingParticipantRepository.save(participant);
         }
-        meetingRepository.save(meeting);
+        //meetingRepository.save(meeting);
     }
 
     private Meeting getMeetingById(Long meetingId) {
