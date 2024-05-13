@@ -30,7 +30,7 @@ public class MeetingsController {
     @Operation(summary = "createMeeting", description = "모임 생성")
     @PostMapping
     public ResponseEntity<String> meetingCreated(@Validated @RequestBody CreateMeetingReq dto) {
-        Long meetingId = meetingService.addMeeting(dto);
+        Long meetingId = meetingService.createMeeting(dto);
         ChatRoom chatRoom = chatRoomService.createChatRoom(meetingId);
         log.info("# create room, roomId = {}", chatRoom.getId());
         return ResponseEntity.created(URI.create("/meetings/" + meetingId)).body("모임 생성 완료");

@@ -1,6 +1,7 @@
 
 package com.techeersalon.moitda.domain.meetings.service;
 
+import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantListMapper;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
@@ -35,47 +36,57 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final UserService userService;
+
+
+    // 한 페이지당 meeting 데이터 개수
     private final int pageSize = 32;
-    public Long addMeeting(CreateMeetingReq dto) {
+
+    /*
+     * 미팅 생성 메소드
+     * Meeting, MeetingParticipant 생성
+     * Meeting에 참가자 1명 추가
+     * */
+    public Long createMeeting(CreateMeetingReq dto) {
         User loginUser = userService.getLoginUser();
 
         Meeting entity = dto.toEntity(loginUser);
         Meeting meeting = meetingRepository.save(entity);
 
-        MeetingParticipant participant = new MeetingParticipant(meeting.getId(), loginUser.getId());
+        MeetingParticipant participant = MeetingParticipantMapper.toEntity(meeting);
         participant.notNeedToApprove();
         meetingParticipantRepository.save(participant);
 
         return meeting.getId();
     }
+
     public GetMeetingDetailRes findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
-        List<MeetingParticipantMapper> participantDtoList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE)
+        List<MeetingParticipantListMapper> participantDtoList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE)
                 .stream()
-                .map(this::mapToDto)
+                .map(MeetingParticipantListMapper::from)
                 .collect(Collectors.toList());
         return GetMeetingDetailRes.of(meeting, participantDtoList);
     }
-    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
-        return new MeetingParticipantMapper(
-                // getId가 필요한가요?
-                meetingParticipant.getId(),
-                meetingParticipant.getMeetingId(),
-                meetingParticipant.getUserId()
-        );
-    }
+
+//    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
+//
+//        return new MeetingParticipantMapper(
+//                meetingParticipant.getId()
+//        );
+//    }
 
     public void addParticipantOfMeeting(Long meetingId) {
         User loginUser = userService.getLoginUser();
+        Meeting meeting;
         if (!meetingParticipantRepository.existsByMeetingIdAndUserId(meetingId, loginUser.getId())) {
             Optional<Meeting> meetingOptional = meetingRepository.findById(meetingId);
 
             if (meetingOptional.isPresent()) {
-                Meeting meeting = meetingOptional.get();
+                meeting = meetingOptional.get();
 
                 if (meeting.getParticipantsCount() < meeting.getMaxParticipantsCount()) {
 
-                    MeetingParticipant participant = new MeetingParticipant(meetingId, loginUser.getId());
+                    MeetingParticipant participant = MeetingParticipantMapper.toEntity(meeting);
 
                     if (!meeting.getApprovalRequired()) {
                         participant.notNeedToApprove();
@@ -120,7 +131,7 @@ public class MeetingService {
 
         Page<Meeting> meetings = meetingRepository.findAll(pageable);
 
-        return meetings.map(GetLatestMeetingListRes::of);
+        return meetings.map(GetLatestMeetingListRes::from);
     }
 
     public void deleteMeeting(Long meetingId) {

@@ -28,7 +28,7 @@ public class GetLatestMeetingListRes {
 
     private Integer maxParticipantsCount;
 
-    public static GetLatestMeetingListRes of(Meeting meeting){
+    public static GetLatestMeetingListRes from(Meeting meeting){
 
         return GetLatestMeetingListRes.builder()
                 .meetingId(meeting.getId())
