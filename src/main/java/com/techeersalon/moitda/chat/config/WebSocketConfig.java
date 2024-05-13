@@ -3,6 +3,7 @@ package com.techeersalon.moitda.chat.config;
 import com.techeersalon.moitda.chat.config.handler.StompExceptionHandler;
 import com.techeersalon.moitda.chat.config.handler.StompHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

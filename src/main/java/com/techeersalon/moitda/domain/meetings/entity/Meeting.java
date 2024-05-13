@@ -58,7 +58,7 @@ public class Meeting extends BaseEntity {
     private String appointmentTime;
 
     @Column(name = "endTime")
-    private LocalDateTime endTime;
+    private String endTime;
 
     public void increaseParticipantsCnt() {
         this.participantsCount++;

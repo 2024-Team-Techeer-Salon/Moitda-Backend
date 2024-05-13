@@ -26,7 +26,7 @@ import static org.springframework.messaging.simp.stomp.StompCommand.UNSUBSCRIBE;
 public class StompHandler implements ChannelInterceptor {
     private final JwtService tokenProvider;
 
-    private final ChatRoomService chatroomService;
+    private final ChatRoomService chatRoomService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -36,8 +36,9 @@ public class StompHandler implements ChannelInterceptor {
         // websocket 연결시 헤더의 jwt token 유효성 검증
         if (StompCommand.CONNECT == accessor.getCommand()) {
             final String authorization = tokenProvider.extractJwt(accessor);
-            tokenProvider.isTokenValid(authorization);
-
+            if(tokenProvider.isTokenValid(authorization)==true) {
+                //chatRoomService.addUserToChatRoom(chatRoomId, userId);
+            }
         }
         return message;
     }

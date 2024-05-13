@@ -16,15 +16,15 @@ import java.time.format.DateTimeFormatter;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
     @CreatedDate
-    private String createAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+    private LocalDateTime createAt = LocalDateTime.now();
 
     @LastModifiedDate
-    private String updateAt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
+    private LocalDateTime updateAt = LocalDateTime.now();
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean is_deleted = Boolean.FALSE;
+    private boolean isdeleted = Boolean.FALSE;
 
     public void delete() {
-        this.is_deleted = Boolean.TRUE;
+        this.isdeleted = Boolean.TRUE;
     }
 }
