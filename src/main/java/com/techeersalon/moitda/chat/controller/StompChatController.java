@@ -37,8 +37,6 @@ import java.util.Objects;
 public class StompChatController {
     private final SimpMessagingTemplate template; //특정 Broker로 메세지를 전달
     private final ChatMessageService chatMessageService;
-    private final ChatRoomService chatRoomService;
-    private final ChatMessageRepository chatRepository;
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final ChatMapper chatMapper;
