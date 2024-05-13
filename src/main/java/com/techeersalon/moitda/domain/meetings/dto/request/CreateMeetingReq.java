@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CreateMeetingRequest {
+public class CreateMeetingReq {
 
     @NotNull(message = "category_id cannot be blank")
     private Long categoryId;
@@ -65,9 +65,9 @@ public class CreateMeetingRequest {
     }
 
     // 초기 데이터 생성용 생성자
-    public CreateMeetingRequest (Long categoryId, String title,
-                                   String buildingName, String address, String addressDetail,
-                                   Integer maxParticipantsCount, Boolean approvalRequired, String appointmentTime){
+    public CreateMeetingReq(Long categoryId, String title,
+                            String buildingName, String address, String addressDetail,
+                            Integer maxParticipantsCount, Boolean approvalRequired, String appointmentTime){
         this.categoryId = categoryId;
 
         this.title = title;

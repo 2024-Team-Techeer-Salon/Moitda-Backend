@@ -1,11 +1,11 @@
 
 package com.techeersalon.moitda.domain.meetings.service;
 
-import com.techeersalon.moitda.domain.meetings.dto.MeetingParticipantDto;
+import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
-import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailResponse;
+import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
+import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
+import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailRes;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingParticipantRepository;
@@ -36,7 +36,7 @@ public class MeetingService {
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final UserService userService;
     private final int pageSize = 32;
-    public Long addMeeting(CreateMeetingRequest dto) {
+    public Long addMeeting(CreateMeetingReq dto) {
         User loginUser = userService.getLoginUser();
 
         Meeting entity = dto.toEntity(loginUser);
@@ -48,16 +48,16 @@ public class MeetingService {
 
         return meeting.getId();
     }
-    public GetMeetingDetailResponse findMeetingById(Long meetingId) {
+    public GetMeetingDetailRes findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
-        List<MeetingParticipantDto> participantDtoList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE)
+        List<MeetingParticipantMapper> participantDtoList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE)
                 .stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
-        return GetMeetingDetailResponse.of(meeting, participantDtoList);
+        return GetMeetingDetailRes.of(meeting, participantDtoList);
     }
-    private MeetingParticipantDto mapToDto(MeetingParticipant meetingParticipant) {
-        return new MeetingParticipantDto(
+    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
+        return new MeetingParticipantMapper(
                 // getId가 필요한가요?
                 meetingParticipant.getId(),
                 meetingParticipant.getMeetingId(),
@@ -113,14 +113,14 @@ public class MeetingService {
 //        return meetingRepository.findByUserId(loginUserId);
 //    }
 
-    public Page<GetLatestMeetingListResponse> findMeetings(int page) {
+    public Page<GetLatestMeetingListRes> findMeetings(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createAt"));
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
 
         Page<Meeting> meetings = meetingRepository.findAll(pageable);
 
-        return meetings.map(GetLatestMeetingListResponse::of);
+        return meetings.map(GetLatestMeetingListRes::of);
     }
 
     public void deleteMeeting(Long meetingId) {
