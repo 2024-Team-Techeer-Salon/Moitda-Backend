@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.chat.dto;
+package com.techeersalon.moitda.domain.chat.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ChatMessageRequestDto {
+public class ChatMessageReq {
     //private String sender;
     private String message;
     //private Long roomId;;

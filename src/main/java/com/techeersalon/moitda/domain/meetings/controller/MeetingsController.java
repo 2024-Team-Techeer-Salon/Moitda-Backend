@@ -1,7 +1,7 @@
 package com.techeersalon.moitda.domain.meetings.controller;
 
-import com.techeersalon.moitda.chat.domain.ChatRoom;
-import com.techeersalon.moitda.chat.service.ChatRoomService;
+import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
+import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoRequest;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingRequest;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;

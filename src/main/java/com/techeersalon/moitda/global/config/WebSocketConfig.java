@@ -1,7 +1,7 @@
-package com.techeersalon.moitda.chat.config;
+package com.techeersalon.moitda.config;
 
-import com.techeersalon.moitda.chat.config.handler.StompExceptionHandler;
-import com.techeersalon.moitda.chat.config.handler.StompHandler;
+import com.techeersalon.moitda.config.handler.StompExceptionHandler;
+import com.techeersalon.moitda.config.handler.StompHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;

@@ -1,10 +1,10 @@
-package com.techeersalon.moitda.chat.controller;
+package com.techeersalon.moitda.domain.chat.controller;
 
-import com.techeersalon.moitda.chat.domain.ChatRoom;
-import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
-import com.techeersalon.moitda.chat.service.ChatMessageService;
-import com.techeersalon.moitda.chat.service.ChatRoomService;
-import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
+import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
+import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
+import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
+import com.techeersalon.moitda.domain.chat.service.ChatMessageService;
+import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
@@ -39,7 +39,7 @@ public class ChatController {
     //@Transactional
     @Operation(summary = "ChatRoomList read", description = "유저의 채팅방 목록 조회")
     @GetMapping("/list")
-    public ResponseEntity<List<ChatRoomResponseDto>> getChatRoomList(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<List<ChatRoomRes>> getChatRoomList(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -49,9 +49,9 @@ public class ChatController {
                 SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername());
         User user = optionalUser.get();
 
-        List<ChatRoomResponseDto> chatRoomDtos = chatRoomService.getChatRoomsByUser(user);
+        List<ChatRoomRes> chatRoomDtos = chatRoomService.getChatRoomsByUser(user);
 
-        return (ResponseEntity<List<ChatRoomResponseDto>>) chatRoomDtos;
+        return (ResponseEntity<List<ChatRoomRes>>) chatRoomDtos;
     }
 
     /*채팅방의 채팅 내역 조회*/
@@ -63,7 +63,7 @@ public class ChatController {
 
         // 채팅방이 존재하는지 확인
         if (chatRoomOptional.isPresent()) {
-            List<ChatMessageResponseDto> chatmessages = chatMessageService.findChatMessage(roomid);
+            List<ChatMessageRes> chatmessages = chatMessageService.findChatMessage(roomid);
             return ResponseEntity.ok().body(chatmessages);
         }
         return ResponseEntity.notFound().build();

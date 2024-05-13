@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.chat.dto;
+package com.techeersalon.moitda.domain.chat.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ChatRoomResponseDto {
+public class ChatRoomRes {
     private Long id;
     //private Long meetingId;
     private List<User> members;

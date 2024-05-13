@@ -1,6 +1,6 @@
-package com.techeersalon.moitda.chat.config.handler;
+package com.techeersalon.moitda.config.handler;
 
-import com.techeersalon.moitda.chat.service.ChatRoomService;
+import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
 import com.techeersalon.moitda.global.jwt.Service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

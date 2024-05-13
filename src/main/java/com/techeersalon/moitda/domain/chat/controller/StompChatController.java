@@ -1,10 +1,10 @@
-package com.techeersalon.moitda.chat.controller;
+package com.techeersalon.moitda.domain.chat.controller;
 
-import com.techeersalon.moitda.chat.domain.ChatMessage;
-import com.techeersalon.moitda.chat.dto.ChatMessageRequestDto;
-import com.techeersalon.moitda.chat.mapper.ChatMapper;
-import com.techeersalon.moitda.chat.service.ChatMessageService;
-import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
+import com.techeersalon.moitda.domain.chat.entity.ChatMessage;
+import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
+import com.techeersalon.moitda.domain.chat.dto.mapper.ChatMapper;
+import com.techeersalon.moitda.domain.chat.dto.request.ChatMessageReq;
+import com.techeersalon.moitda.domain.chat.service.ChatMessageService;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
@@ -51,7 +51,7 @@ public class StompChatController {
     @SendToUser("/sub/chat/room/{roomId}")
     public void send_message(StompHeaderAccessor headerAccessor,
                              @DestinationVariable String roomId,
-                             @Payload ChatMessageRequestDto messageDto) {
+                             @Payload ChatMessageReq messageDto) {
         List<String> authorizationHeaders = headerAccessor.getNativeHeader("Authorization");
         String jwtToken = authorizationHeaders.get(0).replace("Bearer ", "");
         Object[] objects = jwtService.extractEmailAndSocialType(jwtToken);
@@ -61,7 +61,7 @@ public class StompChatController {
 
         log.info("# roomId = {}", roomId);
         ChatMessage chatMessage = ChatMapper.toChatMessage(user, Long.valueOf(roomId), messageDto);
-        ChatMessageResponseDto responseDto = chatMapper.toChatMessageDto(chatMessage);
+        ChatMessageRes responseDto = chatMapper.toChatMessageDto(chatMessage);
             /* 채팅방에 유저 추가하는 것만 하면 될 듯*/
         template.convertAndSend("/sub/chat/room/" + roomId,responseDto); /*채팅방으로*/
         /*채팅 저장*/
