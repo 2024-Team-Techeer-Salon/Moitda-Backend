@@ -1,29 +1,23 @@
 package com.techeersalon.moitda.chat.controller;
 
 import com.techeersalon.moitda.chat.domain.ChatRoom;
-import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
-import com.techeersalon.moitda.chat.dto.ChatRoomRequestDto;
 import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
-import com.techeersalon.moitda.chat.service.*;
-import com.techeersalon.moitda.domain.meetings.entity.Meeting;
-import com.techeersalon.moitda.domain.meetings.service.MeetingService;
+import com.techeersalon.moitda.chat.service.ChatMessageService;
+import com.techeersalon.moitda.chat.service.ChatRoomService;
+import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.global.jwt.Service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 

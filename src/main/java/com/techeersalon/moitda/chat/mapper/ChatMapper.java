@@ -2,14 +2,12 @@ package com.techeersalon.moitda.chat.mapper;
 
 import com.techeersalon.moitda.chat.domain.ChatMessage;
 import com.techeersalon.moitda.chat.domain.ChatRoom;
-
 import com.techeersalon.moitda.chat.dto.ChatMessageRequestDto;
-import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
 import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
-import com.techeersalon.moitda.chat.dto.GetLatestMessageListResponseDto;
+
+import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.entity.User;
-import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

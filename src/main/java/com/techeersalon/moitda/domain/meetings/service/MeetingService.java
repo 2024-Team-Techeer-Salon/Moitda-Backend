@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -142,5 +143,8 @@ public class MeetingService {
         meetingRepository.save(meeting);
     }
 
-
+    public void endMeeting(Long meetingId) {
+        Meeting meeting = this.getMeetingById(meetingId);
+        meeting.updateEndTime(LocalDateTime.now().toString());
+    }
 }

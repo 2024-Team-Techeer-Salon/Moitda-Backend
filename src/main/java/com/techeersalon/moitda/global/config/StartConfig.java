@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.config;
+package com.techeersalon.moitda.global.config;
 
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;

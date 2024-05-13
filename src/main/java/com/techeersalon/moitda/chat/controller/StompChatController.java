@@ -1,19 +1,14 @@
 package com.techeersalon.moitda.chat.controller;
 
 import com.techeersalon.moitda.chat.domain.ChatMessage;
-import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
-import com.techeersalon.moitda.chat.mapper.ChatMapper;
-import com.techeersalon.moitda.chat.repository.ChatMessageRepository;
 import com.techeersalon.moitda.chat.dto.ChatMessageRequestDto;
+import com.techeersalon.moitda.chat.mapper.ChatMapper;
 import com.techeersalon.moitda.chat.service.ChatMessageService;
-import com.techeersalon.moitda.chat.service.ChatRoomService;
+import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
-import com.techeersalon.moitda.domain.user.service.UserService;
 import com.techeersalon.moitda.global.jwt.Service.JwtService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -23,13 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.socket.messaging.SessionConnectEvent;
 
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -56,7 +47,7 @@ public class StompChatController {
 //
 //        // 추가적인 처리를 수행할 수 있습니다.
 //    }
-    @MessageMapping(value = "/chat/room/{roomId}")
+    @MessageMapping(value = "/com/techeersalon/moitda/chat/room/{roomId}")
     @SendToUser("/sub/chat/room/{roomId}")
     public void send_message(StompHeaderAccessor headerAccessor,
                              @DestinationVariable String roomId,

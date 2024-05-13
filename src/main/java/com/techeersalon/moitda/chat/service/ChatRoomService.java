@@ -2,10 +2,10 @@ package com.techeersalon.moitda.chat.service;
 
 import com.techeersalon.moitda.chat.domain.ChatMessage;
 import com.techeersalon.moitda.chat.domain.ChatRoom;
+import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
 import com.techeersalon.moitda.chat.mapper.ChatMapper;
 import com.techeersalon.moitda.chat.repository.ChatMessageRepository;
 import com.techeersalon.moitda.chat.repository.ChatRoomRepository;
-import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;

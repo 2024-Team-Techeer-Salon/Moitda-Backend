@@ -1,6 +1,5 @@
 package com.techeersalon.moitda.chat.domain;
 
-import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.global.common.BaseEntity;
 import jakarta.persistence.*;

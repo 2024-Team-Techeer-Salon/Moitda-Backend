@@ -1,7 +1,6 @@
 package com.techeersalon.moitda.chat.config.handler;
 
 import com.techeersalon.moitda.chat.service.ChatRoomService;
-import com.techeersalon.moitda.global.jwt.JwtAuthenticationFilter;
 import com.techeersalon.moitda.global.jwt.Service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +12,6 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-
-import static org.springframework.messaging.simp.stomp.StompCommand.CONNECT;
-import static org.springframework.messaging.simp.stomp.StompCommand.UNSUBSCRIBE;
 
 @Component
 @Slf4j

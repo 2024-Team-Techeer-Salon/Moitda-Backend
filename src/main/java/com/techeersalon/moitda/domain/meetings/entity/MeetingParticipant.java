@@ -19,16 +19,16 @@ import org.hibernate.annotations.Where;
 public class MeetingParticipant extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "meetingParticipantId")
+    @Column(name = "meeting_participant_id")
     private Long id;
 
-    @Column(name = "meetingId", nullable = false)
+    @Column(name = "meeting_id", nullable = false)
     private Long meetingId;
 
-    @Column(name = "userId", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "isWaiting", nullable = false)
+    @Column(name = "is_waiting", nullable = false)
     private Boolean isWaiting;
 
     public MeetingParticipant(Long meetingId, Long userId){

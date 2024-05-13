@@ -1,26 +1,18 @@
 package com.techeersalon.moitda.chat.service;
 
-import com.techeersalon.moitda.chat.domain.*;
-import com.techeersalon.moitda.chat.dto.ChatRoomResponseDto;
-import com.techeersalon.moitda.chat.dto.GetLatestMessageListResponseDto;
-import com.techeersalon.moitda.chat.mapper.ChatMapper;
-import com.techeersalon.moitda.chat.repository.*;
+import com.techeersalon.moitda.chat.domain.ChatMessage;
+import com.techeersalon.moitda.chat.domain.ChatRoom;
 import com.techeersalon.moitda.chat.dto.ChatMessageRequestDto;
+import com.techeersalon.moitda.chat.mapper.ChatMapper;
 import com.techeersalon.moitda.chat.dto.ChatMessageResponseDto;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListResponse;
-import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.chat.repository.ChatMessageRepository;
+import com.techeersalon.moitda.chat.repository.ChatRoomRepository;
 import com.techeersalon.moitda.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Sort;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service

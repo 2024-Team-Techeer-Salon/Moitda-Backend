@@ -50,10 +50,18 @@ public class MeetingsController {
     }
 
     @Operation(summary = "cancelMeeting", description = "모임 취소")
-    @DeleteMapping("/{meetingId}")
+    @DeleteMapping("cancel/{meetingId}")
     public String cancelMeeting(@PathVariable Long meetingId){
         meetingService.deleteMeeting(meetingId);
         return "미팅 취소";
+    }
+
+    @Operation(summary = "endMeeting", description = "모임 취소")
+    @DeleteMapping("end/{meetingId}")
+    public String endMeeting(@PathVariable Long meetingId){
+        meetingService.endMeeting(meetingId);
+        meetingService.deleteMeeting(meetingId);
+        return "미팅 종료";
     }
 
     @Operation(summary = "ChangeMeetingInfo", description = "미팅 수정")
