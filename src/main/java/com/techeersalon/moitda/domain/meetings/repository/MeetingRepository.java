@@ -21,4 +21,5 @@ public interface MeetingRepository extends PagingAndSortingRepository<Meeting, L
 
     Optional<Meeting> findById(Long id);
 
+    List<Meeting> findByIdIn(List<Long> ids);
 }
