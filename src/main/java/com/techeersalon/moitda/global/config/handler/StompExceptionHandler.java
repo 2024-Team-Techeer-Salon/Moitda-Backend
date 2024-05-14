@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.config.handler;
+package com.techeersalon.moitda.global.config.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
