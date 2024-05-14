@@ -150,13 +150,18 @@ public class MeetingService {
 
         return meetings.map(GetLatestMeetingListRes::from);
     }
-
+    /*
+     * 미팅 삭제 메소드
+     * 미팅, 미팅의 참가자 모두 softDelete
+     * */
     public void deleteMeeting(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
-        List<MeetingParticipant> participantList = meetingParticipantRepository.findByMeetingId(meetingId);
+        Optional<MeetingParticipant> participantOptional = meetingParticipantRepository.findByMeetingId(meetingId);
+        participantOptional.orElseThrow(MeetingParticipantNotFoundException::new);
+
         meetingRepository.delete(meeting);
         //meetingParticipantRepository.save(participant);
-        meetingParticipantRepository.deleteAll(participantList);
+        meetingParticipantRepository.deleteAll(participantOptional.stream().toList());
         //meetingRepository.save(meeting);
     }
 

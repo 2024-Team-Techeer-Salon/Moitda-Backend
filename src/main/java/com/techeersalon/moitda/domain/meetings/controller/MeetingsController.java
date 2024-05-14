@@ -59,17 +59,19 @@ public class MeetingsController {
 
     @Operation(summary = "cancelMeeting", description = "모임 취소")
     @DeleteMapping("cancel/{meetingId}")
-    public String cancelMeeting(@PathVariable Long meetingId){
+    public ResponseEntity<SuccessResponse> cancelMeeting(@PathVariable Long meetingId){
+        //과연 이게 좋은 코드일까?
         meetingService.deleteMeeting(meetingId);
-        return "미팅 취소";
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_DELETE_SUCCESS));
+        //return ResponseEntity.status(HttpStatus.NO_CONTENT).body(SuccessResponse.of(MEETING_DELETE_SUCCESS));
     }
 
-    @Operation(summary = "endMeeting", description = "모임 취소")
+    @Operation(summary = "endMeeting", description = "모임 종료")
     @DeleteMapping("end/{meetingId}")
-    public String endMeeting(@PathVariable Long meetingId){
+    public ResponseEntity<SuccessResponse>endMeeting(@PathVariable Long meetingId){
         meetingService.endMeeting(meetingId);
         meetingService.deleteMeeting(meetingId);
-        return "미팅 종료";
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_DELETE_SUCCESS));
     }
 
     @Operation(summary = "ChangeMeetingInfo", description = "미팅 수정")

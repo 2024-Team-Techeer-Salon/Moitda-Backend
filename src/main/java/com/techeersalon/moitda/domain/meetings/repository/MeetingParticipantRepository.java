@@ -15,5 +15,5 @@ public interface MeetingParticipantRepository extends JpaRepository<MeetingParti
 
     List<MeetingParticipant> findByUserIdAndIsWaiting(Long UserId, Boolean bool);
 
-    List<MeetingParticipant> findByMeetingId(Long Meeting);
+    Optional<MeetingParticipant> findByMeetingId(Long Meeting);
 }
