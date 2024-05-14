@@ -37,7 +37,7 @@ public class ChatController {
     // 나중에 합쳐야 할 수도?
     /*이건 유저의 채팅방 id 조회를 하는 로직을 저쪽에서 짜면 필요없을 수도*/
     //@Transactional
-    @Operation(summary = "ChatRoomList read", description = "유저의 채팅방 목록 조회")
+    @Operation( description = "ChatRoomList read", summary= "유저의 채팅방 목록 조회")
     @GetMapping("/list")
     public ResponseEntity<List<ChatRoomRes>> getChatRoomList(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -55,7 +55,7 @@ public class ChatController {
     }
 
     /*채팅방의 채팅 내역 조회*/
-    @Operation(summary = "GetMessagesByRoom", description = "채팅방의 채팅 내역 조회")
+    @Operation(description = "GetMessagesByRoom", summary = "채팅방의 채팅 내역 조회")
     @GetMapping("/rooms/chatmessages/{room_id}")
     public ResponseEntity<?> getChatMessagesByChatRoom(@PathVariable("room_id") Long roomid) {
         //room_id
@@ -70,7 +70,7 @@ public class ChatController {
     }
 
     /*채팅방 삭제 이때 채팅방 메시지도 동시에 삭제되어야 함*/
-    @Operation(summary="ChatRoom delete", description = "채팅방 삭제")
+    @Operation(description="ChatRoom delete", summary = "채팅방 삭제")
     @DeleteMapping("/rooms/{room_id}")
     public ResponseEntity<?> deleteChatRoom(@PathVariable Long room_id){
         chatRoomService.deleteRoomAndMessages(room_id);
