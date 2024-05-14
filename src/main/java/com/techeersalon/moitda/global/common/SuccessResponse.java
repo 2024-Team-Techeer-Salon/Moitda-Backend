@@ -5,18 +5,22 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class SuccessResponse {
-    private String message;
-    private HttpStatus httpStatus;
     private String code;
+    private HttpStatus httpStatus;
+    private String message;
+    private Object data;
 
-    public SuccessResponse(HttpStatus status, String s) {
-        this.message = s;
-        this.httpStatus = status;
+    public static SuccessResponse of(SuccessCode successCode){
+        return new SuccessResponse(successCode, "");
+    }
+    public static SuccessResponse of(SuccessCode successCode, Object data) {
+        return new SuccessResponse(successCode, data);
     }
 
-    public SuccessResponse(SuccessCode code) {
-        this.message = code.getMessage();
-        this.httpStatus = code.getStatus();
+    public SuccessResponse(SuccessCode code, Object data) {
         this.code = code.getCode();
+        this.httpStatus = code.getStatus();
+        this.message = code.getMessage();
+        this.data = data;
     }
 }

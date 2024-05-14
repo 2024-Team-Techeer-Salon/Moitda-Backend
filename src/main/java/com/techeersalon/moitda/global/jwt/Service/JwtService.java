@@ -187,11 +187,7 @@ public class JwtService {
         }
         return null;
     }
-    // Claims에 저장할 때 SocialType을 문자열로 변환
-    private String serializeSocialType(SocialType socialType) {
-        // 예시: SocialType이 Enum일 경우 name() 메서드를 사용하여 문자열로 변환
-        return socialType.name();
-    }
+
     // Claims에서 추출할 때 문자열을 SocialType으로 변환
     private SocialType deserializeSocialType(String socialTypeString) {
         // 예시: 문자열을 Enum으로 변환
