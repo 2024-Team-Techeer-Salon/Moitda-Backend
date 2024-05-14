@@ -26,35 +26,43 @@ public class User extends BaseEntity {
     @Column(name = "user_id")
     private Long id;
 
+    @Column(name = "username")
     private String username;
 
-    @Column(nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(name = "profile_image")
     private String profileImage;
 
+    @Column(name = "banner_image")
     private String bannerImage;
 
+    @Column(name = "data_of_birth")
     private LocalDate dataOfBirth;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
     private Gender gender;
 
+    @Column(name = "introduce")
     private String introduce;
 
-    @Column(nullable = false)
+    @Column(name = "manner_stat", nullable = false)
     private Integer mannerStat;
 
+    @Column(name = "location")
     private String location;
 
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "social_type", nullable = false)
     private SocialType socialType; // KAKAO, NAVER, GOOGLE
 
+    @Column(name = "refresh_token")
     private String refreshToken;
 
     @Builder

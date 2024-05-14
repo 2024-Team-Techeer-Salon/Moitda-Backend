@@ -9,6 +9,10 @@ import org.springframework.http.HttpStatus;
 public enum SuccessCode {
     //user
     USER_REGISTRATION_SUCCESS(HttpStatus.CREATED, "U001", "회원가입 성공"),
+    USER_LOGOUT_SUCCESS(HttpStatus.OK, "U002", "로그아웃 성공"),
+    USER_PROFILE_GET_SUCCESS(HttpStatus.OK, "U003", "회원정보 조회 성공"),
+    USER_PROFILE_UPDATE_SUCCESS(HttpStatus.OK, "U004", "회원정보 수정 성공"),
+    USER_MEETING_RECORD_GET_SUCCESS(HttpStatus.OK, "U005", "회원 모임 기록 조회 성공"),
 
     //meeting
     MEETING_CREATE_SUCCESS(HttpStatus.CREATED,"M001", "프로젝트 생성 성공"),
