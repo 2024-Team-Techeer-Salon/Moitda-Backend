@@ -1,6 +1,7 @@
 package com.techeersalon.moitda.domain.meetings.entity;
 
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
+import com.techeersalon.moitda.domain.meetings.exception.meeting.MaxParticipantsNotExceededException;
 import com.techeersalon.moitda.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -82,5 +83,12 @@ public class Meeting extends BaseEntity {
 
     public void updateEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    // 최대 참가 인원 유효성 검사 메서드
+    public void validateMaxParticipantsCount() {
+        if (maxParticipantsCount < 2) { // 모집 인원이 2명보다 적은 경우
+            throw new MaxParticipantsNotExceededException();
+        }
     }
 }

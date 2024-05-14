@@ -5,10 +5,13 @@ import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantList
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
+import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingRes;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailRes;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
+import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingNotFoundException;
+import com.techeersalon.moitda.domain.meetings.exception.participant.MeetingParticipantNotFoundException;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingParticipantRepository;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
 import com.techeersalon.moitda.domain.user.entity.User;
@@ -50,22 +53,32 @@ public class MeetingService {
      * Meeting, MeetingParticipant 생성
      * Meeting에 참가자 1명 추가
      * */
-    public Long createMeeting(CreateMeetingReq dto) {
+    public CreateMeetingRes createMeeting(CreateMeetingReq dto) {
         User loginUser = userService.getLoginUser();
-
         Meeting entity = dto.toEntity(loginUser);
+
+        // 최대 참가 인원 유효성 검사
+        entity.validateMaxParticipantsCount();
         Meeting meeting = meetingRepository.save(entity);
 
         MeetingParticipant participant = MeetingParticipantMapper.toEntity(meeting);
+        // 미팅에 바로 참여
         participant.notNeedToApprove();
         meetingParticipantRepository.save(participant);
 
-        return meeting.getId();
+        return CreateMeetingRes.from(meeting.getId());
     }
-
+    /*
+     * 미팅 상세 조회 메소드
+     * 미팅 데이터 값 중 필요한 내용과 미팅 참가자 리스트 reponse에 담음
+     * */
     public GetMeetingDetailRes findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
-        List<MeetingParticipantListMapper> participantDtoList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE)
+
+        Optional<MeetingParticipant> participantOptional = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
+        participantOptional.orElseThrow(MeetingParticipantNotFoundException::new);
+
+        List<MeetingParticipantListMapper> participantDtoList = participantOptional
                 .stream()
                 .map(MeetingParticipantListMapper::from)
                 .collect(Collectors.toList());
@@ -149,7 +162,7 @@ public class MeetingService {
 
     private Meeting getMeetingById(Long meetingId) {
         return meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 모임이 존재하지 않습니다."));
+                .orElseThrow(MeetingNotFoundException::new);
     }
 
     public void modifyMeeting(Long meetingId, ChangeMeetingInfoReq dto) {

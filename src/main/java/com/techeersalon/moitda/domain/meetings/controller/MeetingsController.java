@@ -4,9 +4,11 @@ import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
 import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
+import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingRes;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailRes;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
+import com.techeersalon.moitda.global.common.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+
+import static com.techeersalon.moitda.global.common.SuccessCode.*;
 
 @Slf4j
 @Tag(name = "MeetingsController", description = "모임 관련 API")
@@ -32,17 +36,18 @@ public class MeetingsController {
 
     @Operation(summary = "createMeeting", description = "모임 생성")
     @PostMapping
-    public ResponseEntity<String> meetingCreated(@Validated @RequestBody CreateMeetingReq dto) {
-        Long meetingId = meetingService.createMeeting(dto);
-        ChatRoom chatRoom = chatRoomService.createChatRoom(meetingId);
+    public ResponseEntity<SuccessResponse> meetingCreated(@Validated @RequestBody CreateMeetingReq dto) {
+        CreateMeetingRes response = meetingService.createMeeting(dto);
+        ChatRoom chatRoom = chatRoomService.createChatRoom(response.getMeetingId());
         log.info("# create room, roomId = {}", chatRoom.getId());
-        return ResponseEntity.created(URI.create("/meetings/" + meetingId)).body("모임 생성 완료");
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_CREATE_SUCCESS, response));
     }
+
     @Operation(summary = "findMeeting", description = "모임 상세 조회")
     @GetMapping("/{meetingId}")
-    public ResponseEntity<GetMeetingDetailRes> meetingDetail(@PathVariable Long meetingId) {
+    public ResponseEntity<SuccessResponse> meetingDetail(@PathVariable Long meetingId) {
         GetMeetingDetailRes response = meetingService.findMeetingById(meetingId);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_GET_SUCCESS, response));
     }
 
     @Operation(summary = "findMeetingsList", description = "모임 조회")
