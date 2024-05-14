@@ -17,10 +17,14 @@ public enum ErrorCode {
     // 모임
     MEETING_NOT_FOUND(HttpStatus.NOT_FOUND,"M001","미팅을 찾을 수 없습니다."),
     MEETING_MAX_PARTICIPANTS_NOT_EXCEEDED(HttpStatus.BAD_REQUEST,"M002","최대 참가 인원 수가 너무 적습니다."),
-
+    MEETING_PAGE_NOT_FOUND(HttpStatus.NOT_FOUND,"M003","미팅 페이지를 찾을 수 없습니다."),
+    MEETING_IS_FULL(HttpStatus.BAD_REQUEST,"M004","참여자가 가득 찼습니다."),
 
     // 참여자
-    PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND,"P001","참여자을 찾을 수 없습니다.");
+    PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND,"P001","참여자을 찾을 수 없습니다."),
+    ALREADY_PARTICIPATING_OR_APPLIED(HttpStatus.NOT_FOUND,"P002","이미 모임에 신청한 상태 거나 참가자 입니다."),
+    NOT_AUTHORIZED_TO_APPROVE(HttpStatus.UNAUTHORIZED,"P003","다른 미팅에서 보낸 승인이기 때문에 권한이 없습니다.");
+
 
     private HttpStatus status;
     private String code;

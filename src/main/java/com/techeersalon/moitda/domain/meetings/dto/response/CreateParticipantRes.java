@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CreateMeetingRes {
-    private Long meetingId;
+@AllArgsConstructor
+public class CreateParticipantRes {
+    private Long participantId;
 
-    public static CreateMeetingRes from(Long meetingId){
-        return CreateMeetingRes.builder()
-                .meetingId(meetingId)
+    public static CreateParticipantRes from(Long participantId){
+        return CreateParticipantRes.builder()
+                .participantId(participantId)
                 .build();
     }
 }

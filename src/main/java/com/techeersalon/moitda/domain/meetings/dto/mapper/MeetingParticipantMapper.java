@@ -20,4 +20,12 @@ public class MeetingParticipantMapper {
                 .isWaiting(Boolean.TRUE)
                 .build();
     }
+
+    public static MeetingParticipant toEntity(Meeting meeting, Long userId) {
+        return MeetingParticipant.builder()
+                .meetingId(meeting.getId())
+                .userId(userId)
+                .isWaiting(Boolean.TRUE)
+                .build();
+    }
 }

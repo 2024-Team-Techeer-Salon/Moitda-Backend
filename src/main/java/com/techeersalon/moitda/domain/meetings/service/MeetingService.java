@@ -3,21 +3,28 @@ package com.techeersalon.moitda.domain.meetings.service;
 
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantListMapper;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
+import com.techeersalon.moitda.domain.meetings.dto.request.ApprovalParticipantReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
 import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingRes;
+import com.techeersalon.moitda.domain.meetings.dto.response.CreateParticipantRes;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailRes;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
+import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingIsFullException;
 import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingNotFoundException;
+import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingPageNotFoundException;
+import com.techeersalon.moitda.domain.meetings.exception.participant.AlreadyParticipatingOrAppliedException;
 import com.techeersalon.moitda.domain.meetings.exception.participant.MeetingParticipantNotFoundException;
+import com.techeersalon.moitda.domain.meetings.exception.participant.NotAuthorizedToAppproveException;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingParticipantRepository;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +41,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class MeetingService {
@@ -92,63 +100,98 @@ public class MeetingService {
 //        );
 //    }
 
-    public void addParticipantOfMeeting(Long meetingId) {
+    /*
+     * 참가자 신청 메소드
+     * 미팅에 선착순인 경우와 승인이 필요한 경우
+     * */
+    public CreateParticipantRes addParticipantOfMeeting(Long meetingId) {
         User loginUser = userService.getLoginUser();
-        Meeting meeting;
-        if (!meetingParticipantRepository.existsByMeetingIdAndUserId(meetingId, loginUser.getId())) {
-            Optional<Meeting> meetingOptional = meetingRepository.findById(meetingId);
+        Long loginUserId = loginUser.getId();
+        Meeting meeting = null;
 
-            if (meetingOptional.isPresent()) {
-                meeting = meetingOptional.get();
-
-                if (meeting.getParticipantsCount() < meeting.getMaxParticipantsCount()) {
-
-                    MeetingParticipant participant = MeetingParticipantMapper.toEntity(meeting);
-
-                    if (!meeting.getApprovalRequired()) {
-                        participant.notNeedToApprove();
-                        meeting.increaseParticipantsCnt();
-                    }
-
-                    meetingParticipantRepository.save(participant);
-
-                } else {
-                    throw new IllegalStateException("가득참.");
-                }
-            } else {
-                throw new IllegalStateException("존재하지 않은 미팅");
-            }
-        } else {
-            throw new IllegalStateException("이미 존재하는 회원");
+        // 이미 유저가 미팅에 참가자 거나 참가 신청을 했을 경우 예외처리
+        if (meetingParticipantRepository.existsByMeetingIdAndUserId(meetingId, loginUserId)) {
+            throw new AlreadyParticipatingOrAppliedException();
         }
+        //log.info(String.valueOf(meetingParticipantRepository.existsByMeetingIdAndUserId(meetingId, loginUserId)));
+        meeting = this.getMeetingById(meetingId);
+
+        // 미팅 참가자가 이미 최대 참가자수를 넘을 경우 예외처리
+        if (meeting.getParticipantsCount() >= meeting.getMaxParticipantsCount()){
+            throw new MeetingIsFullException();
+        }
+
+        MeetingParticipant entity = MeetingParticipantMapper.toEntity(meeting,loginUserId);
+
+        // 미팅이 선착순일 경우 바로 미팅 참가자로 변경
+        if (!meeting.getApprovalRequired()) {
+            entity.notNeedToApprove();
+            meeting.increaseParticipantsCnt();
+        }
+
+        MeetingParticipant participant = meetingParticipantRepository.save(entity);
+
+        return CreateParticipantRes.from(participant.getId());
+//        if (!meetingParticipantRepository.existsByMeetingIdAndUserId(meetingId, loginUser.getId())) {
+//            meeting = this.getMeetingById(meetingId);
+//            if (meeting.getParticipantsCount() < meeting.getMaxParticipantsCount()) {
+//
+//                MeetingParticipant participant = MeetingParticipantMapper.toEntity(meeting);
+//
+//                if (!meeting.getApprovalRequired()) {
+//                    participant.notNeedToApprove();
+//                    meeting.increaseParticipantsCnt();
+//                }
+//
+//                meetingParticipantRepository.save(participant);
+//
+//            } else {
+//                throw new MeetingIsFullException();
+//            }
+//
+//        } else {
+//            throw new AlreadyParticipatingOrAppliedException();
+//        }
     }
 
-    public void approvalParticipant(Long participantId, Boolean isApproval) {
-        MeetingParticipant participant = meetingParticipantRepository.findById(participantId).orElse(null);
+    public void approvalParticipant(ApprovalParticipantReq dto) {
+        // 참가자 존재 예외처리
+        MeetingParticipant participant = meetingParticipantRepository.findById(dto.getParticipantId()).orElseThrow(MeetingParticipantNotFoundException::new);
+        // 승인한 미팅이 참가자 미팅이 다른 경우 예외처리
+        if(participant.getMeetingId().longValue() != dto.getMeetingId().longValue()){
+            throw new NotAuthorizedToAppproveException();
+        }
         participant.notNeedToApprove();
-        if (isApproval) {
-            Meeting meeting = getMeetingById(participant.getMeetingId());
+
+        if (dto.getIsApproval()) { // 승인 할 경우
+            Meeting meeting = this.getMeetingById(participant.getMeetingId());
             meeting.increaseParticipantsCnt();
-        } else {
+            meetingParticipantRepository.save(participant);
+        } else { // 거절 할 경우
             meetingParticipantRepository.delete(participant);
             //participant.delete();
         }
-        //meetingParticipantRepository.save(participant);
     }
 
 //    public List<Meeting> getUserMeetingList(){
 //        Long loginUserId = userService.getLoginUser().getId();
 //        return meetingRepository.findByUserId(loginUserId);
 //    }
-
-    public Page<GetLatestMeetingListRes> findMeetings(int page) {
+    /*
+     * 미팅 리스트 조회 메소드
+     * 간략화 된 미팅 내용을 최대 32개인 한 페이지로 준다.
+     * */
+    public List<GetLatestMeetingListRes> findMeetings(int page) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createAt"));
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
 
         Page<Meeting> meetings = meetingRepository.findAll(pageable);
+        if (meetings.isEmpty()) {
+            throw new MeetingPageNotFoundException();
+        }
 
-        return meetings.map(GetLatestMeetingListRes::from);
+        return GetLatestMeetingListRes.listOf(meetings).getContent();
     }
     /*
      * 미팅 삭제 메소드
@@ -169,7 +212,10 @@ public class MeetingService {
         return meetingRepository.findById(meetingId)
                 .orElseThrow(MeetingNotFoundException::new);
     }
-
+    /*
+     * 미팅 수정 메소드
+     * 미팅 전체 내용 수정
+     * */
     public void modifyMeeting(Long meetingId, ChangeMeetingInfoReq dto) {
         Meeting meeting = this.getMeetingById(meetingId);
         meeting.updateInfo(dto);

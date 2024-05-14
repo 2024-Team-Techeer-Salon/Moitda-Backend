@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 @Getter
 @Builder
@@ -39,5 +40,9 @@ public class GetLatestMeetingListRes {
                 .participantsCount(meeting.getParticipantsCount())
                 .maxParticipantsCount(meeting.getMaxParticipantsCount())
                 .build();
+    }
+
+    public static Page<GetLatestMeetingListRes> listOf(Page<Meeting> meetingPage) {
+        return meetingPage.map(GetLatestMeetingListRes::from);
     }
 }
