@@ -11,6 +11,7 @@ import com.techeersalon.moitda.domain.user.dto.response.RecordsRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
+import com.techeersalon.moitda.domain.user.exception.UserNotFoundException;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,49 +31,59 @@ public class UserService {
     private final UserRepository userRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final MeetingRepository meetingRepository;
-    //나중에 리펙토링하기
     private final UserMapper userMapper;
 
     public void signup(SignUpReq signUpReq) {
 //        수정필요
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
+        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername())
+                .orElseThrow(UserNotFoundException::new);
         user.signupUser(signUpReq);
 
         userRepository.save(user);
     }
 
     public void logout() {
+
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
+        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername())
+                .orElseThrow(UserNotFoundException::new);
         user.onLogout();
+
         userRepository.save(user);
     }
 
 
     public UserProfileRes findUserProfile(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
 
-        User user = optionalUser.get();
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User user = optionalUser
+                .orElseThrow(UserNotFoundException::new);
 
         return userMapper.toUserProfile(user);
     }
 
     public void updateUserProfile(UpdateUserReq updateUserReq) {
+
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
+        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername())
+                .orElseThrow(UserNotFoundException::new);
         user.updateProfile(updateUserReq);
 
         userRepository.save(user);
     }
 
     public User getLoginUser() {
+
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User loginUser = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername()).get();
+        User loginUser = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername())
+                .orElseThrow(UserNotFoundException::new);
+
         return loginUser;
     }
 
     public RecordsRes getUserMeetingRecords(Long userId) {
+
         if (userRepository.existsById(userId)) {
             List<MeetingParticipant> meetingParticipantList =
                     meetingParticipantRepository.findByUserIdAndIsWaiting(userId, false);
@@ -84,6 +95,7 @@ public class UserService {
 
             return userMapper.toUserMeetingRecord(userMeetings);
         }
-        return null;
+
+        throw new UserNotFoundException();
     }
 }
