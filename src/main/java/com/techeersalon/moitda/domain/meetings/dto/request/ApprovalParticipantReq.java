@@ -1,4 +1,4 @@
-package com.techeersalon.moitda.domain.meetings.dto.response;
+package com.techeersalon.moitda.domain.meetings.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -12,12 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CreateMeetingRes {
-    private Long meetingId;
+public class ApprovalParticipantReq {
 
-    public static CreateMeetingRes from(Long meetingId){
-        return CreateMeetingRes.builder()
-                .meetingId(meetingId)
-                .build();
-    }
+    private Long participantId;
+    private Long meetingId;
+    private Boolean isApproval;
+
 }
