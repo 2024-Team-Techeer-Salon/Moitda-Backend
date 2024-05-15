@@ -2,7 +2,7 @@ package com.techeersalon.moitda.domain.meetings.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
+import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantListMapper;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +36,7 @@ public class GetMeetingDetailRes {
 
     private Integer participantsCount;
 
-    private List<MeetingParticipantMapper> participantList;
+    private List<MeetingParticipantListMapper> participantList;
 
     private String image;
 
@@ -44,7 +44,7 @@ public class GetMeetingDetailRes {
 
     private LocalDateTime createdAt;
 
-    public static GetMeetingDetailRes of(Meeting meeting, List<MeetingParticipantMapper> participantList) {
+    public static GetMeetingDetailRes of(Meeting meeting, List<MeetingParticipantListMapper> participantList) {
         return GetMeetingDetailRes.builder()
                 .title(meeting.getTitle())
                 .userId(meeting.getUserId())
