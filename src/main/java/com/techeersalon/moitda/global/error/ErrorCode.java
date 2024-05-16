@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // global
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G001", "서버 오류"),
+    PUT_OBJECT_EXCEPTION(HttpStatus.BAD_REQUEST, "G002", "PUT_OBJECT_EXCEPTION"),
 
     // 유저
     USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "U001", "사용자를 찾을 수 없습니다."),
