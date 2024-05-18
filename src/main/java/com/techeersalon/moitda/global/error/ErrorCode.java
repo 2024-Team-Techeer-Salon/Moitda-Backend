@@ -9,11 +9,12 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // global
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "G001", "서버 오류"),
-    PUT_OBJECT_EXCEPTION(HttpStatus.BAD_REQUEST, "G002", "PUT_OBJECT_EXCEPTION"),
+    PUT_OBJECT_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "G002", "이미지 업로드 중 에러가 발생했습니다. 잠시 후 다시 시도해 주세요."),
 
     // 유저
     USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "U001", "사용자를 찾을 수 없습니다."),
     INVALID_TOKEN_EXCEPTION (HttpStatus.UNAUTHORIZED, "U002", "토큰이 유효하지 않습니다."),
+    USER_ALREADY_REGISTERED(HttpStatus.BAD_REQUEST, "U003", "이미 회원가입된 사용자입니다."),
 
     // 모임
     MEETING_NOT_FOUND(HttpStatus.NOT_FOUND,"M001","미팅을 찾을 수 없습니다."),

@@ -53,9 +53,6 @@ public class Meeting extends BaseEntity {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "image")
-    private String image;
-
     @Column(name = "approval_required", nullable = false)
     private Boolean approvalRequired;
 
@@ -78,7 +75,6 @@ public class Meeting extends BaseEntity {
         this.addressDetail = dto.getAddressDetail();
         this.maxParticipantsCount = dto.getMaxParticipantsCount();
         this.appointmentTime = dto.getAppointmentTime();
-        this.image = dto.getImage();
     }
 
     public void updateEndTime(String endTime) {

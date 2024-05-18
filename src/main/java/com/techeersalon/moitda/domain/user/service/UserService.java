@@ -6,7 +6,9 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
+import com.techeersalon.moitda.domain.meetings.repository.MeetingImageRepository;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingParticipantRepository;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
 import com.techeersalon.moitda.domain.user.dto.mapper.UserMapper;
@@ -14,8 +16,10 @@ import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
 import com.techeersalon.moitda.domain.user.dto.response.RecordsRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
+import com.techeersalon.moitda.domain.user.entity.Role;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
+import com.techeersalon.moitda.domain.user.exception.UserAlreadyRegisteredException;
 import com.techeersalon.moitda.domain.user.exception.UserNotFoundException;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.global.s3.exception.S3Exception;
@@ -31,9 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,20 +47,33 @@ public class UserService {
     private final UserRepository userRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final MeetingRepository meetingRepository;
+    private final MeetingImageRepository meetingImageRepository;
     private final UserMapper userMapper;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    @Value("${defaultProfileUrl}")
+    private String defaultProfileUrl;
+
+    @Value("${defaultBannerUrl}")
+    private String defaultBannerUrl;
+
     public void signup(SignUpReq signUpReq) {
-//        수정필요
+
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername())
                 .orElseThrow(UserNotFoundException::new);
-        user.signupUser(signUpReq);
+        if (user.getRole().equals(Role.GUEST)) {
 
-        userRepository.save(user);
+            user.signupUser(signUpReq);
+            userRepository.save(user);
+
+        } else {
+            throw new UserAlreadyRegisteredException();
+        }
+
     }
 
     public void logout() {
@@ -91,8 +106,10 @@ public class UserService {
 
         String[] urls = new String[2];
         // 프로필 이미지 처리
-        if (profileImage.isEmpty()) {
-            urls[0] = "https://moitda-bucket.s3.ap-northeast-2.amazonaws.com/user/default/DefaultProfileImage.png"; //그냥 url 넘기
+        if (profileImage == null) {
+            urls[0] = defaultProfileUrl; //그냥 url 넘기
+        } else if (Objects.requireNonNull(profileImage.getOriginalFilename()).contains("https://moitda-bucket.s3.ap-northeast-2.amazonaws.com")) {
+            urls[0] = profileImage.getOriginalFilename();
         } else {
             // 이미지가 비어있지 않은 경우 이미지를 S3에 업로드
             String profileFileName = profileImage.getOriginalFilename();
@@ -122,8 +139,10 @@ public class UserService {
         }
 
         // 배너 이미지 처리
-        if (bannerImage.isEmpty()) {
-            urls[1] = "https://moitda-bucket.s3.ap-northeast-2.amazonaws.com/user/default/DefaultProfileImage.png";
+        if (bannerImage == null) {
+            urls[1] = defaultBannerUrl;
+        } else if (Objects.requireNonNull(bannerImage.getOriginalFilename()).contains("https://moitda-bucket.s3.ap-northeast-2.amazonaws.com")) {
+            urls[1] = bannerImage.getOriginalFilename();
         } else {
             // 이미지가 비어있지 않은 경우 이미지를 S3에 업로드
             String bannerFileName = bannerImage.getOriginalFilename();
@@ -175,8 +194,14 @@ public class UserService {
                     .map(MeetingParticipant::getMeetingId)
                     .collect(Collectors.toList());
             List<Meeting> userMeetings = meetingRepository.findByIdIn(meetingIds);
+            // 각 회의에 대한 이미지 가져오기
+            List<List<MeetingImage>> meetingImages = new ArrayList<>();
+            for (Meeting meeting : userMeetings) {
+                List<MeetingImage> meetingImage = meetingImageRepository.findByMeetingId(meeting.getId());
+                meetingImages.add(meetingImage);
+            }
 
-            return userMapper.toUserMeetingRecord(userMeetings);
+            return userMapper.toUserMeetingRecord(userMeetings, meetingImages);
         }
 
         throw new UserNotFoundException();

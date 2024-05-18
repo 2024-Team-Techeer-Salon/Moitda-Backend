@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,11 +54,11 @@ public class UserController {
     }
 
     @Operation(summary = "회원정보 수정")
-    @PutMapping("/users")
+    @PutMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse> updateUserProfile(
             @RequestPart @Valid UpdateUserReq updateUserReq,
-            @RequestPart @Valid MultipartFile profileImageFile,
-            @RequestPart @Valid MultipartFile bannerImageFile
+            @RequestPart(name = "profile_image_file", required = false) @Valid MultipartFile profileImageFile,
+            @RequestPart(name = "banner_image_file", required = false) @Valid MultipartFile bannerImageFile
     ) throws IOException {
 
         userService.updateUserProfile(updateUserReq, profileImageFile, bannerImageFile);

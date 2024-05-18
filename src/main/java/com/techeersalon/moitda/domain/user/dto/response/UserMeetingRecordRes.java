@@ -2,7 +2,10 @@ package com.techeersalon.moitda.domain.user.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -12,6 +15,6 @@ import lombok.*;
 public class UserMeetingRecordRes {
     private Long meetingId;
     private String title;
-    private String image;
+    private List<MeetingImage> images;
     private String address;
 }

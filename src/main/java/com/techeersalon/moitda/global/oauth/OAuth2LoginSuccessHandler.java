@@ -39,7 +39,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                             userRepository.saveAndFlush(user);
                         });
 
-                String redirectUrl = "/signup.html?at=" + accessToken + "&rt=" + refreshToken;
+                String redirectUrl = "localhost:3000/?accessToken=" + accessToken + "&refreshToken=" + refreshToken;
 
                 response.sendRedirect(redirectUrl); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
 
@@ -52,7 +52,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                             userRepository.saveAndFlush(user);
                         });
 
-                String redirectUrl = "/?at=" + accessToken + "&rt=" + refreshToken;
+                String redirectUrl = "localhost:3000/auth?accessToken=" + accessToken + "&refreshToken=" + refreshToken;
 
                 response.sendRedirect(redirectUrl); // 메인 페이지로 리다이렉트
             }
