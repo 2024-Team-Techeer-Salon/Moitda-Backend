@@ -69,7 +69,7 @@ public class MeetingService {
     private String bucketName;
 
     // 한 페이지당 meeting 데이터 개수
-    private final int pageSize = 32;
+    //private final int pageSize = 32;
 
     /*
      * 미팅 생성 메소드
@@ -235,7 +235,7 @@ public class MeetingService {
      * 미팅 리스트 조회 메소드
      * 간략화 된 미팅 내용을 최대 32개인 한 페이지로 준다.
      * */
-    public List<GetLatestMeetingListRes> findMeetings(int page) {
+    public List<GetLatestMeetingListRes> latestMeetings(int page, int pageSize) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("createAt"));
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));

@@ -58,10 +58,12 @@ public class MeetingsController {
         return ResponseEntity.ok(SuccessResponse.of(MEETING_GET_SUCCESS, response));
     }
 
-    @Operation(summary = "findMeetingsList", description = "모임 리스트 조회")
+    @Operation(summary = "latestMeetingsList", description = "모임 리스트 조회")
     @GetMapping("/search/latest")
-    public ResponseEntity<SuccessResponse> findMeetingsList(@RequestParam(value = "page", defaultValue = "0") int page) {
-        List<GetLatestMeetingListRes> response = meetingService.findMeetings(page);
+    public ResponseEntity<SuccessResponse> latestMeetingsList(@RequestParam(value="page", defaultValue="0")int page,
+                                                            @RequestParam(value="size", defaultValue="10")int pageSize){
+        List<GetLatestMeetingListRes> response = meetingService.latestMeetings(page, pageSize);
+
         return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
     }
 
@@ -83,14 +85,9 @@ public class MeetingsController {
     }
 
     @Operation(summary = "ChangeMeetingInfo", description = "미팅 수정")
-    @PutMapping(value = "/{meetingId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<SuccessResponse> ChangeMeetingInfo(
-            @PathVariable Long meetingId,
-            @Validated @RequestPart ChangeMeetingInfoReq dto,
-            @RequestPart(name = "meeting_images", required = false) @Valid List<MultipartFile> meetingImages
-    ) throws IOException {
-
-        meetingService.modifyMeeting(meetingId, dto, meetingImages);
+    @PutMapping("/{meetingId}")
+    public ResponseEntity<SuccessResponse> ChangeMeetingInfo(@PathVariable Long meetingId, @Validated @RequestBody ChangeMeetingInfoReq dto){
+        meetingService.modifyMeeting(meetingId, dto);
         return ResponseEntity.ok(SuccessResponse.of(MEETING_UPDATE_SUCCESS));
     }
 

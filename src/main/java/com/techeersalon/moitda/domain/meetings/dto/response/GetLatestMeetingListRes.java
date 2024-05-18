@@ -20,7 +20,7 @@ import java.util.List;
 public class GetLatestMeetingListRes {
     private Long meetingId;
 
-    private Long userId;
+    private String username;
 
     private String title;
 
@@ -36,7 +36,7 @@ public class GetLatestMeetingListRes {
 
         return GetLatestMeetingListRes.builder()
                 .meetingId(meeting.getId())
-                .userId(meeting.getUserId())
+                .username(meeting.getUsername())
                 .title(meeting.getTitle())
                 .imageUrl(images)
                 .address(meeting.getAddress())
@@ -45,4 +45,8 @@ public class GetLatestMeetingListRes {
                 .build();
     }
 
+    public static Page<GetLatestMeetingListRes> listOf(Page<Meeting> meetingPage) {
+
+        return meetingPage.map(GetLatestMeetingListRes::from);
+    }
 }
