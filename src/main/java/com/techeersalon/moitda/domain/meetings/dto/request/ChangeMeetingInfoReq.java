@@ -39,7 +39,4 @@ public class ChangeMeetingInfoReq {
     @NotBlank(message = "appointment time cannot be blank")
     private String appointmentTime;
 
-    @NotBlank(message = "image")
-    private String image;
-
 }

@@ -3,11 +3,14 @@ package com.techeersalon.moitda.domain.meetings.dto.response;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -21,7 +24,7 @@ public class GetLatestMeetingListRes {
 
     private String title;
 
-    private String imageUrl;
+    private List<MeetingImage> imageUrl;
 
     private String address;
 
@@ -29,20 +32,17 @@ public class GetLatestMeetingListRes {
 
     private Integer maxParticipantsCount;
 
-    public static GetLatestMeetingListRes from(Meeting meeting){
+    public static GetLatestMeetingListRes from(Meeting meeting, List<MeetingImage> images){
 
         return GetLatestMeetingListRes.builder()
                 .meetingId(meeting.getId())
                 .userId(meeting.getUserId())
                 .title(meeting.getTitle())
-                .imageUrl(meeting.getImage())
+                .imageUrl(images)
                 .address(meeting.getAddress())
                 .participantsCount(meeting.getParticipantsCount())
                 .maxParticipantsCount(meeting.getMaxParticipantsCount())
                 .build();
     }
 
-    public static Page<GetLatestMeetingListRes> listOf(Page<Meeting> meetingPage) {
-        return meetingPage.map(GetLatestMeetingListRes::from);
-    }
 }

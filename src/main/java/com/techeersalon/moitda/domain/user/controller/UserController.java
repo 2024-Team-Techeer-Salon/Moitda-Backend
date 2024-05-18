@@ -10,8 +10,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static com.techeersalon.moitda.global.common.SuccessCode.*;
 
@@ -50,10 +54,14 @@ public class UserController {
     }
 
     @Operation(summary = "회원정보 수정")
-    @PutMapping("/users")
-    public ResponseEntity<SuccessResponse> updateUserProfile(@RequestBody @Valid UpdateUserReq updateUserReq) {
+    @PutMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<SuccessResponse> updateUserProfile(
+            @RequestPart @Valid UpdateUserReq updateUserReq,
+            @RequestPart(name = "profile_image_file", required = false) @Valid MultipartFile profileImageFile,
+            @RequestPart(name = "banner_image_file", required = false) @Valid MultipartFile bannerImageFile
+    ) throws IOException {
 
-        userService.updateUserProfile(updateUserReq);
+        userService.updateUserProfile(updateUserReq, profileImageFile, bannerImageFile);
 
         return ResponseEntity.ok(SuccessResponse.of(USER_PROFILE_UPDATE_SUCCESS));
     }

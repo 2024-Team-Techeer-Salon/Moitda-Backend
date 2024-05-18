@@ -97,10 +97,10 @@ public class User extends BaseEntity {
         this.refreshToken = null;
     }
 
-    public void updateProfile(UpdateUserReq updateUserReq) {
+    public void updateProfile(UpdateUserReq updateUserReq, String profileImage, String bannerImage) {
         this.username = updateUserReq.getUsername();
-        this.profileImage = updateUserReq.getProfileImage();
-        this.bannerImage = updateUserReq.getBannerImage();
+        this.profileImage = profileImage;
+        this.bannerImage = bannerImage;
         this.gender = updateUserReq.getGender();
         this.introduce = updateUserReq.getIntroduce();
         this.location = updateUserReq.getLocation();
