@@ -3,6 +3,7 @@ package com.techeersalon.moitda.domain.meetings.dto.request;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
 import com.techeersalon.moitda.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Getter
 @Builder
@@ -44,8 +48,6 @@ public class CreateMeetingReq {
     @NotBlank(message = "appointment time cannot be blank")
     private String appointmentTime;
 
-    private String image;
-
     public Meeting toEntity(User user) {
 
         return Meeting.builder()
@@ -59,7 +61,6 @@ public class CreateMeetingReq {
                 .maxParticipantsCount(maxParticipantsCount)
                 .approvalRequired(approvalRequired)
                 .appointmentTime(appointmentTime)
-                .image(image)
                 .participantsCount(1)
                 .build();
     }
