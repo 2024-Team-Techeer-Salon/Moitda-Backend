@@ -86,7 +86,7 @@ public class Meeting extends BaseEntity {
 
     // 최대 참가 인원 유효성 검사 메서드
     public void validateMaxParticipantsCount() {
-        if (maxParticipantsCount < 2) { // 모집 인원이 2명보다 적은 경우
+        if (maxParticipantsCount < 2 || maxParticipantsCount > 100) { // 모집 인원이 2명보다 적거나 100보다 클 경우
             throw new MaxParticipantsNotExceededException();
         }
     }

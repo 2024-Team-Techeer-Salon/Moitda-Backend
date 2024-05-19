@@ -46,7 +46,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -238,26 +237,30 @@ public class MeetingService {
      * 미팅 리스트 조회 메소드
      * 간략화 된 미팅 내용을 최대 32개인 한 페이지로 준다.
      * */
-    public List<GetLatestMeetingListRes> latestMeetings(int page, int pageSize) {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("createAt"));
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
-
+    public List<GetLatestMeetingListRes> latestAllMeetings(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
         Page<Meeting> meetings = meetingRepository.findAll(pageable);
+        return transformMeetingsToResponse(meetings);
+    }
+
+    public List<GetLatestMeetingListRes> latestUserRecordMeetings(Long userId, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+        Page<Meeting> meetings = meetingRepository.findByUserId(userId, pageable);
+        return transformMeetingsToResponse(meetings);
+    }
+
+    private List<GetLatestMeetingListRes> transformMeetingsToResponse(Page<Meeting> meetings) {
         if (meetings.isEmpty()) {
             throw new MeetingPageNotFoundException();
         }
-
-        List<GetLatestMeetingListRes> meetingListResList = new ArrayList<>();
-        for (Meeting meeting : meetings) {
-            Long meetingId = meeting.getId();
-            List<MeetingImage> images = meetingImageRepository.findByMeetingId(meetingId);
-            GetLatestMeetingListRes meetingListRes = GetLatestMeetingListRes.from(meeting, images);
-            meetingListResList.add(meetingListRes);
-        }
-
-        return meetingListResList;
+        return meetings.stream()
+                .map(meeting -> {
+                    List<MeetingImage> images = meetingImageRepository.findByMeetingId(meeting.getId());
+                    return GetLatestMeetingListRes.from(meeting, images);
+                })
+                .collect(Collectors.toList());
     }
+
 
     /*
      * 미팅 삭제 메소드
@@ -289,6 +292,15 @@ public class MeetingService {
         //미팅 값 업데이트
         Meeting meeting = this.getMeetingById(meetingId);
         meeting.updateInfo(dto);
+
+        // 미팅 최대 값 확인
+        meeting.validateMaxParticipantsCount();
+
+        // 미팅 참가자가 수정한 최대 참가자수를 넘을 경우 예외처리
+        if (meeting.getParticipantsCount() >= meeting.getMaxParticipantsCount()) {
+            throw new MeetingIsFullException();
+        }
+
         meetingRepository.save(meeting);
 
         //이미지가 없을 경우
