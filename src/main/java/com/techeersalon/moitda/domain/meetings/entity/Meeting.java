@@ -28,6 +28,9 @@ public class Meeting extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column(name = "username", nullable = false)
+    private String username;
+
     @Column(name = "category_id", nullable = false)
     private Long categoryId;
 
@@ -70,9 +73,9 @@ public class Meeting extends BaseEntity {
         this.categoryId = dto.getCategoryId();
         this.title = dto.getTitle();
         this.content = dto.getContent();
-        this.buildingName = dto.getBuildingName();
-        this.address = dto.getBuildingName();
-        this.addressDetail = dto.getAddressDetail();
+        this.buildingName = dto.getPlaceName();
+        this.address = dto.getRoadAddressName();
+        this.addressDetail = dto.getDetailedAddress();
         this.maxParticipantsCount = dto.getMaxParticipantsCount();
         this.appointmentTime = dto.getAppointmentTime();
     }
