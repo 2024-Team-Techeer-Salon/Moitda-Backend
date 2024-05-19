@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -45,8 +44,8 @@ public class GetLatestMeetingListRes {
                 .build();
     }
 
-    public static Page<GetLatestMeetingListRes> listOf(Page<Meeting> meetingPage) {
-
-        return meetingPage.map(GetLatestMeetingListRes::from);
-    }
+//    public static Page<GetLatestMeetingListRes> listOf(Page<Meeting> meetingPage) {
+//
+//        return meetingPage.map(GetLatestMeetingListRes::from);
+//    }
 }

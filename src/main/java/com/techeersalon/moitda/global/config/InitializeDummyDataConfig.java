@@ -35,8 +35,8 @@ public class InitializeDummyDataConfig implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        registerUser();
-        registerMeeting();
+        //registerUser();
+        //registerMeeting();
     }
 
     private void registerUser(){

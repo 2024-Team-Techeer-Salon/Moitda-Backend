@@ -97,9 +97,7 @@ public class UserService {
     }
 
     public void updateUserProfile(UpdateUserReq updateUserReq, MultipartFile profileImage, MultipartFile bannerImage) throws IOException {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername())
-                .orElseThrow(UserNotFoundException::new);
+        User user = this.getLoginUser();
 
         // 저장되어 있는 url이 같은 경우 패스.
         // 그냥 지우고 저장..?
