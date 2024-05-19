@@ -19,7 +19,7 @@ public interface MeetingRepository extends PagingAndSortingRepository<Meeting, L
 
     //최신순
     Page<Meeting> findAll(Pageable pageable);
-
+    Page<Meeting> findByUserId(Long userId, Pageable pageable);
     Optional<Meeting> findById(Long id);
 
     List<Meeting> findByIdIn(List<Long> ids);

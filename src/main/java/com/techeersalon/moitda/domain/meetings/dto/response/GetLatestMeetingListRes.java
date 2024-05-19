@@ -24,7 +24,7 @@ public class GetLatestMeetingListRes {
 
     private String title;
 
-    private List<MeetingImage> imageUrl;
+    private String imageUrl;
 
     private String roadAddressName;
 
@@ -34,19 +34,24 @@ public class GetLatestMeetingListRes {
 
     public static GetLatestMeetingListRes from(Meeting meeting, List<MeetingImage> images){
         String[] roadAddress = meeting.getAddress().split(" ");
-        String roadAddressName;
+        String roadAddressName, url;
         // 앞에 두 단어만 roadAddressName으로 설정
         try{
             roadAddressName = roadAddress[0] + " " + roadAddress[1];
         }catch(Exception e){
             roadAddressName = meeting.getAddress();
         }
+        try{
+            url = images.get(0).getImageUrl();
+        }catch(Exception e) {
+            url = null;
+        }
 
         return GetLatestMeetingListRes.builder()
                 .meetingId(meeting.getId())
                 .username(meeting.getUsername())
                 .title(meeting.getTitle())
-                .imageUrl(images)
+                .imageUrl(url)
                 .roadAddressName(roadAddressName)
                 .participantsCount(meeting.getParticipantsCount())
                 .maxParticipantsCount(meeting.getMaxParticipantsCount())

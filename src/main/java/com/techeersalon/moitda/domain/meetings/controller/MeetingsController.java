@@ -64,7 +64,7 @@ public class MeetingsController {
     @GetMapping("/search/latest")
     public ResponseEntity<SuccessResponse> latestMeetingsList(@RequestParam(value="page", defaultValue="0")int page,
                                                             @RequestParam(value="size", defaultValue="10")int pageSize){
-        List<GetLatestMeetingListRes> response = meetingService.latestMeetings(page, pageSize);
+        List<GetLatestMeetingListRes> response = meetingService.latestAllMeetings(page, pageSize);
 
         return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
     }
