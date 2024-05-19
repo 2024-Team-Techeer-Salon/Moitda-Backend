@@ -97,7 +97,9 @@ public class UserService {
     }
 
     public void updateUserProfile(UpdateUserReq updateUserReq, MultipartFile profileImage, MultipartFile bannerImage) throws IOException {
-        User user = this.getLoginUser();
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername())
+                .orElseThrow(UserNotFoundException::new);
 
         String[] urls = new String[2];
 
@@ -170,6 +172,4 @@ public class UserService {
 
         throw new UserNotFoundException();
     }
-
-
 }
