@@ -343,12 +343,11 @@ public class MeetingService {
 
     public Boolean determineMeetingOwner(Long meetingId){
         User loginUser = userService.getLoginUser();
-        if(meetingId.equals(loginUser.getId())){
+        Meeting meeting = this.getMeetingById(meetingId);
+        if(meeting.getUserId().equals(loginUser.getId())){
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
     }
-
-}
 
 }

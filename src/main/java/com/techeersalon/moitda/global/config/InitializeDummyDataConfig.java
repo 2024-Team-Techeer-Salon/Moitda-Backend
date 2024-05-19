@@ -84,6 +84,7 @@ public class InitializeDummyDataConfig implements CommandLineRunner {
         for (int i = 0; i < meetingCount; i++) {
             Meeting meeting = Meeting.builder()
                     .userId(Long.valueOf(random.nextInt(6) + 1))
+                    .username("name" + (random.nextInt(6) + 1))
                     .categoryId(Long.valueOf(random.nextInt(19)))
                     .title("title" + i)
                     .participantsCount(1)

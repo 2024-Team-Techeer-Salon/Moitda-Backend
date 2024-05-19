@@ -54,7 +54,9 @@ public class MeetingsController {
     @Operation(summary = "findMeeting", description = "모임 상세 조회")
     @GetMapping("/{meetingId}")
     public ResponseEntity<SuccessResponse> meetingDetail(@PathVariable Long meetingId) {
+        Boolean isOwner= meetingService.determineMeetingOwner(meetingId);
         GetMeetingDetailRes response = meetingService.findMeetingById(meetingId);
+        response.setIsOwner(isOwner);
         return ResponseEntity.ok(SuccessResponse.of(MEETING_GET_SUCCESS, response));
     }
 
