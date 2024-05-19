@@ -99,78 +99,44 @@ public class UserService {
     public void updateUserProfile(UpdateUserReq updateUserReq, MultipartFile profileImage, MultipartFile bannerImage) throws IOException {
         User user = this.getLoginUser();
 
-        // 저장되어 있는 url이 같은 경우 패스.
-        // 그냥 지우고 저장..?
-
         String[] urls = new String[2];
+
         // 프로필 이미지 처리
-        if (profileImage == null) {
-            urls[0] = defaultProfileUrl; //그냥 url 넘기
-        } else if (Objects.requireNonNull(profileImage.getOriginalFilename()).contains("https://moitda-bucket.s3.ap-northeast-2.amazonaws.com")) {
-            urls[0] = profileImage.getOriginalFilename();
-        } else {
-            // 이미지가 비어있지 않은 경우 이미지를 S3에 업로드
-            String profileFileName = profileImage.getOriginalFilename();
-            String extension = profileFileName.substring(profileFileName.lastIndexOf("."));
-            String s3ProfileFileName = "user/custom/profile/" + UUID.randomUUID().toString().substring(0, 10) + profileFileName;
-            InputStream is1 = profileImage.getInputStream();
-            byte[] bytes1 = IOUtils.toByteArray(is1);
-            ObjectMetadata metadata1 = new ObjectMetadata();
-            metadata1.setContentType("image/" + extension);
-            metadata1.setContentLength(bytes1.length);
-            ByteArrayInputStream byteArrayInputStream1 = new ByteArrayInputStream(bytes1);
-
-            try {
-                PutObjectRequest putObjectRequest1 =
-                        new PutObjectRequest(bucketName, s3ProfileFileName, byteArrayInputStream1, metadata1)
-                                .withCannedAcl(CannedAccessControlList.PublicRead);
-                amazonS3.putObject(putObjectRequest1);
-
-                // 첫 번째 이미지의 URL을 저장
-                urls[0] = amazonS3.getUrl(bucketName, s3ProfileFileName).toString();
-            } catch (Exception e) {
-                throw new S3Exception();
-            } finally {
-                byteArrayInputStream1.close();
-                is1.close();
-            }
-        }
+        urls[0] = processImage(profileImage, user.getProfileImage(), "user/custom/profile/", defaultProfileUrl);
 
         // 배너 이미지 처리
-        if (bannerImage == null) {
-            urls[1] = defaultBannerUrl;
-        } else if (Objects.requireNonNull(bannerImage.getOriginalFilename()).contains("https://moitda-bucket.s3.ap-northeast-2.amazonaws.com")) {
-            urls[1] = bannerImage.getOriginalFilename();
-        } else {
-            // 이미지가 비어있지 않은 경우 이미지를 S3에 업로드
-            String bannerFileName = bannerImage.getOriginalFilename();
-            String extension2 = bannerFileName.substring(bannerFileName.lastIndexOf("."));
-            String s3BannerFileName = "user/custom/banner/" + UUID.randomUUID().toString().substring(0, 10) + bannerFileName;
-            InputStream is2 = bannerImage.getInputStream();
-            byte[] bytes2 = IOUtils.toByteArray(is2);
-            ObjectMetadata metadata2 = new ObjectMetadata();
-            metadata2.setContentType("image/" + extension2);
-            metadata2.setContentLength(bytes2.length);
-            ByteArrayInputStream byteArrayInputStream2 = new ByteArrayInputStream(bytes2);
+        urls[1] = processImage(bannerImage, user.getBannerImage(), "user/custom/banner/", defaultBannerUrl);
 
-            try {
-                PutObjectRequest putObjectRequest2 =
-                        new PutObjectRequest(bucketName, s3BannerFileName, byteArrayInputStream2, metadata2)
-                                .withCannedAcl(CannedAccessControlList.PublicRead);
-                amazonS3.putObject(putObjectRequest2);
+        user.updateProfile(updateUserReq, urls[0], urls[1]);
+        userRepository.save(user);
+    }
 
-                // 두 번째 이미지의 URL을 저장
-                urls[1] = amazonS3.getUrl(bucketName, s3BannerFileName).toString();
+    private String processImage(MultipartFile image, String currentImageUrl, String s3Folder, String defaultUrl) throws IOException {
+        if (image == null) {
+            return defaultUrl;
+        }
+
+        String imageFileName = image.getOriginalFilename();
+        if (!currentImageUrl.equals(imageFileName)) {
+            String extension = imageFileName.substring(imageFileName.lastIndexOf(".") + 1);
+            String s3FileName = s3Folder + UUID.randomUUID().toString().substring(0, 10) + imageFileName;
+
+            byte[] bytes = IOUtils.toByteArray(image.getInputStream());
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType("image/" + extension);
+            metadata.setContentLength(bytes.length);
+
+            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
+                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata)
+                        .withCannedAcl(CannedAccessControlList.PublicRead);
+                amazonS3.putObject(putObjectRequest);
+                return amazonS3.getUrl(bucketName, s3FileName).toString();
             } catch (Exception e) {
                 throw new S3Exception();
-            } finally {
-                byteArrayInputStream2.close();
-                is2.close();
             }
+        } else {
+            return currentImageUrl;
         }
-        user.updateProfile(updateUserReq, urls[0], urls[1]);
-
-        userRepository.save(user);
     }
 
     public User getLoginUser() {
