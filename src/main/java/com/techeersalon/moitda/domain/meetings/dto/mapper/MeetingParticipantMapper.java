@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class MeetingParticipantMapper {
     private Long meetingId;
     private Long userId;
-    private String userName;
+    private String username;
 
     public static MeetingParticipant toEntity(Meeting meeting) {
         return MeetingParticipant.builder()

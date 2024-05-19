@@ -17,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GetLatestMeetingListRes {
+
     private Long meetingId;
 
     private String username;

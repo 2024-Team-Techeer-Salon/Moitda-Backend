@@ -24,13 +24,13 @@ public class ChangeMeetingInfoReq {
     @NotBlank(message = "content cannot be blank")
     private String content;
 
-    @NotBlank
+    @NotBlank(message = "road_address_name cannot be blank")
     private String roadAddressName;
 
-    @NotBlank
+    @NotBlank(message = "detailed_address cannot be blank")
     private String detailedAddress;
 
-    @NotBlank
+    @NotBlank(message = "place_name cannot be blank")
     private String placeName;
 
     @NotNull(message = "max_participants_count cannot be blank")

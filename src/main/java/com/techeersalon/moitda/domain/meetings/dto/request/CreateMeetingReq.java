@@ -26,13 +26,13 @@ public class CreateMeetingReq {
 
     private String content;
 
-    @NotBlank
+    @NotBlank(message = "place_name cannot be blank")
     private String placeName;
 
-    @NotBlank
+    @NotBlank(message = "road_address_name cannot be blank")
     private String roadAddressName;
 
-    @NotBlank
+    @NotBlank(message = "detailed_address cannot be blank")
     private String detailedAddress;
 
     @NotNull(message = "max_participants_count cannot be blank")
