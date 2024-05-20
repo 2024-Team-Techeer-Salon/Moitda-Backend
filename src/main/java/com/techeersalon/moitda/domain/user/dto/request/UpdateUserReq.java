@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -15,8 +16,6 @@ import lombok.NoArgsConstructor;
 public class UpdateUserReq {
 
     private String username;
-    private String profileImage;
-    private String bannerImage;
     private Gender gender;
     private String introduce;
     private String location;

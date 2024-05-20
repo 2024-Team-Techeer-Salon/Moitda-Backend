@@ -26,14 +26,14 @@ public class CreateMeetingReq {
 
     private String content;
 
-    @NotBlank(message = "builing_name cannot be blank")
-    private String buildingName;
+    @NotBlank(message = "place_name cannot be blank")
+    private String placeName;
 
-    @NotBlank(message = "address cannot be blank")
-    private String address;
+    @NotBlank(message = "road_address_name cannot be blank")
+    private String roadAddressName;
 
-    @NotBlank(message = "address_detail cannot be blank")
-    private String addressDetail;
+    @NotBlank(message = "detailed_address cannot be blank")
+    private String detailedAddress;
 
     @NotNull(message = "max_participants_count cannot be blank")
     private Integer maxParticipantsCount;
@@ -44,45 +44,22 @@ public class CreateMeetingReq {
     @NotBlank(message = "appointment time cannot be blank")
     private String appointmentTime;
 
-    private String image;
-
     public Meeting toEntity(User user) {
-
         return Meeting.builder()
                 .userId(user.getId())
+                .username(user.getUsername())
                 .categoryId(categoryId)
                 .title(title)
                 .content(content)
-                .address(address)
-                .buildingName(buildingName)
-                .addressDetail(addressDetail)
+                .address(roadAddressName)
+                .buildingName(placeName)
+                .addressDetail(detailedAddress)
                 .maxParticipantsCount(maxParticipantsCount)
                 .approvalRequired(approvalRequired)
                 .appointmentTime(appointmentTime)
-                .image(image)
                 .participantsCount(1)
                 .build();
     }
 
     // 초기 데이터 생성용 생성자
-    public CreateMeetingReq(Long categoryId, String title,
-                            String buildingName, String address, String addressDetail,
-                            Integer maxParticipantsCount, Boolean approvalRequired, String appointmentTime){
-        this.categoryId = categoryId;
-
-        this.title = title;
-
-        this.buildingName = buildingName;
-
-        this.address = address;
-
-        this.addressDetail = addressDetail;
-
-        this.maxParticipantsCount = maxParticipantsCount;
-
-        this.approvalRequired = approvalRequired;
-
-        this.appointmentTime = appointmentTime;
-
-    }
 }

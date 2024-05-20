@@ -28,6 +28,9 @@ public class MeetingParticipant extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column(name = "username")
+    private String username;
+
     @Column(name = "is_waiting", nullable = false)
     private Boolean isWaiting;
 

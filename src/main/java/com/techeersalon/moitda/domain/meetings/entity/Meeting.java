@@ -28,6 +28,9 @@ public class Meeting extends BaseEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column(name = "username", nullable = false)
+    private String username;
+
     @Column(name = "category_id", nullable = false)
     private Long categoryId;
 
@@ -53,9 +56,6 @@ public class Meeting extends BaseEntity {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "image")
-    private String image;
-
     @Column(name = "approval_required", nullable = false)
     private Boolean approvalRequired;
 
@@ -73,12 +73,11 @@ public class Meeting extends BaseEntity {
         this.categoryId = dto.getCategoryId();
         this.title = dto.getTitle();
         this.content = dto.getContent();
-        this.buildingName = dto.getBuildingName();
-        this.address = dto.getBuildingName();
-        this.addressDetail = dto.getAddressDetail();
+        this.buildingName = dto.getPlaceName();
+        this.address = dto.getRoadAddressName();
+        this.addressDetail = dto.getDetailedAddress();
         this.maxParticipantsCount = dto.getMaxParticipantsCount();
         this.appointmentTime = dto.getAppointmentTime();
-        this.image = dto.getImage();
     }
 
     public void updateEndTime(String endTime) {
@@ -87,7 +86,7 @@ public class Meeting extends BaseEntity {
 
     // 최대 참가 인원 유효성 검사 메서드
     public void validateMaxParticipantsCount() {
-        if (maxParticipantsCount < 2) { // 모집 인원이 2명보다 적은 경우
+        if (maxParticipantsCount < 2 || maxParticipantsCount > 100) { // 모집 인원이 2명보다 적거나 100보다 클 경우
             throw new MaxParticipantsNotExceededException();
         }
     }

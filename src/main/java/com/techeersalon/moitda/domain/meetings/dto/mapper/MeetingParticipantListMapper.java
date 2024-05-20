@@ -12,12 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MeetingParticipantListMapper {
     private Long meetingParticipantId;
-
+    private String username;
 
     public static MeetingParticipantListMapper from(MeetingParticipant meetingParticipant){
 
         return MeetingParticipantListMapper.builder()
                 .meetingParticipantId(meetingParticipant.getId())
+                .username(meetingParticipant.getUsername())
                 .build();
     }
 }
