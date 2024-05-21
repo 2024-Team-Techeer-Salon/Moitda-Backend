@@ -21,6 +21,7 @@ public enum ErrorCode {
     MEETING_MAX_PARTICIPANTS_NOT_EXCEEDED(HttpStatus.BAD_REQUEST, "M002", "최대 참가 인원 수가 너무 적습니다."),
     MEETING_PAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "M003", "미팅 페이지를 찾을 수 없습니다."),
     MEETING_IS_FULL(HttpStatus.BAD_REQUEST, "M004", "참여자가 가득 찼습니다."),
+    MEETING_NOT_ENDED(HttpStatus.BAD_REQUEST, "M005", "미팅이 아직 종료되지 않았습니다."),
 
     // 참여자
     PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "참여자을 찾을 수 없습니다."),
