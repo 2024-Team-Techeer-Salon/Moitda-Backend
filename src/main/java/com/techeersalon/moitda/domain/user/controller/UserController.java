@@ -29,6 +29,7 @@ import static com.techeersalon.moitda.global.common.SuccessCode.*;
 public class UserController {
     private final UserService userService;
     private final MeetingService meetingService;
+
     @Operation(summary = "추가정보 입력")
     @PostMapping("/users")
     public ResponseEntity<SuccessResponse> signupUser(@RequestBody @Valid SignUpReq signUpReq) {
@@ -71,8 +72,8 @@ public class UserController {
     @Operation(summary = "회원모임 내역 조회")
     @GetMapping("/users/{user_id}/records")
     public ResponseEntity<SuccessResponse> getUserMeetingRecords(@PathVariable("user_id") Long userId,
-                                                                 @RequestParam(value="page", defaultValue="0")int page,
-                                                                 @RequestParam(value="size", defaultValue="10")int pageSize) {
+                                                                 @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                 @RequestParam(value = "size", defaultValue = "10") int pageSize) {
 
         List<GetLatestMeetingListRes> meetingRecords = meetingService.latestUserRecordMeetings(userId, page, pageSize);
 

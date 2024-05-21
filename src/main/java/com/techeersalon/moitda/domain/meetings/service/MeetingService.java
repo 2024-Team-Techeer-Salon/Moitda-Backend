@@ -8,9 +8,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantListMapper;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
-import com.techeersalon.moitda.domain.meetings.dto.request.ApprovalParticipantReq;
-import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
-import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
+import com.techeersalon.moitda.domain.meetings.dto.request.*;
 import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingRes;
 import com.techeersalon.moitda.domain.meetings.dto.response.CreateParticipantRes;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
@@ -24,10 +22,14 @@ import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingPageNotF
 import com.techeersalon.moitda.domain.meetings.exception.participant.AlreadyParticipatingOrAppliedException;
 import com.techeersalon.moitda.domain.meetings.exception.participant.MeetingParticipantNotFoundException;
 import com.techeersalon.moitda.domain.meetings.exception.participant.NotAuthorizedToAppproveException;
+import com.techeersalon.moitda.domain.meetings.exception.review.InvalidRatingScoreException;
+import com.techeersalon.moitda.domain.meetings.exception.review.MeetingNotEndedException;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingImageRepository;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingParticipantRepository;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
 import com.techeersalon.moitda.domain.user.entity.User;
+import com.techeersalon.moitda.domain.user.exception.UserNotFoundException;
+import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import com.techeersalon.moitda.global.s3.exception.S3Exception;
 import lombok.AccessLevel;
@@ -61,6 +63,7 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final MeetingParticipantRepository meetingParticipantRepository;
     private final UserService userService;
+    private final UserRepository userRepository;
     private final MeetingImageRepository meetingImageRepository;
     private final AmazonS3 amazonS3;
 
@@ -314,7 +317,7 @@ public class MeetingService {
             // 기존 이미지 삭제
             meetingImageRepository.deleteByMeetingId(meetingId);
             // 기본 이미지 적용
-            MeetingImage newMeetingImage= new MeetingImage(defaultProfileUrl,meetingId);
+            MeetingImage newMeetingImage = new MeetingImage(defaultProfileUrl, meetingId);
             meetingImageRepository.save(newMeetingImage);
             return;
         }
@@ -354,18 +357,62 @@ public class MeetingService {
             }
         }
     }
+
     public void endMeeting(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
         meeting.updateEndTime(LocalDateTime.now().toString());
     }
 
-    public Boolean determineMeetingOwner(Long meetingId){
+    public Boolean determineMeetingOwner(Long meetingId) {
         User loginUser = userService.getLoginUser();
         Meeting meeting = this.getMeetingById(meetingId);
-        if(meeting.getUserId().equals(loginUser.getId())){
+        if (meeting.getUserId().equals(loginUser.getId())) {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;
     }
 
+    public void createReview(CreateReviewReq createReviewReq) {
+        Long meetingId = createReviewReq.getMeetingId();
+        Optional<Meeting> meetingOptional = meetingRepository.findById(meetingId);
+        Meeting meeting = meetingOptional.orElseThrow(MeetingNotFoundException::new);
+
+        if (meeting.getEndTime() == null) {
+            throw new MeetingNotEndedException();
+        }
+        List<CreateReviewReq.Review> reviews = createReviewReq.getReviews();
+
+        for (CreateReviewReq.Review review : reviews) {
+            Long userId = review.getUserId();
+            int rating = review.getRating();
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(UserNotFoundException::new);
+
+            int adjustedMannerStat = adjustUserMannerStat(user.getMannerStat(), rating);
+            user.updateMannerStat(adjustedMannerStat);
+            userRepository.save(user);
+        }
+    }
+
+    private int adjustUserMannerStat(int existingMannerStat, int ratingScore) {
+
+        if (ratingScore < 1 || ratingScore > 10) {
+            throw new InvalidRatingScoreException();
+        }
+
+        int adjustment = switch (ratingScore) {
+            case 1 -> -4;
+            case 2 -> -3;
+            case 3 -> -2;
+            case 4 -> -1;
+            case 7 -> 1;
+            case 8 -> 2;
+            case 9 -> 3;
+            case 10 -> 4;
+            default -> 0;
+        };
+
+        return Math.max(Math.min(existingMannerStat + adjustment, 100), 0);
+    }
 }
