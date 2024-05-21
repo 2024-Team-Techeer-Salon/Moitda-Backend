@@ -2,6 +2,7 @@ package com.techeersalon.moitda.domain.user.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
@@ -114,12 +115,24 @@ public class UserService {
     }
 
     private String processImage(MultipartFile image, String currentImageUrl, String s3Folder, String defaultUrl) throws IOException {
+        // 안들어왔을 경우
         if (image == null) {
             return defaultUrl;
         }
-
+// 기존 상태에선 생각한 이미지 삭제 로직이 확인되지 않음. 기존에 이미지 선택했다가 디폴트로 바꾸는 로직도 x.
         String imageFileName = image.getOriginalFilename();
+        // 기존의 url과 다른 경우 혹은 같은 경우
         if (!currentImageUrl.equals(imageFileName)) {
+            // 기존 파일 s3에서 삭제
+
+            if (currentImageUrl.equals(defaultUrl)) {
+                // db에 저장된 url이 디폴트 값인 경우 (디폴트 url에는 전체 경로가 들어있음)
+                amazonS3.deleteObject(new DeleteObjectRequest(bucketName, currentImageUrl));
+
+            } else {
+                amazonS3.deleteObject(new DeleteObjectRequest(bucketName, s3Folder + currentImageUrl));
+            }
+
             String extension = imageFileName.substring(imageFileName.lastIndexOf(".") + 1);
             String s3FileName = s3Folder + UUID.randomUUID().toString().substring(0, 10) + imageFileName;
 
