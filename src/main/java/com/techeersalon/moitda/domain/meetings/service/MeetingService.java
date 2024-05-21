@@ -252,6 +252,12 @@ public class MeetingService {
         return transformMeetingsToResponse(meetings);
     }
 
+    public List<GetLatestMeetingListRes> latestCategoryMeetings(Long categoryId, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+        Page<Meeting> meetings = meetingRepository.findByCategoryId(categoryId, pageable);
+        return transformMeetingsToResponse(meetings);
+    }
+
     private List<GetLatestMeetingListRes> transformMeetingsToResponse(Page<Meeting> meetings) {
         if (meetings.isEmpty()) {
             throw new MeetingPageNotFoundException();

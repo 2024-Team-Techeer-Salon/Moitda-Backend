@@ -32,7 +32,7 @@ public class CreateMeetingReq {
     @NotBlank(message = "road_address_name cannot be blank")
     private String roadAddressName;
 
-    @NotBlank(message = "detailed_address cannot be blank")
+    //@NotBlank(message = "detailed_address cannot be blank")
     private String detailedAddress;
 
     @NotNull(message = "max_participants_count cannot be blank")
