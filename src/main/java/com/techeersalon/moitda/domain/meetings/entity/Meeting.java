@@ -43,14 +43,14 @@ public class Meeting extends BaseEntity {
     @Column(name = "max_participants_count", nullable = false)
     private Integer maxParticipantsCount;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @Column(name = "road_address_name", nullable = false)
+    private String roadAddressName;
 
-    @Column(name = "building_name")
-    private String buildingName;
+    @Column(name = "place_name")
+    private String placeName;
 
-    @Column(name = "address_detail")
-    private String addressDetail;
+    @Column(name = "detailed_address")
+    private String detailedAddress;
 
     @Lob
     @Column(name = "content")
@@ -73,9 +73,9 @@ public class Meeting extends BaseEntity {
         this.categoryId = dto.getCategoryId();
         this.title = dto.getTitle();
         this.content = dto.getContent();
-        this.buildingName = dto.getPlaceName();
-        this.address = dto.getRoadAddressName();
-        this.addressDetail = dto.getDetailedAddress();
+        this.placeName = dto.getPlaceName();
+        this.roadAddressName = dto.getRoadAddressName();
+        this.detailedAddress = dto.getDetailedAddress();
         this.maxParticipantsCount = dto.getMaxParticipantsCount();
         this.appointmentTime = dto.getAppointmentTime();
     }
