@@ -11,6 +11,7 @@ import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -54,7 +55,12 @@ public class ChatMapper {
     public static ChatRoomRes toChatRoomDto(ChatRoom chatRoom) {
         return ChatRoomRes.builder()
                 .id(chatRoom.getId())
-                .members(chatRoom.getMembers())
+                .members(chatRoom.getMembers().stream()
+                        .map(user -> ChatRoomRes.MemberDetail.builder()
+                                .id(user.getId())
+                                .name(user.getUsername())
+                                .build())
+                        .collect(Collectors.toList()))
                         //.stream().map(this::toMemberDetail).collect(Collectors.toList()))
                 .build();
     }
@@ -70,6 +76,11 @@ public class ChatMapper {
         return messages.stream()
                 .map(chatMapper::toChatMessageDto)
                 .collect(Collectors.toList());
+    }
+
+    public static PageToChatMessageDto(Page<ChatMessage> messages){
+
+        return
     }
 
 

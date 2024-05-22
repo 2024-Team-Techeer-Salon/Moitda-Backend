@@ -15,15 +15,15 @@ import java.util.List;
 @Entity
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE chat_room SET is_deleted = true WHERE chat_room_id = ?")
+@SQLDelete(sql = "UPDATE chatroom SET is_deleted = true WHERE chatroom_id = ?")
 @Where(clause = "is_deleted = false")
 public class ChatRoom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "chat_room_id")
+    @Column(name = "chatroom_id")
     private Long id;
 
-    @Column(name = "meetingId", nullable = false)
+    @Column(name = "meeting_Id", nullable = false)
     private Long meetingId;
 
     @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)

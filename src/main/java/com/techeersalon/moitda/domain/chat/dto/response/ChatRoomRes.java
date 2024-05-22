@@ -2,7 +2,6 @@ package com.techeersalon.moitda.domain.chat.dto.response;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.techeersalon.moitda.domain.user.entity.User;
 import lombok.*;
 
 import java.util.List;
@@ -15,5 +14,14 @@ import java.util.List;
 public class ChatRoomRes {
     private Long id;
     //private Long meetingId;
-    private List<User> members;
+    private List<MemberDetail> members; // 채팅방 멤버 정보
+
+    @Getter
+    @Setter
+    @Builder
+    public static class MemberDetail {
+        private Long id;
+        private String name;
+    }
+
 }

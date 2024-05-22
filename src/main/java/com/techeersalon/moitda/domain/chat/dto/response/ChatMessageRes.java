@@ -10,9 +10,11 @@ import lombok.*;
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ChatMessageRes {
+    private Long Id;
     private Long userid;
     private String sender;
     private String profileImage;
     private String content;
     private String sendDate;
+    private boolean isRead;  // 읽음 여부
 }

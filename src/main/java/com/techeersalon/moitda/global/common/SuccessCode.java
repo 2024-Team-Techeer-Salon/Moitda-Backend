@@ -23,8 +23,15 @@ public enum SuccessCode {
 
     //participant
     PARTICIPANT_CREATE_SUCCESS(HttpStatus.CREATED,"P001", "참가자 생성 성공"),
-    PARTICIPANT_APPROVAL_OR_REJECTION_SUCCESS(HttpStatus.NO_CONTENT,"P002", "참가자 승인 또는 거절 성공");
+    PARTICIPANT_APPROVAL_OR_REJECTION_SUCCESS(HttpStatus.NO_CONTENT,"P002", "참가자 승인 또는 거절 성공"),
 
+    //message
+    MESSAGE_CREATE_SUCCESS(HttpStatus.CREATED,"CM001", "메시지 생성 성공"),
+    MESSAGE_GET_SUCCESS(HttpStatus.OK,"CM002", "메시지 조회 성공"),
+    MESSAGE_DELETE_SUCCESS(HttpStatus.NO_CONTENT,"CM003", "메시지 삭제 성공"),
+    //room
+    USER_ROOM_GET_SUCCESS(HttpStatus.OK,"CR001", "채팅방 조회 성공"),
+    USER_APPROVAL_SUCCESS(HttpStatus.OK,"CR002", "유저 채팅방 가입 성공");
 
     private HttpStatus status;
     private String code;

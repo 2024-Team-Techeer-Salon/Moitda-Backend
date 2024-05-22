@@ -116,11 +116,11 @@ public class JwtService {
         String headerValue = accessor.getFirstNativeHeader("Authorization");
         if (headerValue != null && headerValue.startsWith("Bearer ")) {
             String token = headerValue.substring(7); // "Bearer " 부분을 제외하고 JWT 토큰만 추출
-            log.info("Extracted JWT token: {}", token);
+            log.info("검출된 AT : ", token);
             return token;
         }
 
-        log.info("안됨");
+        log.info("token 추출x");
 
         return null;
     }

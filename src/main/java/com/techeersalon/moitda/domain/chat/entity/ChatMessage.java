@@ -19,17 +19,22 @@ public class ChatMessage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // pk
 
-    @Column(name = "userId")
+    @Column(name = "user_Id")
     private Long userid;
 
 
     @Column(columnDefinition = "TEXT")
     private String message; // comment
 
-    @Column(name = "meetingId")
+    @Column(name = "meeting_Id")
     private Long meetingId;
 
-    @Column(name = "sendDate")
+    @Column(name = "send_Date")
     private String sendDate;
 
+    public enum MessageType {
+        ENTER, TALK
+    }
+
+    private boolean isRead;
 }

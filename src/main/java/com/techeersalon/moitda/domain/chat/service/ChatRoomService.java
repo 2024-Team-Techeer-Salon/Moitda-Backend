@@ -39,7 +39,9 @@ public class ChatRoomService {
 
     /*채팅방에 유저 추가*/
     @Transactional
-    public void addUserToRoom(Long roomId, Long userId) {
+    public ChatRoomRes addUserToRoom(Long roomId, Long userId) {
+
+        return
     }
 
     @Transactional
