@@ -20,6 +20,7 @@ public enum SuccessCode {
     MEETING_DELETE_SUCCESS(HttpStatus.NO_CONTENT, "M003", "모임 삭제 성공"),
     MEETING_PAGING_GET_SUCCESS(HttpStatus.OK, "M004", "모임 페이징 조회 성공"),
     MEETING_UPDATE_SUCCESS(HttpStatus.NO_CONTENT, "M005", "모임 수정 성공"),
+    MEETING_END_SUCCESS(HttpStatus.NO_CONTENT, "M006", "모임 종료 성공"),
 
     //participant
     PARTICIPANT_CREATE_SUCCESS(HttpStatus.CREATED, "P001", "참가자 생성 성공"),
