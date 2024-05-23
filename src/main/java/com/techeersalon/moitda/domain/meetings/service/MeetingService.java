@@ -9,10 +9,7 @@ import com.amazonaws.util.IOUtils;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantListMapper;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
 import com.techeersalon.moitda.domain.meetings.dto.request.*;
-import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.CreateParticipantRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailRes;
+import com.techeersalon.moitda.domain.meetings.dto.response.*;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
@@ -139,17 +136,25 @@ public class MeetingService {
      * */
     public GetMeetingDetailRes findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
+        User user = userRepository.findById(meeting.getUserId())
+                .orElseThrow(UserNotFoundException::new);
 
         List<MeetingImage> imageList = meetingImageRepository.findByMeetingId(meetingId);
 
-        Optional<MeetingParticipant> participantOptional = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
-        participantOptional.orElseThrow(MeetingParticipantNotFoundException::new);
+        List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
+        if (participants.isEmpty()) {
+            throw new MeetingNotFoundException();
+        }
 
-        List<MeetingParticipantListMapper> participantDtoList = participantOptional
+        List<MeetingParticipantListMapper> participantDtoList = participants
                 .stream()
-                .map(MeetingParticipantListMapper::from)
+                .map(participant -> {
+                    User participantUser = userRepository.findById(participant.getUserId())
+                            .orElseThrow(UserNotFoundException::new);
+                    return MeetingParticipantListMapper.from(participant, participantUser);
+                        })
                 .collect(Collectors.toList());
-        return GetMeetingDetailRes.of(meeting, participantDtoList, imageList);
+        return GetMeetingDetailRes.of(meeting, user, participantDtoList, imageList);
     }
 
 //    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
@@ -414,5 +419,20 @@ public class MeetingService {
         };
 
         return Math.max(Math.min(existingMannerStat + adjustment, 100), 0);
+    }
+
+    public List<GetParticipantListRes> getParticipantsOfMeeting(Long meetingId) {
+        List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.TRUE);
+        if (participants.isEmpty()) {
+            throw new MeetingParticipantNotFoundException();
+        }
+
+        return participants.stream()
+                .map(participant -> {
+                    User user = userRepository.findById(participant.getUserId())
+                            .orElseThrow(UserNotFoundException::new);
+                    return GetParticipantListRes.from(user);
+                })
+                .collect(Collectors.toList());
     }
 }

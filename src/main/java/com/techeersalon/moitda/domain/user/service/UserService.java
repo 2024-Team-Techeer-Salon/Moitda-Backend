@@ -5,16 +5,12 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
-import com.techeersalon.moitda.domain.meetings.entity.Meeting;
-import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
-import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingImageRepository;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingParticipantRepository;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
 import com.techeersalon.moitda.domain.user.dto.mapper.UserMapper;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
-import com.techeersalon.moitda.domain.user.dto.response.RecordsRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.entity.Role;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
@@ -181,29 +177,5 @@ public class UserService {
 
         return loginUser;
     }
-
-    public RecordsRes getUserMeetingRecords(Long userId) {
-
-        if (userRepository.existsById(userId)) {
-            List<MeetingParticipant> meetingParticipantList =
-                    meetingParticipantRepository.findByUserIdAndIsWaiting(userId, false);
-            List<Long> meetingIds = meetingParticipantList
-                    .stream()
-                    .map(MeetingParticipant::getMeetingId)
-                    .collect(Collectors.toList());
-            List<Meeting> userMeetings = meetingRepository.findByIdIn(meetingIds);
-            // 각 회의에 대한 이미지 가져오기
-            List<List<MeetingImage>> meetingImages = new ArrayList<>();
-            for (Meeting meeting : userMeetings) {
-                List<MeetingImage> meetingImage = meetingImageRepository.findByMeetingId(meeting.getId());
-                meetingImages.add(meetingImage);
-            }
-
-            return userMapper.toUserMeetingRecord(userMeetings, meetingImages);
-        }
-
-        throw new UserNotFoundException();
-    }
-
 
 }
