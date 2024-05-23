@@ -53,7 +53,7 @@ public class Meeting extends BaseEntity {
     private String detailedAddress;
 
     @Lob
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "approval_required", nullable = false)
@@ -69,7 +69,7 @@ public class Meeting extends BaseEntity {
         this.participantsCount++;
     }
 
-    public void updateInfo(ChangeMeetingInfoReq dto){
+    public void updateInfo(ChangeMeetingInfoReq dto) {
         this.categoryId = dto.getCategoryId();
         this.title = dto.getTitle();
         this.content = dto.getContent();
