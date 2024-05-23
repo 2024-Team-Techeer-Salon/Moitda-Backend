@@ -35,8 +35,8 @@ public class InitializeDummyDataConfig implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        //registerUser();
-        //registerMeeting();
+        registerUser();
+        registerMeeting();
     }
 
     private void registerUser(){
@@ -82,9 +82,10 @@ public class InitializeDummyDataConfig implements CommandLineRunner {
         Random random = new Random();
 
         for (int i = 0; i < meetingCount; i++) {
+            User user = userRepository.findById((long) (random.nextInt(6) + 1)).get();
             Meeting meeting = Meeting.builder()
-                    .userId(Long.valueOf(random.nextInt(6) + 1))
-                    .username("name" + (random.nextInt(6) + 1))
+                    .userId(user.getId())
+                    .username(user.getUsername())
                     .categoryId(Long.valueOf(random.nextInt(19)))
                     .title("title" + i)
                     .participantsCount(1)
