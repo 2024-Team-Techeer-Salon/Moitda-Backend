@@ -139,6 +139,8 @@ public class MeetingService {
      * */
     public GetMeetingDetailRes findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
+        User user = userRepository.findById(meeting.getUserId())
+                .orElseThrow(UserNotFoundException::new);
 
         List<MeetingImage> imageList = meetingImageRepository.findByMeetingId(meetingId);
 
@@ -147,9 +149,13 @@ public class MeetingService {
 
         List<MeetingParticipantListMapper> participantDtoList = participantOptional
                 .stream()
-                .map(MeetingParticipantListMapper::from)
+                .map(participant -> {
+                    User participantUser = userRepository.findById(participant.getUserId())
+                            .orElseThrow(UserNotFoundException::new);
+                    return MeetingParticipantListMapper.from(participant, participantUser);
+                        })
                 .collect(Collectors.toList());
-        return GetMeetingDetailRes.of(meeting, participantDtoList, imageList);
+        return GetMeetingDetailRes.of(meeting, user, participantDtoList, imageList);
     }
 
 //    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
