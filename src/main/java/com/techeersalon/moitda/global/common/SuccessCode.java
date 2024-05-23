@@ -25,6 +25,8 @@ public enum SuccessCode {
     //participant
     PARTICIPANT_CREATE_SUCCESS(HttpStatus.CREATED, "P001", "참가자 생성 성공"),
     PARTICIPANT_APPROVAL_OR_REJECTION_SUCCESS(HttpStatus.NO_CONTENT, "P002", "참가자 승인 또는 거절 성공"),
+    PARTICIPANT_LIST_GET_SUCCESS(HttpStatus.OK, "P003", "모임 신청자 목록 조회"),
+
 
     //review
     REVIEW_CREATE_SUCCESS(HttpStatus.CREATED, "R001", "후기 생성 성공"),

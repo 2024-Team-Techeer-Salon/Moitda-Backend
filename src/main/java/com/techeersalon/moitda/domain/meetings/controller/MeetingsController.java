@@ -6,10 +6,7 @@ import com.techeersalon.moitda.domain.meetings.dto.request.ApprovalParticipantRe
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateReviewReq;
-import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.CreateParticipantRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailRes;
+import com.techeersalon.moitda.domain.meetings.dto.response.*;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
 import com.techeersalon.moitda.global.common.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -71,10 +68,10 @@ public class MeetingsController {
 
     @Operation(summary = "latestCategoryMeetingsPage", description = "카테고리별 최신 모임 리스트 조회")
     @GetMapping("/search/latest/{categoryId}")
-    public ResponseEntity<SuccessResponse> latestCategoryMeetingsPage( @PathVariable Long categoryId,
-                                                                       @RequestParam(value="page", defaultValue="0")int page,
-                                                                       @RequestParam(value="size", defaultValue="10")int pageSize){
-        List<GetLatestMeetingListRes> response = meetingService.latestCategoryMeetings(categoryId,page, pageSize);
+    public ResponseEntity<SuccessResponse> latestCategoryMeetingsPage(@PathVariable Long categoryId,
+                                                                      @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                      @RequestParam(value = "size", defaultValue = "10") int pageSize) {
+        List<GetLatestMeetingListRes> response = meetingService.latestCategoryMeetings(categoryId, page, pageSize);
 
         return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
     }
@@ -125,5 +122,12 @@ public class MeetingsController {
 
         meetingService.createReview(createReviewReq);
         return ResponseEntity.ok(SuccessResponse.of(REVIEW_CREATE_SUCCESS));
+    }
+
+    @Operation(summary = "getMeetingParticipants", description = "모임 신청자 리스트 조회")
+    @GetMapping("/{meetingId}/participants")
+    public ResponseEntity<SuccessResponse> getMeetingParticipants(@PathVariable Long meetingId) {
+        List<GetParticipantListRes> response = meetingService.getParticipantsOfMeeting(meetingId);
+        return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_LIST_GET_SUCCESS, response));
     }
 }
