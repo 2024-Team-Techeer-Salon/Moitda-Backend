@@ -29,7 +29,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,9 +51,7 @@ public class UserService {
 
     public void signup(SignUpReq signUpReq) {
 
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername())
-                .orElseThrow(UserNotFoundException::new);
+        User user = this.getLoginUser();
         if (user.getRole().equals(Role.GUEST)) {
 
             user.signupUser(signUpReq);
@@ -68,14 +65,17 @@ public class UserService {
 
     public void logout() {
 
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername())
-                .orElseThrow(UserNotFoundException::new);
+        User user = this.getLoginUser();
         user.onLogout();
 
         userRepository.save(user);
     }
 
+    public UserProfileRes findCurrentUserProfile() {
+
+        User user = this.getLoginUser();
+        return userMapper.toUserProfile(user);
+    }
 
     public UserProfileRes findUserProfile(Long userId) {
 
@@ -171,5 +171,4 @@ public class UserService {
 
         return loginUser;
     }
-
 }
