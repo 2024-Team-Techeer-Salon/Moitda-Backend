@@ -43,17 +43,17 @@ public class Meeting extends BaseEntity {
     @Column(name = "max_participants_count", nullable = false)
     private Integer maxParticipantsCount;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @Column(name = "road_address_name", nullable = false)
+    private String roadAddressName;
 
-    @Column(name = "building_name")
-    private String buildingName;
+    @Column(name = "place_name")
+    private String placeName;
 
-    @Column(name = "address_detail")
-    private String addressDetail;
+    @Column(name = "detailed_address")
+    private String detailedAddress;
 
     @Lob
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "approval_required", nullable = false)
@@ -69,13 +69,13 @@ public class Meeting extends BaseEntity {
         this.participantsCount++;
     }
 
-    public void updateInfo(ChangeMeetingInfoReq dto){
+    public void updateInfo(ChangeMeetingInfoReq dto) {
         this.categoryId = dto.getCategoryId();
         this.title = dto.getTitle();
         this.content = dto.getContent();
-        this.buildingName = dto.getPlaceName();
-        this.address = dto.getRoadAddressName();
-        this.addressDetail = dto.getDetailedAddress();
+        this.placeName = dto.getPlaceName();
+        this.roadAddressName = dto.getRoadAddressName();
+        this.detailedAddress = dto.getDetailedAddress();
         this.maxParticipantsCount = dto.getMaxParticipantsCount();
         this.appointmentTime = dto.getAppointmentTime();
     }
@@ -86,7 +86,7 @@ public class Meeting extends BaseEntity {
 
     // 최대 참가 인원 유효성 검사 메서드
     public void validateMaxParticipantsCount() {
-        if (maxParticipantsCount < 2) { // 모집 인원이 2명보다 적은 경우
+        if (maxParticipantsCount < 2 || maxParticipantsCount > 100) { // 모집 인원이 2명보다 적거나 100보다 클 경우
             throw new MaxParticipantsNotExceededException();
         }
     }

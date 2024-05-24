@@ -105,5 +105,9 @@ public class User extends BaseEntity {
         this.introduce = updateUserReq.getIntroduce();
         this.location = updateUserReq.getLocation();
     }
+
+    public void updateMannerStat(int adjustScore) {
+        this.mannerStat = adjustScore;
+    }
 }
 

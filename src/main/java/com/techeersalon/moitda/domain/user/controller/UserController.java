@@ -1,8 +1,9 @@
 package com.techeersalon.moitda.domain.user.controller;
 
+import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
+import com.techeersalon.moitda.domain.meetings.service.MeetingService;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
-import com.techeersalon.moitda.domain.user.dto.response.RecordsRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import com.techeersalon.moitda.global.common.SuccessResponse;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.techeersalon.moitda.global.common.SuccessCode.*;
 
@@ -26,6 +28,7 @@ import static com.techeersalon.moitda.global.common.SuccessCode.*;
 @RequestMapping("/api/v1")
 public class UserController {
     private final UserService userService;
+    private final MeetingService meetingService;
 
     @Operation(summary = "추가정보 입력")
     @PostMapping("/users")
@@ -42,6 +45,15 @@ public class UserController {
         userService.logout();
 
         return ResponseEntity.ok(SuccessResponse.of(USER_LOGOUT_SUCCESS));
+    }
+
+    @Operation(summary = "현재 사용자 정보 조회")
+    @GetMapping("/users/me")
+    public ResponseEntity<SuccessResponse> findCurrentUserProfile() {
+
+        UserProfileRes userProfile = userService.findCurrentUserProfile();
+
+        return ResponseEntity.ok(SuccessResponse.of(USER_PROFILE_GET_SUCCESS, userProfile));
     }
 
     @Operation(summary = "회원정보 조회")
@@ -68,9 +80,12 @@ public class UserController {
 
     @Operation(summary = "회원모임 내역 조회")
     @GetMapping("/users/{user_id}/records")
-    public ResponseEntity<SuccessResponse> getUserMeetingRecords(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<SuccessResponse> getUserMeetingRecords(
+            @PathVariable("user_id") Long userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int pageSize) {
 
-        RecordsRes meetingRecords = userService.getUserMeetingRecords(userId);
+        List<GetLatestMeetingListRes> meetingRecords = meetingService.latestUserRecordMeetings(userId, page, pageSize);
 
         return ResponseEntity.ok(SuccessResponse.of(USER_MEETING_RECORD_GET_SUCCESS, meetingRecords));
     }

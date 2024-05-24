@@ -5,10 +5,8 @@ import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
 import com.techeersalon.moitda.domain.meetings.dto.request.ApprovalParticipantReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
-import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.CreateParticipantRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailRes;
+import com.techeersalon.moitda.domain.meetings.dto.request.CreateReviewReq;
+import com.techeersalon.moitda.domain.meetings.dto.response.*;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
 import com.techeersalon.moitda.global.common.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -34,9 +31,7 @@ import static com.techeersalon.moitda.global.common.SuccessCode.*;
 @RequestMapping("api/v1/meetings")
 @RequiredArgsConstructor
 public class MeetingsController {
-    @Autowired
     private final MeetingService meetingService;
-    @Autowired
     private final ChatRoomService chatRoomService;
 
     @Operation(summary = "createMeeting", description = "모임 생성")
@@ -54,44 +49,57 @@ public class MeetingsController {
     @Operation(summary = "findMeeting", description = "모임 상세 조회")
     @GetMapping("/{meetingId}")
     public ResponseEntity<SuccessResponse> meetingDetail(@PathVariable Long meetingId) {
-        Boolean isOwner= meetingService.determineMeetingOwner(meetingId);
+        Boolean isOwner = meetingService.determineMeetingOwner(meetingId);
         GetMeetingDetailRes response = meetingService.findMeetingById(meetingId);
         response.setIsOwner(isOwner);
         return ResponseEntity.ok(SuccessResponse.of(MEETING_GET_SUCCESS, response));
     }
 
-    @Operation(summary = "latestMeetingsList", description = "최신 모임 리스트 조회")
+    @Operation(summary = "latestMeetingsPage", description = "최신 모임 리스트 조회")
     @GetMapping("/search/latest")
-    public ResponseEntity<SuccessResponse> latestMeetingsList(@RequestParam(value="page", defaultValue="0")int page,
-                                                            @RequestParam(value="size", defaultValue="10")int pageSize){
-        List<GetLatestMeetingListRes> response = meetingService.latestMeetings(page, pageSize);
+
+    public ResponseEntity<SuccessResponse> latestMeetingsList(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int pageSize) {
+
+        List<GetLatestMeetingListRes> response = meetingService.latestAllMeetings(page, pageSize);
 
         return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
     }
 
-    @Operation(summary = "cancelMeeting", description = "모임 취소")
-    @DeleteMapping("cancel/{meetingId}")
-    public ResponseEntity<SuccessResponse> cancelMeeting(@PathVariable Long meetingId) {
-        //과연 이게 좋은 코드일까?
+    @Operation(summary = "latestCategoryMeetingsPage", description = "카테고리별 최신 모임 리스트 조회")
+    @GetMapping("/search/latest/{categoryId}")
+    public ResponseEntity<SuccessResponse> latestCategoryMeetingsPage(
+            @PathVariable Long categoryId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int pageSize) {
+        List<GetLatestMeetingListRes> response = meetingService.latestCategoryMeetings(categoryId, page, pageSize);
+
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
+    }
+
+    @Operation(summary = "deleteMeeting", description = "모임 삭제")
+    @DeleteMapping("/{meetingId}")
+    public ResponseEntity<SuccessResponse> deleteMeeting(@PathVariable Long meetingId) {
         meetingService.deleteMeeting(meetingId);
         return ResponseEntity.ok(SuccessResponse.of(MEETING_DELETE_SUCCESS));
         //return ResponseEntity.status(HttpStatus.NO_CONTENT).body(SuccessResponse.of(MEETING_DELETE_SUCCESS));
     }
 
     @Operation(summary = "endMeeting", description = "모임 종료")
-    @DeleteMapping("end/{meetingId}")
+    @PatchMapping("end/{meetingId}")
     public ResponseEntity<SuccessResponse> endMeeting(@PathVariable Long meetingId) {
         meetingService.endMeeting(meetingId);
-        meetingService.deleteMeeting(meetingId);
-        return ResponseEntity.ok(SuccessResponse.of(MEETING_DELETE_SUCCESS));
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_END_SUCCESS));
     }
 
     @Operation(summary = "ChangeMeetingInfo", description = "미팅 수정")
-    @PutMapping(value = "/{meetingId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<SuccessResponse> ChangeMeetingInfo( @PathVariable Long meetingId,
-            @Validated @RequestPart ChangeMeetingInfoReq changeMeetingReq,
-            @RequestPart(name = "meeting_images", required = false) @Valid List<MultipartFile> meetingImages) throws IOException {
-        meetingService.modifyMeeting(meetingId, changeMeetingReq, meetingImages);
+    @PutMapping("/{meetingId}")
+    public ResponseEntity<SuccessResponse> ChangeMeetingInfo(
+            @PathVariable Long meetingId,
+            @Validated @RequestBody ChangeMeetingInfoReq changeMeetingReq
+            ) {
+        meetingService.modifyMeeting(meetingId, changeMeetingReq);
         return ResponseEntity.ok(SuccessResponse.of(MEETING_UPDATE_SUCCESS));
     }
 
@@ -109,5 +117,30 @@ public class MeetingsController {
         meetingService.approvalParticipant(dto);
 
         return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_APPROVAL_OR_REJECTION_SUCCESS));
+    }
+
+    @Operation(summary = "reviewParticipants", description = "후기 작성")
+    @PostMapping("reviews")
+    public ResponseEntity<SuccessResponse> createReview(@RequestBody @Valid CreateReviewReq createReviewReq) {
+
+        meetingService.createReview(createReviewReq);
+        return ResponseEntity.ok(SuccessResponse.of(REVIEW_CREATE_SUCCESS));
+    }
+
+    @Operation(summary = "getMeetingParticipants", description = "모임 신청자 리스트 조회")
+    @GetMapping("/{meetingId}/participants")
+    public ResponseEntity<SuccessResponse> getMeetingParticipants(@PathVariable Long meetingId) {
+        List<GetParticipantListRes> response = meetingService.getParticipantsOfMeeting(meetingId);
+        return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_LIST_GET_SUCCESS, response));
+    }
+
+    @Operation(summary = "searchMeetingsByKeyword", description = "키워드로 모임 검색")
+    @GetMapping("/search")
+    public ResponseEntity<SuccessResponse> searchMeetingsByKeyword(
+            @RequestParam(value = "keyword") String keyword,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        List<GetLatestMeetingListRes> response = meetingService.searchMeetingsByKeyword(keyword, page, size);
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_SEARCH_SUCCESS, response));
     }
 }

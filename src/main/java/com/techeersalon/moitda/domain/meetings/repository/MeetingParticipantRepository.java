@@ -9,11 +9,11 @@ import java.util.Optional;
 
 @Repository
 public interface MeetingParticipantRepository extends JpaRepository<MeetingParticipant, Long> {
-    Optional<MeetingParticipant> findByMeetingIdAndIsWaiting(Long MeetingId, Boolean bool);
+    List<MeetingParticipant> findByMeetingIdAndIsWaiting(Long MeetingId, Boolean bool);
+
+    List<MeetingParticipant> findParticipantsByMeetingId(Long MeetingId);
 
     Boolean existsByMeetingIdAndUserId(Long meetingId, Long UserId);
-
-    List<MeetingParticipant> findByUserIdAndIsWaiting(Long UserId, Boolean bool);
 
     Optional<MeetingParticipant> findByMeetingId(Long Meeting);
 }

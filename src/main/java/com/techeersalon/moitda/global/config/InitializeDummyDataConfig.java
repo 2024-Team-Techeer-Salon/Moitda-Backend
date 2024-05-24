@@ -82,15 +82,16 @@ public class InitializeDummyDataConfig implements CommandLineRunner {
         Random random = new Random();
 
         for (int i = 0; i < meetingCount; i++) {
+            User user = userRepository.findById((long) (random.nextInt(6) + 1)).get();
             Meeting meeting = Meeting.builder()
-                    .userId(Long.valueOf(random.nextInt(6) + 1))
-                    .username("name" + (random.nextInt(6) + 1))
+                    .userId(user.getId())
+                    .username(user.getUsername())
                     .categoryId(Long.valueOf(random.nextInt(19)))
                     .title("title" + i)
                     .participantsCount(1)
                     .maxParticipantsCount(random.nextInt(30) + 1)
-                    .address(address[random.nextInt(address.length)])
-                    .buildingName("스타벅스")
+                    .roadAddressName(address[random.nextInt(address.length)])
+                    .placeName("스타벅스")
                     .approvalRequired(true)
                     .appointmentTime(LocalDateTime.now()
                                     .plusDays(random.nextInt(30) + 1)
