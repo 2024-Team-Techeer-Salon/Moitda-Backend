@@ -141,7 +141,7 @@ public class MeetingService {
 
         List<MeetingImage> imageList = meetingImageRepository.findByMeetingId(meetingId);
 
-        List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
+        List<MeetingParticipant> participants = meetingParticipantRepository.findParticipantsByMeetingId(meetingId);
         if (participants.isEmpty()) {
             throw new MeetingNotFoundException();
         }
