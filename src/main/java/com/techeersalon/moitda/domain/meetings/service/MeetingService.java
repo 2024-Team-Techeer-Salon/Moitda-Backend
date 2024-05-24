@@ -141,7 +141,7 @@ public class MeetingService {
 
         List<MeetingImage> imageList = meetingImageRepository.findByMeetingId(meetingId);
 
-        List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
+        List<MeetingParticipant> participants = meetingParticipantRepository.findParticipantsByMeetingId(meetingId);
         if (participants.isEmpty()) {
             throw new MeetingNotFoundException();
         }
@@ -302,7 +302,7 @@ public class MeetingService {
      * 미팅 수정 메소드
      * 미팅 전체 내용 수정
      * */
-    public void modifyMeeting(Long meetingId, ChangeMeetingInfoReq dto, List<MultipartFile> images) throws IOException {
+    public void modifyMeeting(Long meetingId, ChangeMeetingInfoReq dto) {
         //미팅 값 업데이트
         Meeting meeting = this.getMeetingById(meetingId);
         meeting.updateInfo(dto);
@@ -316,51 +316,6 @@ public class MeetingService {
         }
 
         meetingRepository.save(meeting);
-
-        //이미지가 없을 경우
-        if (images == null) {
-            // 기존 이미지 삭제
-            meetingImageRepository.deleteByMeetingId(meetingId);
-            // 기본 이미지 적용
-            MeetingImage newMeetingImage = new MeetingImage(defaultProfileUrl, meetingId);
-            meetingImageRepository.save(newMeetingImage);
-            return;
-        }
-
-        // 이미지들이 존재할 경우
-        for (MultipartFile image : images) {
-            String imageName = image.getOriginalFilename();
-            String extension = imageName.substring(imageName.lastIndexOf(".") + 1);
-            String s3imageFileName = "meeting/" + UUID.randomUUID().toString().substring(0, 10) + "_" + imageName;
-            InputStream is = image.getInputStream();
-            byte[] bytes = IOUtils.toByteArray(is);
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("image/" + extension);
-            metadata.setContentLength(bytes.length);
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-
-            try {
-                PutObjectRequest putObjectRequest =
-                        new PutObjectRequest(bucketName, s3imageFileName, byteArrayInputStream, metadata)
-                                .withCannedAcl(CannedAccessControlList.PublicRead);
-                amazonS3.putObject(putObjectRequest);
-
-                // 이미지의 URL을 저장
-                String imageUrl = amazonS3.getUrl(bucketName, s3imageFileName).toString();
-
-                // MeetingImage 엔티티에 저장
-                MeetingImage meetingImage = new MeetingImage(imageUrl, meetingId); // 생성자를 사용하여 설정
-
-                // MeetingImage 저장
-                meetingImageRepository.save(meetingImage);
-
-            } catch (Exception e) {
-                throw new S3Exception();
-            } finally {
-                byteArrayInputStream.close();
-                is.close();
-            }
-        }
     }
 
     public void endMeeting(Long meetingId) {

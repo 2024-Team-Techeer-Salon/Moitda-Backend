@@ -47,6 +47,15 @@ public class UserController {
         return ResponseEntity.ok(SuccessResponse.of(USER_LOGOUT_SUCCESS));
     }
 
+    @Operation(summary = "현재 사용자 정보 조회")
+    @GetMapping("/users/me")
+    public ResponseEntity<SuccessResponse> findCurrentUserProfile() {
+
+        UserProfileRes userProfile = userService.findCurrentUserProfile();
+
+        return ResponseEntity.ok(SuccessResponse.of(USER_PROFILE_GET_SUCCESS, userProfile));
+    }
+
     @Operation(summary = "회원정보 조회")
     @GetMapping("/users/{user_id}")
     public ResponseEntity<SuccessResponse> findUserProfile(@PathVariable("user_id") Long userId) {
@@ -71,9 +80,10 @@ public class UserController {
 
     @Operation(summary = "회원모임 내역 조회")
     @GetMapping("/users/{user_id}/records")
-    public ResponseEntity<SuccessResponse> getUserMeetingRecords(@PathVariable("user_id") Long userId,
-                                                                 @RequestParam(value = "page", defaultValue = "0") int page,
-                                                                 @RequestParam(value = "size", defaultValue = "10") int pageSize) {
+    public ResponseEntity<SuccessResponse> getUserMeetingRecords(
+            @PathVariable("user_id") Long userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int pageSize) {
 
         List<GetLatestMeetingListRes> meetingRecords = meetingService.latestUserRecordMeetings(userId, page, pageSize);
 

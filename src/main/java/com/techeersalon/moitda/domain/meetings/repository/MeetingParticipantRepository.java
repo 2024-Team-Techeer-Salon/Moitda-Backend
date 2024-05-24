@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface MeetingParticipantRepository extends JpaRepository<MeetingParticipant, Long> {
     List<MeetingParticipant> findByMeetingIdAndIsWaiting(Long MeetingId, Boolean bool);
 
+    List<MeetingParticipant> findParticipantsByMeetingId(Long MeetingId);
+
     Boolean existsByMeetingIdAndUserId(Long meetingId, Long UserId);
 
     Optional<MeetingParticipant> findByMeetingId(Long Meeting);

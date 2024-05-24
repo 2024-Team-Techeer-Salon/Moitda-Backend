@@ -15,13 +15,15 @@ public class MeetingParticipantListMapper {
     private Long meetingParticipantId;
     private String username;
     private String profileImage;
+    private Boolean isWaiting;
 
-    public static MeetingParticipantListMapper from(MeetingParticipant meetingParticipant, User user){
+    public static MeetingParticipantListMapper from(MeetingParticipant meetingParticipant, User user) {
 
         return MeetingParticipantListMapper.builder()
                 .meetingParticipantId(meetingParticipant.getId())
                 .username(meetingParticipant.getUsername())
                 .profileImage(user.getProfileImage())
+                .isWaiting(meetingParticipant.getIsWaiting())
                 .build();
     }
 }
