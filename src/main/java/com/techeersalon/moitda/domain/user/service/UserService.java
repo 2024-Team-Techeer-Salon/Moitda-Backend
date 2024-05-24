@@ -70,15 +70,22 @@ public class UserService {
         return userMapper.toUserProfile(user);
     }
 
-    public void updateUserProfile(UpdateUserReq updateUserReq, MultipartFile profileImage, MultipartFile bannerImage) throws IOException {
+    public void updateUserProfile(UpdateUserReq updateUserReq, String profileUrl, String bannerUrl, MultipartFile profileImage, MultipartFile bannerImage) throws IOException {
         User user = this.getLoginUser();
         String[] urls = new String[2];
 
         // 프로필 이미지 처리
-//        urls[0] = processImage(profileImage, user.getProfileImage(), "user/custom/profile/");
-        urls[0] = processImage(profileImage, "user/custom/profile/");
+        if (profileUrl == null) {
+            urls[0] = processImage(profileImage, "user/custom/profile/");
+        } else {
+            urls[0] = profileUrl;
+        }
         // 배너 이미지 처리
-        urls[1] = processImage(bannerImage, "user/custom/banner/");
+        if (bannerUrl == null) {
+            urls[1] = processImage(bannerImage, "user/custom/banner/");
+        } else {
+            urls[1] = bannerUrl;
+        }
 
         user.updateProfile(updateUserReq, urls[0], urls[1]);
         userRepository.save(user);

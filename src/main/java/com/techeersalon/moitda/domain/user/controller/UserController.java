@@ -69,11 +69,13 @@ public class UserController {
     @PutMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse> updateUserProfile(
             @RequestPart @Valid UpdateUserReq updateUserReq,
+            @RequestPart @Valid String profileUrl,
+            @RequestPart @Valid String bannerUrl,
             @RequestPart(name = "profile_image_file", required = false) @Valid MultipartFile profileImageFile,
             @RequestPart(name = "banner_image_file", required = false) @Valid MultipartFile bannerImageFile
     ) throws IOException {
 
-        userService.updateUserProfile(updateUserReq, profileImageFile, bannerImageFile);
+        userService.updateUserProfile(updateUserReq, profileUrl, bannerUrl, profileImageFile, bannerImageFile);
 
         return ResponseEntity.ok(SuccessResponse.of(USER_PROFILE_UPDATE_SUCCESS));
     }
