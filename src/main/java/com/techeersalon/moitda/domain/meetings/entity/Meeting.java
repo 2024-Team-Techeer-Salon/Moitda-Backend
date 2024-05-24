@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
@@ -51,6 +52,10 @@ public class Meeting extends BaseEntity {
 
     @Column(name = "detailed_address")
     private String detailedAddress;
+
+    @Column(name = "location_point", columnDefinition = "GEOMETRY")
+    //@Type(type = "org.hibernate.spatial.")
+    private Point locationPoint;
 
     @Lob
     @Column(name = "content")
