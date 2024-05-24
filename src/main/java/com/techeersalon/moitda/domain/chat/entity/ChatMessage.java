@@ -35,6 +35,4 @@ public class ChatMessage extends BaseEntity {
     public enum MessageType {
         ENTER, TALK
     }
-
-    private boolean isRead;
 }

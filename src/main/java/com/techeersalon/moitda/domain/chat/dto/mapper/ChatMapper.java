@@ -6,6 +6,10 @@ import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
 import com.techeersalon.moitda.domain.chat.dto.request.ChatMessageReq;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
+import com.techeersalon.moitda.domain.chat.exception.MessageNotFoundException;
+import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
+import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
+import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingPageNotFoundException;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.service.UserService;
@@ -26,7 +30,7 @@ import static java.time.LocalTime.now;
 public class ChatMapper {
 
     @Autowired
-    private UserService userService;
+    private static UserService userService;
 
     public static ChatMessage toChatMessage(User user, Long meetingId, ChatMessageReq request) {
         return ChatMessage.builder()
@@ -38,8 +42,7 @@ public class ChatMapper {
                 .build();
     }
 
-    public ChatMessageRes toChatMessageDto(ChatMessage chatMessage) {
-        Long userId = chatMessage.getUserid();
+    public static ChatMessageRes toChatMessageDto(ChatMessage chatMessage, Long userId) {
         // userId를 사용하여 사용자 정보를 조회합니다.
         UserProfileRes userProfile = userService.findUserProfile(userId);
 
@@ -74,13 +77,15 @@ public class ChatMapper {
     public static List<ChatMessageRes> toChatMessageDtoList(List<ChatMessage> messages) {
         ChatMapper chatMapper = new ChatMapper();;
         return messages.stream()
-                .map(chatMapper::toChatMessageDto)
+                .map(message -> toChatMessageDto(message, message.getUserid()))
                 .collect(Collectors.toList());
     }
 
-    public static PageToChatMessageDto(Page<ChatMessage> messages){
-
-        return
+    public static List<ChatMessageRes> PageToChatMessageDto(Page<ChatMessage> messages){
+        if (messages.isEmpty()) {
+            throw new MessageNotFoundException();
+        }
+        return toChatMessageDtoList(messages.getContent());
     }
 
 

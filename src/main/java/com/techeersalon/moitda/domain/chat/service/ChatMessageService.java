@@ -6,6 +6,8 @@ import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
 import com.techeersalon.moitda.domain.chat.dto.response.GetLatestMessageListRes;
 import com.techeersalon.moitda.domain.chat.entity.ChatMessage;
 import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
+import com.techeersalon.moitda.domain.chat.exception.ChatRoomNotFoundException;
+import com.techeersalon.moitda.domain.chat.exception.MessageNotFoundException;
 import com.techeersalon.moitda.domain.chat.repository.ChatMessageRepository;
 import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
 import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
@@ -48,7 +50,7 @@ public class ChatMessageService {
     @Transactional
     public void save(User sender, Long roomId, ChatMessageReq messageRequestDto) {
         ChatRoom chatRoomEntity = this.chatRoomRepository.findById(roomId).orElseThrow(
-                () -> new IllegalArgumentException("해당 ChatRoom이 존재하지 않습니다. chatRoomId = " + roomId));
+                ChatRoomNotFoundException::new);
         //messageRequestDto.setRoomId(chatRoomEntity.getId());
 
         ChatMessage message = chatMapper.toChatMessage(sender, roomId, messageRequestDto);
@@ -60,7 +62,7 @@ public class ChatMessageService {
     @Transactional
     public void delete(final Long chatMessageId) {
         ChatMessage chatMessageEntity = this.chatMessageRepository.findById(chatMessageId).orElseThrow(
-                () -> new IllegalArgumentException("해당 ChatMessage가 존재하지 않습니다. chatMessageId = " + chatMessageId));
+                MessageNotFoundException::new);
         this.chatMessageRepository.delete(chatMessageEntity);
     }
 
@@ -73,13 +75,16 @@ public class ChatMessageService {
 
     /*채팅방 메시지 조회 무한 스크롤*/
     @Transactional
-    public Page<GetLatestMessageListRes> findLatestMessageList(Long meetingId, int page, int pageSize){
+    public List<ChatMessageRes> getLatestMessageList(Long meetingId, int page, int pageSize){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
         Page<ChatMessage> chatMessages = chatMessageRepository.findByMeetingId(meetingId, pageable);
 
-        return transformMessagesToResponse(chatMessages);
+        return chatMapper.PageToChatMessageDto(chatMessages);
         // return meetings.map(GetLatestMeetingListResponse::of);
     }
+
+
+
 
 
 }

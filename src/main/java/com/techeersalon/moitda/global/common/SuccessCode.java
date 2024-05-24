@@ -31,7 +31,7 @@ public enum SuccessCode {
     MESSAGE_DELETE_SUCCESS(HttpStatus.NO_CONTENT,"CM003", "메시지 삭제 성공"),
     //room
     USER_ROOM_GET_SUCCESS(HttpStatus.OK,"CR001", "채팅방 조회 성공"),
-    USER_APPROVAL_SUCCESS(HttpStatus.OK,"CR002", "유저 채팅방 가입 성공");
+    USER_APPROVAL_SUCCESS(HttpStatus.OK,"CR002", "유저 채팅방 가입 성공"),
     //review
     REVIEW_CREATE_SUCCESS(HttpStatus.CREATED, "R001", "후기 생성 성공"),
 
