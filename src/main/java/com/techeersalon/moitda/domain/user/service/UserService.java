@@ -54,12 +54,6 @@ public class UserService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    @Value("${defaultProfileUrl}")
-    private String defaultProfileUrl;
-
-    @Value("${defaultBannerUrl}")
-    private String defaultBannerUrl;
-
     public void signup(SignUpReq signUpReq) {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -104,33 +98,42 @@ public class UserService {
         String[] urls = new String[2];
 
         // 프로필 이미지 처리
-        urls[0] = processImage(profileImage, user.getProfileImage(), "user/custom/profile/", defaultProfileUrl);
+//        urls[0] = processImage(profileImage, user.getProfileImage(), "user/custom/profile/");
+        urls[0] = processImage(profileImage, "user/custom/profile/");
 
         // 배너 이미지 처리
-        urls[1] = processImage(bannerImage, user.getBannerImage(), "user/custom/banner/", defaultBannerUrl);
+        urls[1] = processImage(bannerImage, "user/custom/banner/");
 
         user.updateProfile(updateUserReq, urls[0], urls[1]);
         userRepository.save(user);
     }
 
-    private String processImage(MultipartFile image, String currentImageUrl, String s3Folder, String defaultUrl) throws IOException {
-        // 안들어왔을 경우
-        if (image == null) {
-            return defaultUrl;
+    private String processImage(MultipartFile image, String s3Folder) throws IOException {
+
+        String imageFileName = image.getOriginalFilename();
+        String extension = imageFileName.substring(imageFileName.lastIndexOf(".") + 1);
+        String s3FileName = s3Folder + UUID.randomUUID().toString().substring(0, 10) + imageFileName;
+
+        byte[] bytes = IOUtils.toByteArray(image.getInputStream());
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType("image/" + extension);
+        metadata.setContentLength(bytes.length);
+
+        try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead);
+            amazonS3.putObject(putObjectRequest);
+            return amazonS3.getUrl(bucketName, s3FileName).toString();
+        } catch (Exception e) {
+            throw new S3Exception();
         }
-// 기존 상태에선 생각한 이미지 삭제 로직이 확인되지 않음. 기존에 이미지 선택했다가 디폴트로 바꾸는 로직도 x.
+        /*
         String imageFileName = image.getOriginalFilename();
         // 기존의 url과 다른 경우 혹은 같은 경우
+        // 서버에서 저장하는 것은 url. 클라이언트에서 오는 것은 파일 형태이기 때문에 의미가 없음.
         if (!currentImageUrl.equals(imageFileName)) {
             // 기존 파일 s3에서 삭제
-
-            if (currentImageUrl.equals(defaultUrl)) {
-                // db에 저장된 url이 디폴트 값인 경우 (디폴트 url에는 전체 경로가 들어있음)
-                amazonS3.deleteObject(new DeleteObjectRequest(bucketName, currentImageUrl));
-
-            } else {
-                amazonS3.deleteObject(new DeleteObjectRequest(bucketName, s3Folder + currentImageUrl));
-            }
+            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, s3Folder + currentImageUrl));
 
             String extension = imageFileName.substring(imageFileName.lastIndexOf(".") + 1);
             String s3FileName = s3Folder + UUID.randomUUID().toString().substring(0, 10) + imageFileName;
@@ -151,6 +154,7 @@ public class UserService {
         } else {
             return currentImageUrl;
         }
+         */
     }
 
     public User getLoginUser() {
