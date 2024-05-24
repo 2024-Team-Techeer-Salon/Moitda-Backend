@@ -2,8 +2,10 @@ package com.techeersalon.moitda.domain.meetings.repository;
 
 
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +22,8 @@ public interface MeetingRepository extends PagingAndSortingRepository<Meeting, L
     Page<Meeting> findByUserId(Long userId, Pageable pageable);
     Optional<Meeting> findById(Long id);
 
-    List<Meeting> findByIdIn(List<Long> ids);
+    @Query("SELECT m FROM Meeting m WHERE m.title LIKE %:keyword%")
+    Page<Meeting> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     Page<Meeting> findByCategoryId(Long categoryId, Pageable pageable);
 }

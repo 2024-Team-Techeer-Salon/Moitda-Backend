@@ -5,9 +5,6 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
-import com.techeersalon.moitda.domain.meetings.repository.MeetingImageRepository;
-import com.techeersalon.moitda.domain.meetings.repository.MeetingParticipantRepository;
-import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
 import com.techeersalon.moitda.domain.user.dto.mapper.UserMapper;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
@@ -41,9 +38,6 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final MeetingParticipantRepository meetingParticipantRepository;
-    private final MeetingRepository meetingRepository;
-    private final MeetingImageRepository meetingImageRepository;
     private final UserMapper userMapper;
     private final AmazonS3 amazonS3;
 

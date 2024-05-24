@@ -152,7 +152,7 @@ public class MeetingService {
                     User participantUser = userRepository.findById(participant.getUserId())
                             .orElseThrow(UserNotFoundException::new);
                     return MeetingParticipantListMapper.from(participant, participantUser);
-                        })
+                })
                 .collect(Collectors.toList());
         return GetMeetingDetailRes.of(meeting, user, participantDtoList, imageList);
     }
@@ -434,5 +434,11 @@ public class MeetingService {
                     return GetParticipantListRes.from(user);
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<GetLatestMeetingListRes> searchMeetingsByKeyword(String keyword, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+        Page<Meeting> meetings = meetingRepository.findByKeyword(keyword, pageable);
+        return transformMeetingsToResponse(meetings);
     }
 }
