@@ -56,6 +56,8 @@ public class GetMeetingDetailRes {
 
     private String endTime;
 
+    private Boolean approvalRequired;
+
     // meeting table에 userId, username을 저장할 필요가 있나요?
     public static GetMeetingDetailRes of(Meeting meeting, User user, List<MeetingParticipantListMapper> participantList, List<MeetingImage> imageList) {
         return GetMeetingDetailRes.builder()
@@ -76,6 +78,7 @@ public class GetMeetingDetailRes {
                 .appointmentTime(meeting.getAppointmentTime())
                 .createdAt(meeting.getCreateAt())
                 .endTime(meeting.getEndTime())
+                .approvalRequired(meeting.getApprovalRequired())
                 .build();
     }
 
