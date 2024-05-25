@@ -2,6 +2,7 @@ package com.techeersalon.moitda.domain.user.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
@@ -27,6 +28,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 
 @Service
@@ -41,6 +44,12 @@ public class UserService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
+
+    @Value("${baseProfilePath}")
+    private String baseProfilePath;
+
+    @Value("${baseBannerPath}")
+    private String baseBannerPath;
 
     public void signup(SignUpReq signUpReq) {
         User user = this.getLoginUser();
@@ -76,12 +85,19 @@ public class UserService {
 
         // 프로필 이미지 처리
         if (profileUrl == null) {
+            if (user.getProfileImage() != null) {
+                deleteExistingImage(user.getProfileImage(), baseProfilePath, "user/custom/profile/");
+            }
             urls[0] = processImage(profileImage, "user/custom/profile/");
         } else {
             urls[0] = profileUrl;
         }
+
         // 배너 이미지 처리
         if (bannerUrl == null) {
+            if (user.getBannerImage() != null) {
+                deleteExistingImage(user.getBannerImage(), baseBannerPath, "user/custom/banner/");
+            }
             urls[1] = processImage(bannerImage, "user/custom/banner/");
         } else {
             urls[1] = bannerUrl;
@@ -91,9 +107,22 @@ public class UserService {
         userRepository.save(user);
     }
 
+    private void deleteExistingImage(String imageUrl, String basePath, String s3Folder) throws UnsupportedEncodingException {
+        String encodedString = imageUrl.replace(basePath, "");
+        String decodedString = URLDecoder.decode(encodedString, "UTF-8");
+        amazonS3.deleteObject(new DeleteObjectRequest(bucketName, s3Folder + decodedString));
+    }
+
     private String processImage(MultipartFile image, String s3Folder) throws IOException {
+        if (image == null || image.isEmpty()) {
+            throw new IllegalArgumentException("Image file must not be null or empty");
+        }
 
         String imageFileName = image.getOriginalFilename();
+        if (imageFileName == null) {
+            throw new IllegalArgumentException("Image file name must not be null");
+        }
+
         String extension = imageFileName.substring(imageFileName.lastIndexOf(".") + 1);
         String s3FileName = s3Folder + UUID.randomUUID().toString().substring(0, 10) + imageFileName;
 
@@ -110,34 +139,6 @@ public class UserService {
         } catch (Exception e) {
             throw new S3Exception();
         }
-        /*
-        String imageFileName = image.getOriginalFilename();
-        // 기존의 url과 다른 경우 혹은 같은 경우
-        // 서버에서 저장하는 것은 url. 클라이언트에서 오는 것은 파일 형태이기 때문에 의미가 없음.
-        if (!currentImageUrl.equals(imageFileName)) {
-            // 기존 파일 s3에서 삭제
-            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, s3Folder + currentImageUrl));
-
-            String extension = imageFileName.substring(imageFileName.lastIndexOf(".") + 1);
-            String s3FileName = s3Folder + UUID.randomUUID().toString().substring(0, 10) + imageFileName;
-
-            byte[] bytes = IOUtils.toByteArray(image.getInputStream());
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("image/" + extension);
-            metadata.setContentLength(bytes.length);
-
-            try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
-                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, s3FileName, byteArrayInputStream, metadata)
-                        .withCannedAcl(CannedAccessControlList.PublicRead);
-                amazonS3.putObject(putObjectRequest);
-                return amazonS3.getUrl(bucketName, s3FileName).toString();
-            } catch (Exception e) {
-                throw new S3Exception();
-            }
-        } else {
-            return currentImageUrl;
-        }
-         */
     }
 
     public User getLoginUser() {

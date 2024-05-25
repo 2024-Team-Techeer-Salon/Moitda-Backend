@@ -64,9 +64,6 @@ public class MeetingService {
     private final MeetingImageRepository meetingImageRepository;
     private final AmazonS3 amazonS3;
 
-    @Value("${defaultProfileUrl}")
-    private String defaultProfileUrl;
-
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
