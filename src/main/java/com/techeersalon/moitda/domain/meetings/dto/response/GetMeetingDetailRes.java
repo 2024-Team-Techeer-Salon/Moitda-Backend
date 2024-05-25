@@ -46,6 +46,8 @@ public class GetMeetingDetailRes {
 
     private List<MeetingParticipantListMapper> participantList;
 
+    private List<MeetingParticipantListMapper> waitingList;
+
     private List<MeetingImage> imageList;
 
     private String appointmentTime;
@@ -56,8 +58,10 @@ public class GetMeetingDetailRes {
 
     private String endTime;
 
+    private Boolean approvalRequired;
+
     // meeting table에 userId, username을 저장할 필요가 있나요?
-    public static GetMeetingDetailRes of(Meeting meeting, User user, List<MeetingParticipantListMapper> participantList, List<MeetingImage> imageList) {
+    public static GetMeetingDetailRes of(Meeting meeting, User user, List<MeetingParticipantListMapper> participantList, List<MeetingParticipantListMapper> waitingList, List<MeetingImage> imageList) {
         return GetMeetingDetailRes.builder()
                 .title(meeting.getTitle())
                 .userId(meeting.getUserId())    // 필요없으면 주석된 부분 바꿔야함.
@@ -72,10 +76,12 @@ public class GetMeetingDetailRes {
                 .maxParticipantsCount(meeting.getMaxParticipantsCount())
                 .participantsCount(meeting.getParticipantsCount())
                 .participantList(participantList)
+                .waitingList(waitingList)
                 .imageList(imageList)
                 .appointmentTime(meeting.getAppointmentTime())
                 .createdAt(meeting.getCreateAt())
                 .endTime(meeting.getEndTime())
+                .approvalRequired(meeting.getApprovalRequired())
                 .build();
     }
 
