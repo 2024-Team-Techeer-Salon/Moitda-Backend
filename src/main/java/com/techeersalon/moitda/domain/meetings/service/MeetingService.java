@@ -141,7 +141,7 @@ public class MeetingService {
         List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
         List<MeetingParticipant> waitingList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.TRUE);
 
-        if (participants.isEmpty() || waitingList.isEmpty()) {
+        if (participants.isEmpty() && waitingList.isEmpty()) {
             throw new MeetingNotFoundException();
         }
 
