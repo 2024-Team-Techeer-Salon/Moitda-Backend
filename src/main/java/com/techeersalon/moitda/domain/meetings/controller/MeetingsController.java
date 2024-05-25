@@ -115,7 +115,6 @@ public class MeetingsController {
     @PatchMapping("/participant")
     public ResponseEntity<SuccessResponse> ApprovalOfMeetingParticipants(@Validated @RequestBody ApprovalParticipantReq dto) {
         meetingService.approvalParticipant(dto);
-
         return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_APPROVAL_OR_REJECTION_SUCCESS));
     }
 
