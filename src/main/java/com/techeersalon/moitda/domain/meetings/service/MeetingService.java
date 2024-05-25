@@ -138,8 +138,10 @@ public class MeetingService {
 
         List<MeetingImage> imageList = meetingImageRepository.findByMeetingId(meetingId);
 
-        List<MeetingParticipant> participants = meetingParticipantRepository.findParticipantsByMeetingId(meetingId);
-        if (participants.isEmpty()) {
+        List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
+        List<MeetingParticipant> waitingList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.TRUE);
+
+        if (participants.isEmpty() || waitingList.isEmpty()) {
             throw new MeetingNotFoundException();
         }
 
@@ -151,7 +153,17 @@ public class MeetingService {
                     return MeetingParticipantListMapper.from(participant, participantUser);
                 })
                 .collect(Collectors.toList());
-        return GetMeetingDetailRes.of(meeting, user, participantDtoList, imageList);
+
+        List<MeetingParticipantListMapper> waitingDtoList = waitingList
+                .stream()
+                .map(participant -> {
+                    User participantUser = userRepository.findById(participant.getUserId())
+                            .orElseThrow(UserNotFoundException::new);
+                    return MeetingParticipantListMapper.from(participant, participantUser);
+                })
+                .collect(Collectors.toList());
+
+        return GetMeetingDetailRes.of(meeting, user, participantDtoList, waitingDtoList ,imageList);
     }
 
 //    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
