@@ -78,7 +78,7 @@ public class MeetingsController {
 //        return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
 //    }
 
-    @Operation(summary = "NearMeetingsPage", description = "가까운 모임 리스트 조회")
+    @Operation(summary = "nearMeetingsPage", description = "가까운 모임 리스트 조회")
     @GetMapping("/search/")
     public ResponseEntity<SuccessResponse> getNearMeetings(
             @RequestParam double latitude,
@@ -91,7 +91,7 @@ public class MeetingsController {
     }
     //@PageableDefault(sort = "createAt", direction = Sort.Direction.ASC,page = 0, size = 10)Pageable pageable)
 
-    @Operation(summary = "CategoryNearMeetingsPage", description = "카테고리 모임 리스트 조회")
+    @Operation(summary = "categoryNearMeetingsPage", description = "카테고리 모임 리스트 조회")
     @GetMapping("/search/category/{categoryId}")
     public ResponseEntity<SuccessResponse> getCategoryMeetings(
             @PathVariable Long categoryId,
@@ -102,6 +102,20 @@ public class MeetingsController {
         //Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
         GetSearchPageRes response= meetingService.getMeetingsCategory(pointMapper, categoryId,pageable);
         return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
+    }
+
+    @Operation(summary = "searchMeetingsByKeyword", description = "키워드로 모임 검색")
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<SuccessResponse> searchMeetingsByKeyword(
+            @PathVariable String keyword,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            Pageable pageable) {
+        PointMapper pointMapper = PointMapper.from(latitude, longitude);
+        GetSearchPageRes response = meetingService.searchMeetingsByKeyword(keyword, pointMapper, pageable);
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_SEARCH_SUCCESS, response));
     }
 
     @Operation(summary = "deleteMeeting", description = "모임 삭제")
@@ -170,13 +184,5 @@ public class MeetingsController {
         return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_LIST_GET_SUCCESS, response));
     }
 
-//    @Operation(summary = "searchMeetingsByKeyword", description = "키워드로 모임 검색")
-//    @GetMapping("/search")
-//    public ResponseEntity<SuccessResponse> searchMeetingsByKeyword(
-//            @RequestParam(value = "keyword") String keyword,
-//            @RequestParam(value = "page", defaultValue = "0") int page,
-//            @RequestParam(value = "size", defaultValue = "10") int size) {
-//        List<GetLatestMeetingListRes> response = meetingService.searchMeetingsByKeyword(keyword, page, size);
-//        return ResponseEntity.ok(SuccessResponse.of(MEETING_SEARCH_SUCCESS, response));
-//    }
+
 }
