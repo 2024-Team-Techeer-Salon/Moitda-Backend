@@ -1,0 +1,17 @@
+{
+	"ulid": "01HYSFX08WCGM584FVN67GFKD4",
+	"minTime": 1716645600000,
+	"maxTime": 1716652800000,
+	"stats": {
+		"numSamples": 221520,
+		"numSeries": 1846,
+		"numChunks": 1931
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01HYSFX08WCGM584FVN67GFKD4"
+		]
+	},
+	"version": 1
+}

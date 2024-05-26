@@ -1,0 +1,53 @@
+{
+  "dependencies": {
+    "grafanaDependency": "\u003e=8.0.0",
+    "plugins": []
+  },
+  "id": "grafana-clock-panel",
+  "info": {
+    "author": {
+      "name": "Grafana Labs",
+      "url": "https://grafana.com"
+    },
+    "build": {
+      "time": 1716278430555,
+      "repo": "https://github.com/grafana/clock-panel",
+      "branch": "main",
+      "hash": "ac286cbd42a95c05de354bf718a86c0b0630b191",
+      "build": 192
+    },
+    "description": "Clock panel for grafana",
+    "keywords": [
+      "clock",
+      "panel"
+    ],
+    "links": [
+      {
+        "name": "Project site",
+        "url": "https://github.com/grafana/clock-panel"
+      },
+      {
+        "name": "MIT License",
+        "url": "https://github.com/grafana/clock-panel/blob/master/LICENSE"
+      }
+    ],
+    "logos": {
+      "large": "img/clock.svg",
+      "small": "img/clock.svg"
+    },
+    "screenshots": [
+      {
+        "name": "Showcase",
+        "path": "img/screenshot-showcase.png"
+      },
+      {
+        "name": "Options",
+        "path": "img/screenshot-clock-options.png"
+      }
+    ],
+    "updated": "2024-05-21",
+    "version": "2.1.5"
+  },
+  "name": "Clock",
+  "type": "panel"
+}

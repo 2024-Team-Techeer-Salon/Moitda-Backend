@@ -1,0 +1,17 @@
+{
+	"ulid": "01HYR492Q04TRH697X45MWTS07",
+	"minTime": 1716638423141,
+	"maxTime": 1716645600000,
+	"stats": {
+		"numSamples": 83704,
+		"numSeries": 1987,
+		"numChunks": 1987
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01HYR492Q04TRH697X45MWTS07"
+		]
+	},
+	"version": 1
+}
