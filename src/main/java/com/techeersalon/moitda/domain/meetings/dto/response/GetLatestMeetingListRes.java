@@ -34,6 +34,7 @@ public class GetLatestMeetingListRes {
 
     private Integer maxParticipantsCount;
 
+
     public static GetLatestMeetingListRes from(Meeting meeting, List<MeetingImage> images){
         String[] roadAddress = meeting.getRoadAddressName().split(" ");
         String roadAddressName, url;

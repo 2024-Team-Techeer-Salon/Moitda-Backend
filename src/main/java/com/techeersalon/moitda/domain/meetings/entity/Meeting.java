@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
 @Entity
@@ -53,8 +55,8 @@ public class Meeting extends BaseEntity {
     @Column(name = "detailed_address")
     private String detailedAddress;
 
-    @Column(name = "location_point", columnDefinition = "GEOMETRY")
-    //@Type(type = "org.hibernate.spatial.")
+    @Column(name = "location_point")
+    //@Type(org.hibernate.spatial.)
     private Point locationPoint;
 
     @Lob
@@ -75,12 +77,17 @@ public class Meeting extends BaseEntity {
     }
 
     public void updateInfo(ChangeMeetingInfoReq dto){
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Coordinate coord = new Coordinate(dto.getLongitude(), dto.getLatitude());
+        Point point = geometryFactory.createPoint(coord);
+
         this.categoryId = dto.getCategoryId();
         this.title = dto.getTitle();
         this.content = dto.getContent();
         this.placeName = dto.getPlaceName();
         this.roadAddressName = dto.getRoadAddressName();
         this.detailedAddress = dto.getDetailedAddress();
+        this.locationPoint = point;
         this.maxParticipantsCount = dto.getMaxParticipantsCount();
         this.appointmentTime = dto.getAppointmentTime();
     }
