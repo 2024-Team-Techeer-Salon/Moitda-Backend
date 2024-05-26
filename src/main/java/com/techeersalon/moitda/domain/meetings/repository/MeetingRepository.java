@@ -20,8 +20,12 @@ public interface MeetingRepository extends PagingAndSortingRepository<Meeting, L
     Page<Meeting> findPageByUserId(Long userId, Pageable pageable);
     //Optional<Meeting> findById(Long id);
 
-    @Query("SELECT m FROM Meeting m WHERE m.title LIKE %:keyword%")
-    Page<Meeting> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+//    @Query("SELECT m FROM Meeting m WHERE m.title LIKE %:keyword%")
+//    Page<Meeting> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    @Query(value = "SELECT * FROM meeting WHERE end_time IS NULL AND title LIKE %:keyword% ORDER BY ST_Distance_Sphere(location_point, :point)",
+            countQuery = "SELECT count(*) FROM meeting WHERE end_time IS NULL AND title LIKE %:keyword%",
+            nativeQuery = true)
+    Page<Meeting> findPageByKeyword(@Param("keyword") String keyword, @Param("point") Point point, Pageable pageable);
 
     //Page<Meeting> findByCategoryId(Long categoryId, Pageable pageable);
 

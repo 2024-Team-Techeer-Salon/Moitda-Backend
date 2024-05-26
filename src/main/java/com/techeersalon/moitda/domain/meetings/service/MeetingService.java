@@ -432,11 +432,11 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 
-//    public List<GetLatestMeetingListRes> searchMeetingsByKeyword(String keyword, int page, int pageSize) {
-//        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
-//        Page<Meeting> meetings = meetingRepository.findByKeyword(keyword, pageable);
-//        return transformMeetingsToResponse(meetings);
-//    }
+    public GetSearchPageRes searchMeetingsByKeyword(String keyword, PointMapper pointMapper,Pageable pageable) {
+        Point point = mappingPoint(pointMapper);
+        Page<Meeting> meetings = meetingRepository.findPageByKeyword(keyword, point, pageable);
+        return transformMeetingsToResponse(meetings);
+    }
 
 
 
