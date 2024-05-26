@@ -7,10 +7,7 @@ import com.techeersalon.moitda.domain.meetings.dto.request.ApprovalParticipantRe
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateReviewReq;
-import com.techeersalon.moitda.domain.meetings.dto.response.CreateMeetingRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.CreateParticipantRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetMeetingDetailRes;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetSearchPageRes;
+import com.techeersalon.moitda.domain.meetings.dto.response.*;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
 import com.techeersalon.moitda.global.common.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -123,11 +120,12 @@ public class MeetingsController {
     }
 
     @Operation(summary = "ChangeMeetingInfo", description = "미팅 수정")
-    @PutMapping(value = "/{meetingId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<SuccessResponse> ChangeMeetingInfo(@PathVariable Long meetingId,
-                                                             @Validated @RequestPart ChangeMeetingInfoReq changeMeetingReq,
-                                                             @RequestPart(name = "meeting_images", required = false) @Valid List<MultipartFile> meetingImages) throws IOException {
-        meetingService.modifyMeeting(meetingId, changeMeetingReq, meetingImages);
+    @PutMapping("/{meetingId}")
+    public ResponseEntity<SuccessResponse> ChangeMeetingInfo(
+            @PathVariable Long meetingId,
+            @Validated @RequestBody ChangeMeetingInfoReq changeMeetingReq
+            ) {
+        meetingService.modifyMeeting(meetingId, changeMeetingReq);
         return ResponseEntity.ok(SuccessResponse.of(MEETING_UPDATE_SUCCESS));
     }
 
@@ -143,7 +141,6 @@ public class MeetingsController {
     @PatchMapping("/participant")
     public ResponseEntity<SuccessResponse> ApprovalOfMeetingParticipants(@Validated @RequestBody ApprovalParticipantReq dto) {
         meetingService.approvalParticipant(dto);
-
         return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_APPROVAL_OR_REJECTION_SUCCESS));
     }
 
@@ -165,4 +162,21 @@ public class MeetingsController {
 //
 //        return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
 //    }
+
+    @Operation(summary = "getMeetingParticipants", description = "모임 신청자 리스트 조회")
+    @GetMapping("/{meetingId}/participants")
+    public ResponseEntity<SuccessResponse> getMeetingParticipants(@PathVariable Long meetingId) {
+        List<GetParticipantListRes> response = meetingService.getParticipantsOfMeeting(meetingId);
+        return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_LIST_GET_SUCCESS, response));
+    }
+
+    @Operation(summary = "searchMeetingsByKeyword", description = "키워드로 모임 검색")
+    @GetMapping("/search")
+    public ResponseEntity<SuccessResponse> searchMeetingsByKeyword(
+            @RequestParam(value = "keyword") String keyword,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+        List<GetLatestMeetingListRes> response = meetingService.searchMeetingsByKeyword(keyword, page, size);
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_SEARCH_SUCCESS, response));
+    }
 }

@@ -60,7 +60,7 @@ public class Meeting extends BaseEntity {
     private Point locationPoint;
 
     @Lob
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "approval_required", nullable = false)

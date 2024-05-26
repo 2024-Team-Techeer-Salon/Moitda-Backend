@@ -9,10 +9,7 @@ import com.amazonaws.util.IOUtils;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantListMapper;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.PointMapper;
-import com.techeersalon.moitda.domain.meetings.dto.request.ApprovalParticipantReq;
-import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
-import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
-import com.techeersalon.moitda.domain.meetings.dto.request.CreateReviewReq;
+import com.techeersalon.moitda.domain.meetings.dto.request.*;
 import com.techeersalon.moitda.domain.meetings.dto.response.*;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
@@ -68,9 +65,6 @@ public class MeetingService {
     private final UserRepository userRepository;
     private final MeetingImageRepository meetingImageRepository;
     private final AmazonS3 amazonS3;
-
-    @Value("${defaultProfileUrl}")
-    private String defaultProfileUrl;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -141,17 +135,37 @@ public class MeetingService {
      * */
     public GetMeetingDetailRes findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
+        User user = userRepository.findById(meeting.getUserId())
+                .orElseThrow(UserNotFoundException::new);
 
         List<MeetingImage> imageList = meetingImageRepository.findByMeetingId(meetingId);
 
-        Optional<MeetingParticipant> participantOptional = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
-        participantOptional.orElseThrow(MeetingParticipantNotFoundException::new);
+        List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
+        List<MeetingParticipant> waitingList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.TRUE);
 
-        List<MeetingParticipantListMapper> participantDtoList = participantOptional
+        if (participants.isEmpty() && waitingList.isEmpty()) {
+            throw new MeetingNotFoundException();
+        }
+
+        List<MeetingParticipantListMapper> participantDtoList = participants
                 .stream()
-                .map(MeetingParticipantListMapper::from)
+                .map(participant -> {
+                    User participantUser = userRepository.findById(participant.getUserId())
+                            .orElseThrow(UserNotFoundException::new);
+                    return MeetingParticipantListMapper.from(participant, participantUser);
+                })
                 .collect(Collectors.toList());
-        return GetMeetingDetailRes.of(meeting, participantDtoList, imageList);
+
+        List<MeetingParticipantListMapper> waitingDtoList = waitingList
+                .stream()
+                .map(participant -> {
+                    User participantUser = userRepository.findById(participant.getUserId())
+                            .orElseThrow(UserNotFoundException::new);
+                    return MeetingParticipantListMapper.from(participant, participantUser);
+                })
+                .collect(Collectors.toList());
+
+        return GetMeetingDetailRes.of(meeting, user, participantDtoList, waitingDtoList ,imageList);
     }
 
 //    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
@@ -321,7 +335,7 @@ public class MeetingService {
      * 미팅 수정 메소드
      * 미팅 전체 내용 수정
      * */
-    public void modifyMeeting(Long meetingId, ChangeMeetingInfoReq dto, List<MultipartFile> images) throws IOException {
+    public void modifyMeeting(Long meetingId, ChangeMeetingInfoReq dto) {
         //미팅 값 업데이트
         Meeting meeting = this.getMeetingById(meetingId);
         meeting.updateInfo(dto);
@@ -335,51 +349,6 @@ public class MeetingService {
         }
 
         meetingRepository.save(meeting);
-
-        //이미지가 없을 경우
-        if (images == null) {
-            // 기존 이미지 삭제
-            meetingImageRepository.deleteByMeetingId(meetingId);
-            // 기본 이미지 적용
-            MeetingImage newMeetingImage = new MeetingImage(defaultProfileUrl, meetingId);
-            meetingImageRepository.save(newMeetingImage);
-            return;
-        }
-
-        // 이미지들이 존재할 경우
-        for (MultipartFile image : images) {
-            String imageName = image.getOriginalFilename();
-            String extension = imageName.substring(imageName.lastIndexOf(".") + 1);
-            String s3imageFileName = "meeting/" + UUID.randomUUID().toString().substring(0, 10) + "_" + imageName;
-            InputStream is = image.getInputStream();
-            byte[] bytes = IOUtils.toByteArray(is);
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentType("image/" + extension);
-            metadata.setContentLength(bytes.length);
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-
-            try {
-                PutObjectRequest putObjectRequest =
-                        new PutObjectRequest(bucketName, s3imageFileName, byteArrayInputStream, metadata)
-                                .withCannedAcl(CannedAccessControlList.PublicRead);
-                amazonS3.putObject(putObjectRequest);
-
-                // 이미지의 URL을 저장
-                String imageUrl = amazonS3.getUrl(bucketName, s3imageFileName).toString();
-
-                // MeetingImage 엔티티에 저장
-                MeetingImage meetingImage = new MeetingImage(imageUrl, meetingId); // 생성자를 사용하여 설정
-
-                // MeetingImage 저장
-                meetingImageRepository.save(meetingImage);
-
-            } catch (Exception e) {
-                throw new S3Exception();
-            } finally {
-                byteArrayInputStream.close();
-                is.close();
-            }
-        }
     }
 
     public void endMeeting(Long meetingId) {
@@ -438,6 +407,27 @@ public class MeetingService {
         };
 
         return Math.max(Math.min(existingMannerStat + adjustment, 100), 0);
+    }
+
+    public List<GetParticipantListRes> getParticipantsOfMeeting(Long meetingId) {
+        List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.TRUE);
+        if (participants.isEmpty()) {
+            throw new MeetingParticipantNotFoundException();
+        }
+
+        return participants.stream()
+                .map(participant -> {
+                    User user = userRepository.findById(participant.getUserId())
+                            .orElseThrow(UserNotFoundException::new);
+                    return GetParticipantListRes.from(user);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<GetLatestMeetingListRes> searchMeetingsByKeyword(String keyword, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+        Page<Meeting> meetings = meetingRepository.findByKeyword(keyword, pageable);
+        return transformMeetingsToResponse(meetings);
     }
 
 

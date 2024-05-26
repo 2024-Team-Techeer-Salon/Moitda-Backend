@@ -1,6 +1,7 @@
 package com.techeersalon.moitda.domain.meetings.dto.mapper;
 
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
+import com.techeersalon.moitda.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,12 +14,16 @@ import lombok.NoArgsConstructor;
 public class MeetingParticipantListMapper {
     private Long meetingParticipantId;
     private String username;
+    private String profileImage;
+    private Boolean isWaiting;
 
-    public static MeetingParticipantListMapper from(MeetingParticipant meetingParticipant){
+    public static MeetingParticipantListMapper from(MeetingParticipant meetingParticipant, User user) {
 
         return MeetingParticipantListMapper.builder()
                 .meetingParticipantId(meetingParticipant.getId())
                 .username(meetingParticipant.getUsername())
+                .profileImage(user.getProfileImage())
+                .isWaiting(meetingParticipant.getIsWaiting())
                 .build();
     }
 }

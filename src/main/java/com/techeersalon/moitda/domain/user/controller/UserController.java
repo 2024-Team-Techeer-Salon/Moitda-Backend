@@ -49,6 +49,15 @@ public class UserController {
         return ResponseEntity.ok(SuccessResponse.of(USER_LOGOUT_SUCCESS));
     }
 
+    @Operation(summary = "현재 사용자 정보 조회")
+    @GetMapping("/users/me")
+    public ResponseEntity<SuccessResponse> findCurrentUserProfile() {
+
+        UserProfileRes userProfile = userService.findCurrentUserProfile();
+
+        return ResponseEntity.ok(SuccessResponse.of(USER_PROFILE_GET_SUCCESS, userProfile));
+    }
+
     @Operation(summary = "회원정보 조회")
     @GetMapping("/users/{user_id}")
     public ResponseEntity<SuccessResponse> findUserProfile(@PathVariable("user_id") Long userId) {
@@ -62,11 +71,13 @@ public class UserController {
     @PutMapping(value = "/users", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SuccessResponse> updateUserProfile(
             @RequestPart @Valid UpdateUserReq updateUserReq,
+            @RequestPart(required = false) @Valid String profileUrl,
+            @RequestPart(required = false) @Valid String bannerUrl,
             @RequestPart(name = "profile_image_file", required = false) @Valid MultipartFile profileImageFile,
             @RequestPart(name = "banner_image_file", required = false) @Valid MultipartFile bannerImageFile
     ) throws IOException {
 
-        userService.updateUserProfile(updateUserReq, profileImageFile, bannerImageFile);
+        userService.updateUserProfile(updateUserReq, profileUrl, bannerUrl, profileImageFile, bannerImageFile);
 
         return ResponseEntity.ok(SuccessResponse.of(USER_PROFILE_UPDATE_SUCCESS));
     }
