@@ -11,35 +11,32 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
 
 @Repository
 public interface MeetingRepository extends PagingAndSortingRepository<Meeting, Long>, JpaRepository<Meeting, Long>{
 
     //최신순
-    Page<Meeting> findAll(Pageable pageable);
-    Page<Meeting> findByUserId(Long userId, Pageable pageable);
-    Optional<Meeting> findById(Long id);
+    //Page<Meeting> findPageAll(Pageable pageable);
+    Page<Meeting> findPageByUserId(Long userId, Pageable pageable);
+    //Optional<Meeting> findById(Long id);
 
     @Query("SELECT m FROM Meeting m WHERE m.title LIKE %:keyword%")
     Page<Meeting> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
-    Page<Meeting> findByCategoryId(Long categoryId, Pageable pageable);
+    //Page<Meeting> findByCategoryId(Long categoryId, Pageable pageable);
 
 
 //    @Query(value = "SELECT * FROM meeting WHERE ST_Distance_Sphere(location_point, :point) <= 1000",
 //            nativeQuery = true)
 //    Page<Meeting> findMeetingByDistance(@Param("point") Point point, Pageable pageable);
 
-    @Query(value = "SELECT * FROM meeting ORDER BY ST_Distance_Sphere(location_point, :point)",
-            countQuery = "SELECT count(*) FROM meeting",
+    @Query(value = "SELECT * FROM meeting WHERE end_time IS NULL ORDER BY ST_Distance_Sphere(location_point, :point)",
+            countQuery = "SELECT count(*) FROM meeting WHERE end_time IS NULL",
             nativeQuery = true)
     Page<Meeting> findByLocationNear(@Param("point") Point point, Pageable pageable);
 
-    @Query(value = "SELECT * FROM meeting WHERE Category_id = :category ORDER BY ST_Distance_Sphere(location_point, :point) ",
-            countQuery = "SELECT count(*) FROM meeting WHERE Category_id = :category",
+    @Query(value = "SELECT * FROM meeting WHERE Category_id = :category AND end_time IS NULL ORDER BY ST_Distance_Sphere(location_point, :point) ",
+            countQuery = "SELECT count(*) FROM meeting WHERE Category_id = :category AND end_time IS NULL",
             nativeQuery = true)
     Page<Meeting> findByLocationNearAndCategory(@Param("point") Point point, @Param("category") Long category, Pageable pageable);
 }

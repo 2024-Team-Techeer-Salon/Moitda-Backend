@@ -80,7 +80,6 @@ public class MeetingService {
     public CreateMeetingRes createMeeting(CreateMeetingReq dto, List<MultipartFile> images) throws IOException {
         User loginUser = userService.getLoginUser();
         Meeting entity = dto.toEntity(loginUser);
-
         // 최대 참가 인원 유효성 검사
         entity.validateMaxParticipantsCount();
         Meeting meeting = meetingRepository.save(entity);
@@ -272,9 +271,10 @@ public class MeetingService {
 //
     public GetSearchPageRes latestUserRecordMeetings(Long userId, Pageable pageable) {
         //Pageable pageable = PageRequest.of(pageable, Sort.by(Sort.Order.desc("createAt")));
-        Page<Meeting> meetings = meetingRepository.findByUserId(userId, pageable);
+        Page<Meeting> meetings = meetingRepository.findPageByUserId(userId, pageable);
         return transformMeetingsToResponse(meetings);
     }
+
 //
 //    public List<GetLatestMeetingListRes> latestCategoryMeetings(Long categoryId, int page, int pageSize) {
 //        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
