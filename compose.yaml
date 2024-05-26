@@ -37,13 +37,13 @@ services:
 #      - prometheus_data : /prometheus
     command:
       - '--web.enable-lifecycle'
-#      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.path=/prometheus'
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
     privileged: true
-#    networks:
-#      - monitor-net
+    networks:
+      - monitoring-network
 #    labels:
 #      org.label-schema.group: "monitoring"
 
@@ -51,7 +51,7 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - '3000:3000'
+      - '3001:3000'
     restart: unless-stopped
 #    environment:
 #      - GF_SECURITY_ADMIN_USER=${ADMIN_USER}
@@ -60,8 +60,8 @@ services:
     depends_on:
       - prometheus
       - node-exporter
-  #    networks:
-  #      - monitor-net
+    networks:
+      - monitoring-network
   #    labels:
   #      org.label-schema.group: "monitoring"
 
@@ -83,8 +83,11 @@ services:
     restart: always
     deploy:
       mode: global
-#    networks:
-#      - monitor-net
+    networks:
+      - monitoring-network
 #    labels:
 #      org.label-schema.group: "monitoring"
+networks:
+  monitoring-network:
+    driver: bridge
 
