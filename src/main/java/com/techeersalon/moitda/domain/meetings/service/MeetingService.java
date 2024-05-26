@@ -133,13 +133,27 @@ public class MeetingService {
      * */
     public GetMeetingDetailRes findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
+        // 생성자 유저 정보.
         User user = userRepository.findById(meeting.getUserId())
                 .orElseThrow(UserNotFoundException::new);
+
+        User currentUser = userService.getLoginUser();
 
         List<MeetingImage> imageList = meetingImageRepository.findByMeetingId(meetingId);
 
         List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
         List<MeetingParticipant> waitingList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.TRUE);
+        boolean participantValid = false;
+        // user.getId()가 participants 또는 waitingList에 있는 userId와 일치하는지 확인
+        boolean isUserInParticipants = participants.stream()
+                .anyMatch(participant -> participant.getUserId().equals(currentUser.getId()));
+
+        boolean isUserInWaitingList = waitingList.stream()
+                .anyMatch(participant -> participant.getUserId().equals(currentUser.getId()));
+
+        if (isUserInParticipants == true || isUserInWaitingList == true) {
+            participantValid = true;
+        }
 
         if (participants.isEmpty() && waitingList.isEmpty()) {
             throw new MeetingNotFoundException();
@@ -163,7 +177,7 @@ public class MeetingService {
                 })
                 .collect(Collectors.toList());
 
-        return GetMeetingDetailRes.of(meeting, user, participantDtoList, waitingDtoList ,imageList);
+        return GetMeetingDetailRes.of(meeting, user, participantDtoList, waitingDtoList ,imageList, participantValid);
     }
 
 //    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
