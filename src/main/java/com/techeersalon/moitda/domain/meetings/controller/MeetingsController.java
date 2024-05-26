@@ -170,13 +170,13 @@ public class MeetingsController {
         return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_LIST_GET_SUCCESS, response));
     }
 
-    @Operation(summary = "searchMeetingsByKeyword", description = "키워드로 모임 검색")
-    @GetMapping("/search")
-    public ResponseEntity<SuccessResponse> searchMeetingsByKeyword(
-            @RequestParam(value = "keyword") String keyword,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
-        List<GetLatestMeetingListRes> response = meetingService.searchMeetingsByKeyword(keyword, page, size);
-        return ResponseEntity.ok(SuccessResponse.of(MEETING_SEARCH_SUCCESS, response));
-    }
+//    @Operation(summary = "searchMeetingsByKeyword", description = "키워드로 모임 검색")
+//    @GetMapping("/search")
+//    public ResponseEntity<SuccessResponse> searchMeetingsByKeyword(
+//            @RequestParam(value = "keyword") String keyword,
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            @RequestParam(value = "size", defaultValue = "10") int size) {
+//        List<GetLatestMeetingListRes> response = meetingService.searchMeetingsByKeyword(keyword, page, size);
+//        return ResponseEntity.ok(SuccessResponse.of(MEETING_SEARCH_SUCCESS, response));
+//    }
 }
