@@ -34,7 +34,8 @@ scrape_configs:
     scrape_interval: 15s # global 값과 다르게 사용할려면 따로 정의하자.
 #    scheme: 'http' # request를 보낼 scheme 설정 [scheme의 기본값은 `http`]
     static_configs:
-      - targets: ['localhost:8080',
+      - targets: [
+#        'localhost:8080',
                   'host.docker.internal:8080']
     # request를 보낼 server ip 그리고 actuator port를 적어주면 된다. (위에서 지정한 포트는 9090이며, 서버 IP는 EC2의 Public Ip를 적어주자)
     # 보안을 위해서 JWT를 사용. (내 Spring 서버에서 사용할 수 있는 JWT를 발급받아서 사용)
