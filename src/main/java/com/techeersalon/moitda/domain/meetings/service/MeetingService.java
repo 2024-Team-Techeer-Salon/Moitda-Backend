@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantListMapper;
 import com.techeersalon.moitda.domain.meetings.dto.mapper.MeetingParticipantMapper;
+import com.techeersalon.moitda.domain.meetings.dto.mapper.PointMapper;
 import com.techeersalon.moitda.domain.meetings.dto.request.*;
 import com.techeersalon.moitda.domain.meetings.dto.response.*;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
@@ -32,11 +33,12 @@ import com.techeersalon.moitda.global.s3.exception.S3Exception;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -133,20 +135,29 @@ public class MeetingService {
      * */
     public GetMeetingDetailRes findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
+
+        // 생성자 유저 정보.
         User user = userRepository.findById(meeting.getUserId())
                 .orElseThrow(UserNotFoundException::new);
+
+        User currentUser = userService.getLoginUser();
 
         List<MeetingImage> imageList = meetingImageRepository.findByMeetingId(meetingId);
 
         List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
         List<MeetingParticipant> waitingList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.TRUE);
 
-        if (participants.isEmpty() || waitingList.isEmpty()) {
+        // user.getId()가 participants 또는 waitingList에 있는 userId와 일치하는지 확인
+        boolean participantValid = participants.stream()
+                .anyMatch(participant -> participant.getUserId().equals(currentUser.getId())) ||
+                waitingList.stream()
+                        .anyMatch(participant -> participant.getUserId().equals(currentUser.getId()));
+
+        if (participants.isEmpty() && waitingList.isEmpty()) {
             throw new MeetingNotFoundException();
         }
 
-        List<MeetingParticipantListMapper> participantDtoList = participants
-                .stream()
+        List<MeetingParticipantListMapper> participantDtoList = participants.stream()
                 .map(participant -> {
                     User participantUser = userRepository.findById(participant.getUserId())
                             .orElseThrow(UserNotFoundException::new);
@@ -154,8 +165,7 @@ public class MeetingService {
                 })
                 .collect(Collectors.toList());
 
-        List<MeetingParticipantListMapper> waitingDtoList = waitingList
-                .stream()
+        List<MeetingParticipantListMapper> waitingDtoList = waitingList.stream()
                 .map(participant -> {
                     User participantUser = userRepository.findById(participant.getUserId())
                             .orElseThrow(UserNotFoundException::new);
@@ -163,7 +173,7 @@ public class MeetingService {
                 })
                 .collect(Collectors.toList());
 
-        return GetMeetingDetailRes.of(meeting, user, participantDtoList, waitingDtoList ,imageList);
+        return GetMeetingDetailRes.of(meeting, user, participantDtoList, waitingDtoList, imageList, participantValid);
     }
 
 //    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
@@ -254,34 +264,56 @@ public class MeetingService {
      * 미팅 리스트 조회 메소드
      * 간략화 된 미팅 내용을 최대 32개인 한 페이지로 준다.
      * */
-    public List<GetLatestMeetingListRes> latestAllMeetings(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
-        Page<Meeting> meetings = meetingRepository.findAll(pageable);
-        return transformMeetingsToResponse(meetings);
-    }
-
-    public List<GetLatestMeetingListRes> latestUserRecordMeetings(Long userId, int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+//    public List<GetLatestMeetingListRes> latestAllMeetings(int page, int pageSize) {
+//        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+//        Page<Meeting> meetings = meetingRepository.findAll(pageable);
+//        return transformMeetingsToResponse(meetings);
+//    }
+//
+    public GetSearchPageRes latestUserRecordMeetings(Long userId, Pageable pageable) {
+        //Pageable pageable = PageRequest.of(pageable, Sort.by(Sort.Order.desc("createAt")));
         Page<Meeting> meetings = meetingRepository.findByUserId(userId, pageable);
         return transformMeetingsToResponse(meetings);
     }
-
-    public List<GetLatestMeetingListRes> latestCategoryMeetings(Long categoryId, int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
-        Page<Meeting> meetings = meetingRepository.findByCategoryId(categoryId, pageable);
+//
+//    public List<GetLatestMeetingListRes> latestCategoryMeetings(Long categoryId, int page, int pageSize) {
+//        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+//        Page<Meeting> meetings = meetingRepository.findByCategoryId(categoryId, pageable);
+//        return transformMeetingsToResponse(meetings);
+//    }
+//
+//    public List<GetLatestMeetingListRes> distanceMeetings(PointMapper point, int page, int pageSize) {
+//        Point p = mappingPoint(point);
+//        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+//        List<Meeting> meetings = meetingRepository.findMeetingByDistance(p, pageable).stream().toList();
+//        return transformMeetingsToResponse(meetings);
+//    }
+//
+//
+    public GetSearchPageRes getMeetingsNearLocation(PointMapper pointMapper, Pageable pageable) {
+        Point point = mappingPoint(pointMapper);
+        Page<Meeting> meetings = meetingRepository.findByLocationNear(point, pageable);
         return transformMeetingsToResponse(meetings);
     }
 
-    private List<GetLatestMeetingListRes> transformMeetingsToResponse(Page<Meeting> meetings) {
+    public GetSearchPageRes getMeetingsCategory (PointMapper pointMapper, Long categoryId,Pageable pageable) {
+        Point point = mappingPoint(pointMapper);
+        Page<Meeting> meetings = meetingRepository.findByLocationNearAndCategory(point, categoryId, pageable);
+        return transformMeetingsToResponse(meetings);
+    }
+
+    private GetSearchPageRes transformMeetingsToResponse(Page<Meeting> meetings) {
         if (meetings.isEmpty()) {
             throw new MeetingPageNotFoundException();
         }
-        return meetings.stream()
+        List<GetLatestMeetingListRes> meetingList = meetings.stream()
                 .map(meeting -> {
                     List<MeetingImage> images = meetingImageRepository.findByMeetingId(meeting.getId());
                     return GetLatestMeetingListRes.from(meeting, images);
                 })
                 .collect(Collectors.toList());
+
+        return GetSearchPageRes.from(meetingList, meetings.getTotalPages(), meetings.getNumber(), (int) meetings.getTotalElements(), meetings.getSize());
     }
 
 
@@ -400,9 +432,20 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 
-    public List<GetLatestMeetingListRes> searchMeetingsByKeyword(String keyword, int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
-        Page<Meeting> meetings = meetingRepository.findByKeyword(keyword, pageable);
-        return transformMeetingsToResponse(meetings);
+//    public List<GetLatestMeetingListRes> searchMeetingsByKeyword(String keyword, int page, int pageSize) {
+//        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+//        Page<Meeting> meetings = meetingRepository.findByKeyword(keyword, pageable);
+//        return transformMeetingsToResponse(meetings);
+//    }
+
+
+
+    private Point mappingPoint(PointMapper pointMapper){
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Coordinate coord = new Coordinate(pointMapper.getLongitude(), pointMapper.getLatitude());
+        Point point = geometryFactory.createPoint(coord);
+        return point;
     }
+
+
 }

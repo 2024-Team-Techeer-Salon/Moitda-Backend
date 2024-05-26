@@ -34,6 +34,11 @@ public class GetLatestMeetingListRes {
 
     private Integer maxParticipantsCount;
 
+    private Double latitude;
+
+    private Double longitude;
+
+
     public static GetLatestMeetingListRes from(Meeting meeting, List<MeetingImage> images){
         String[] roadAddress = meeting.getRoadAddressName().split(" ");
         String roadAddressName, url;
@@ -58,6 +63,8 @@ public class GetLatestMeetingListRes {
                 .roadAddressName(roadAddressName)
                 .participantsCount(meeting.getParticipantsCount())
                 .maxParticipantsCount(meeting.getMaxParticipantsCount())
+                .latitude(meeting.getLocationPoint().getY())
+                .longitude(meeting.getLocationPoint().getX())
                 .build();
     }
 

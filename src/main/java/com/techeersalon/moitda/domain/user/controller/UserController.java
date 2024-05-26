@@ -1,6 +1,6 @@
 package com.techeersalon.moitda.domain.user.controller;
 
-import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
+import com.techeersalon.moitda.domain.meetings.dto.response.GetSearchPageRes;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
@@ -11,13 +11,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 import static com.techeersalon.moitda.global.common.SuccessCode.*;
 
@@ -82,12 +84,12 @@ public class UserController {
 
     @Operation(summary = "회원모임 내역 조회")
     @GetMapping("/users/{user_id}/records")
-    public ResponseEntity<SuccessResponse> getUserMeetingRecords(
-            @PathVariable("user_id") Long userId,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int pageSize) {
+    public ResponseEntity<SuccessResponse> getUserMeetingRecords(@PathVariable("user_id") Long userId,
+                                                                 @RequestParam(value = "page", defaultValue = "0") int page,
+                                                                 @RequestParam(value = "size", defaultValue = "10") int pageSize){
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
 
-        List<GetLatestMeetingListRes> meetingRecords = meetingService.latestUserRecordMeetings(userId, page, pageSize);
+        GetSearchPageRes meetingRecords = meetingService.latestUserRecordMeetings(userId, pageable);
 
         return ResponseEntity.ok(SuccessResponse.of(USER_MEETING_RECORD_GET_SUCCESS, meetingRecords));
     }
