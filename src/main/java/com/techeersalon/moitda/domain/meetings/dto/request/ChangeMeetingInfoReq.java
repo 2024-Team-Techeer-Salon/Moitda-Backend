@@ -28,6 +28,10 @@ public class ChangeMeetingInfoReq {
 
     private String detailedAddress;
 
+    double latitude;
+
+    double longitude;
+
     @NotBlank(message = "place_name cannot be blank")
     private String placeName;
 

@@ -2,6 +2,7 @@ package com.techeersalon.moitda.domain.meetings.controller;
 
 import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
 import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
+import com.techeersalon.moitda.domain.meetings.dto.mapper.PointMapper;
 import com.techeersalon.moitda.domain.meetings.dto.request.ApprovalParticipantReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.ChangeMeetingInfoReq;
 import com.techeersalon.moitda.domain.meetings.dto.request.CreateMeetingReq;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -55,26 +57,50 @@ public class MeetingsController {
         return ResponseEntity.ok(SuccessResponse.of(MEETING_GET_SUCCESS, response));
     }
 
-    @Operation(summary = "latestMeetingsPage", description = "최신 모임 리스트 조회")
-    @GetMapping("/search/latest")
+//    @Operation(summary = "latestMeetingsPage", description = "최신 모임 리스트 조회")
+//    @GetMapping("/search/latest")
+//
+//    public ResponseEntity<SuccessResponse> latestMeetingsList(@RequestParam(value = "page", defaultValue = "0") int page,
+//                                                              @RequestParam(value = "size", defaultValue = "10") int pageSize) {
+//
+//        List<GetLatestMeetingListRes> response = meetingService.latestAllMeetings(page, pageSize);
+//
+//        return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
+//    }
 
-    public ResponseEntity<SuccessResponse> latestMeetingsList(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int pageSize) {
+//    @Operation(summary = "latestCategoryMeetingsPage", description = "카테고리별 최신 모임 리스트 조회")
+//    @GetMapping("/search/latest/{categoryId}")
+//    public ResponseEntity<SuccessResponse> latestCategoryMeetingsPage( @PathVariable Long categoryId,
+//                                                                       @RequestParam(value="page", defaultValue="0")int page,
+//                                                                       @RequestParam(value="size", defaultValue="10")int pageSize){
+//        List<GetLatestMeetingListRes> response = meetingService.latestCategoryMeetings(categoryId,page, pageSize);
+//
+//        return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
+//    }
 
-        List<GetLatestMeetingListRes> response = meetingService.latestAllMeetings(page, pageSize);
-
+    @Operation(summary = "NearMeetingsPage", description = "가까운 모임 리스트 조회")
+    @GetMapping("/search/")
+    public ResponseEntity<SuccessResponse> getNearMeetings(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            Pageable pageable){
+        PointMapper pointMapper = PointMapper.from(latitude, longitude);
+        //Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+        GetSearchPageRes response= meetingService.getMeetingsNearLocation(pointMapper, pageable);
         return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
     }
+    //@PageableDefault(sort = "createAt", direction = Sort.Direction.ASC,page = 0, size = 10)Pageable pageable)
 
-    @Operation(summary = "latestCategoryMeetingsPage", description = "카테고리별 최신 모임 리스트 조회")
-    @GetMapping("/search/latest/{categoryId}")
-    public ResponseEntity<SuccessResponse> latestCategoryMeetingsPage(
+    @Operation(summary = "CategoryNearMeetingsPage", description = "카테고리 모임 리스트 조회")
+    @GetMapping("/search/category/{categoryId}")
+    public ResponseEntity<SuccessResponse> getCategoryMeetings(
             @PathVariable Long categoryId,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int pageSize) {
-        List<GetLatestMeetingListRes> response = meetingService.latestCategoryMeetings(categoryId, page, pageSize);
-
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            Pageable pageable){
+        PointMapper pointMapper = PointMapper.from(latitude, longitude);
+        //Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+        GetSearchPageRes response= meetingService.getMeetingsCategory(pointMapper, categoryId,pageable);
         return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
     }
 
@@ -126,6 +152,17 @@ public class MeetingsController {
         return ResponseEntity.ok(SuccessResponse.of(REVIEW_CREATE_SUCCESS));
     }
 
+//    @Operation(summary = "distanceMeetingsPage", description = "범위 모임 리스트 조회")
+//    @GetMapping("/search/distance")
+//    public ResponseEntity<SuccessResponse> distanceMeetingsPage(@RequestParam("latitude") Double latitude, @RequestParam("longitude") Double longitude,
+//                                                                @RequestParam(value="page", defaultValue="0")int page,
+//                                                                @RequestParam(value="size", defaultValue="10")int pageSize){
+//        PointMapper pointMapper = PointMapper.from(latitude, longitude);
+//        List<GetLatestMeetingListRes> response = meetingService.distanceMeetings(pointMapper,page, pageSize);
+//
+//        return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
+//    }
+
     @Operation(summary = "getMeetingParticipants", description = "모임 신청자 리스트 조회")
     @GetMapping("/{meetingId}/participants")
     public ResponseEntity<SuccessResponse> getMeetingParticipants(@PathVariable Long meetingId) {
@@ -133,13 +170,13 @@ public class MeetingsController {
         return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_LIST_GET_SUCCESS, response));
     }
 
-    @Operation(summary = "searchMeetingsByKeyword", description = "키워드로 모임 검색")
-    @GetMapping("/search")
-    public ResponseEntity<SuccessResponse> searchMeetingsByKeyword(
-            @RequestParam(value = "keyword") String keyword,
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
-        List<GetLatestMeetingListRes> response = meetingService.searchMeetingsByKeyword(keyword, page, size);
-        return ResponseEntity.ok(SuccessResponse.of(MEETING_SEARCH_SUCCESS, response));
-    }
+//    @Operation(summary = "searchMeetingsByKeyword", description = "키워드로 모임 검색")
+//    @GetMapping("/search")
+//    public ResponseEntity<SuccessResponse> searchMeetingsByKeyword(
+//            @RequestParam(value = "keyword") String keyword,
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            @RequestParam(value = "size", defaultValue = "10") int size) {
+//        List<GetLatestMeetingListRes> response = meetingService.searchMeetingsByKeyword(keyword, page, size);
+//        return ResponseEntity.ok(SuccessResponse.of(MEETING_SEARCH_SUCCESS, response));
+//    }
 }
