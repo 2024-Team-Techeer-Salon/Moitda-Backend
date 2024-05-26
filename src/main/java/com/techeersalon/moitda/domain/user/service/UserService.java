@@ -9,6 +9,7 @@ import com.amazonaws.util.IOUtils;
 import com.techeersalon.moitda.domain.user.dto.mapper.UserMapper;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
+import com.techeersalon.moitda.domain.user.dto.response.UserIdRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.entity.Role;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
@@ -67,9 +68,9 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public UserProfileRes findCurrentUserProfile() {
+    public UserIdRes findCurrentUserProfile() {
         User user = this.getLoginUser();
-        return userMapper.toUserProfile(user);
+        return userMapper.toUserId(user);
     }
 
     public UserProfileRes findUserProfile(Long userId) {

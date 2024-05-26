@@ -4,6 +4,7 @@ import com.techeersalon.moitda.domain.meetings.dto.response.GetSearchPageRes;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
+import com.techeersalon.moitda.domain.user.dto.response.UserIdRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import com.techeersalon.moitda.global.common.SuccessResponse;
@@ -53,7 +54,7 @@ public class UserController {
     @GetMapping("/users/me")
     public ResponseEntity<SuccessResponse> findCurrentUserProfile() {
 
-        UserProfileRes userProfile = userService.findCurrentUserProfile();
+        UserIdRes userProfile = userService.findCurrentUserProfile();
 
         return ResponseEntity.ok(SuccessResponse.of(USER_PROFILE_GET_SUCCESS, userProfile));
     }
