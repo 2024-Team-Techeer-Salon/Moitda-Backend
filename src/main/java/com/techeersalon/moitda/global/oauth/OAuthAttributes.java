@@ -63,7 +63,7 @@ public class OAuthAttributes {
                 .email(oauth2UserInfo.getEmail())
                 .socialType(socialType)
                 .role(Role.GUEST)
-                .mannerStat(20)
+                .mannerStat(40)
                 .build();
     }
 }

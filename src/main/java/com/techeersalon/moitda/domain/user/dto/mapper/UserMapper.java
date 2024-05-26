@@ -39,7 +39,7 @@ public class UserMapper {
                 .meetingId(meeting.getId())
                 .title(meeting.getTitle())
                 .images(images)
-                .address(meeting.getAddress())
+                .address(meeting.getRoadAddressName())
                 .build();
     }
 }

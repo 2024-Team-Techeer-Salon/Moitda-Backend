@@ -24,3 +24,6 @@ services:
       MYSQL_DATABASE: moitda
       MYSQL_ROOT_PASSWORD: "1234"
 
+
+
+

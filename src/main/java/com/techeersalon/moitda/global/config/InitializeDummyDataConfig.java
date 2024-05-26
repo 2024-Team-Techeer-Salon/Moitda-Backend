@@ -35,8 +35,8 @@ public class InitializeDummyDataConfig implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        registerUser();
-        registerMeeting();
+//        registerUser();
+//        registerMeeting();
     }
 
     private void registerUser(){
@@ -90,8 +90,8 @@ public class InitializeDummyDataConfig implements CommandLineRunner {
                     .title("title" + i)
                     .participantsCount(1)
                     .maxParticipantsCount(random.nextInt(30) + 1)
-                    .address(address[random.nextInt(address.length)])
-                    .buildingName("스타벅스")
+                    .roadAddressName(address[random.nextInt(address.length)])
+                    .placeName("스타벅스")
                     .approvalRequired(true)
                     .appointmentTime(LocalDateTime.now()
                                     .plusDays(random.nextInt(30) + 1)

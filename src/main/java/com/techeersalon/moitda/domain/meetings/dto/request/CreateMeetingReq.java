@@ -10,6 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 @Getter
 @Builder
@@ -35,6 +38,11 @@ public class CreateMeetingReq {
     //@NotBlank(message = "detailed_address cannot be blank")
     private String detailedAddress;
 
+    //private Point locationPoint;
+    double latitude;
+
+    double longitude;
+
     @NotNull(message = "max_participants_count cannot be blank")
     private Integer maxParticipantsCount;
 
@@ -45,15 +53,19 @@ public class CreateMeetingReq {
     private String appointmentTime;
 
     public Meeting toEntity(User user) {
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Coordinate coord = new Coordinate(longitude, latitude);
+        Point point = geometryFactory.createPoint(coord);
         return Meeting.builder()
                 .userId(user.getId())
                 .username(user.getUsername())
                 .categoryId(categoryId)
                 .title(title)
                 .content(content)
-                .address(roadAddressName)
-                .buildingName(placeName)
-                .addressDetail(detailedAddress)
+                .roadAddressName(roadAddressName)
+                .placeName(placeName)
+                .detailedAddress(detailedAddress)
+                .locationPoint(point)
                 .maxParticipantsCount(maxParticipantsCount)
                 .approvalRequired(approvalRequired)
                 .appointmentTime(appointmentTime)

@@ -42,6 +42,8 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
                 "http://localhost:3000",
+                "http://localhost:9100",
+                "http://localhost:9090",
                 "http://jxy.me",
                 "http://apic.app",
                 "file://",

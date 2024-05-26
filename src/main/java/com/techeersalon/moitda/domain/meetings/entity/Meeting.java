@@ -10,6 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
@@ -43,17 +46,21 @@ public class Meeting extends BaseEntity {
     @Column(name = "max_participants_count", nullable = false)
     private Integer maxParticipantsCount;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @Column(name = "road_address_name", nullable = false)
+    private String roadAddressName;
 
-    @Column(name = "building_name")
-    private String buildingName;
+    @Column(name = "place_name")
+    private String placeName;
 
-    @Column(name = "address_detail")
-    private String addressDetail;
+    @Column(name = "detailed_address")
+    private String detailedAddress;
+
+    @Column(name = "location_point")
+    //@Type(org.hibernate.spatial.)
+    private Point locationPoint;
 
     @Lob
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "approval_required", nullable = false)
@@ -70,12 +77,17 @@ public class Meeting extends BaseEntity {
     }
 
     public void updateInfo(ChangeMeetingInfoReq dto){
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Coordinate coord = new Coordinate(dto.getLongitude(), dto.getLatitude());
+        Point point = geometryFactory.createPoint(coord);
+
         this.categoryId = dto.getCategoryId();
         this.title = dto.getTitle();
         this.content = dto.getContent();
-        this.buildingName = dto.getPlaceName();
-        this.address = dto.getRoadAddressName();
-        this.addressDetail = dto.getDetailedAddress();
+        this.placeName = dto.getPlaceName();
+        this.roadAddressName = dto.getRoadAddressName();
+        this.detailedAddress = dto.getDetailedAddress();
+        this.locationPoint = point;
         this.maxParticipantsCount = dto.getMaxParticipantsCount();
         this.appointmentTime = dto.getAppointmentTime();
     }
