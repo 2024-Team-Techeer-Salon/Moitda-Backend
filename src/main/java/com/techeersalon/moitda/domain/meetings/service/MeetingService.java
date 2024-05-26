@@ -133,20 +133,29 @@ public class MeetingService {
      * */
     public GetMeetingDetailRes findMeetingById(Long meetingId) {
         Meeting meeting = this.getMeetingById(meetingId);
+
+        // 생성자 유저 정보.
         User user = userRepository.findById(meeting.getUserId())
                 .orElseThrow(UserNotFoundException::new);
+
+        User currentUser = userService.getLoginUser();
 
         List<MeetingImage> imageList = meetingImageRepository.findByMeetingId(meetingId);
 
         List<MeetingParticipant> participants = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.FALSE);
         List<MeetingParticipant> waitingList = meetingParticipantRepository.findByMeetingIdAndIsWaiting(meetingId, Boolean.TRUE);
 
+        // user.getId()가 participants 또는 waitingList에 있는 userId와 일치하는지 확인
+        boolean participantValid = participants.stream()
+                .anyMatch(participant -> participant.getUserId().equals(currentUser.getId())) ||
+                waitingList.stream()
+                        .anyMatch(participant -> participant.getUserId().equals(currentUser.getId()));
+
         if (participants.isEmpty() && waitingList.isEmpty()) {
             throw new MeetingNotFoundException();
         }
 
-        List<MeetingParticipantListMapper> participantDtoList = participants
-                .stream()
+        List<MeetingParticipantListMapper> participantDtoList = participants.stream()
                 .map(participant -> {
                     User participantUser = userRepository.findById(participant.getUserId())
                             .orElseThrow(UserNotFoundException::new);
@@ -154,8 +163,7 @@ public class MeetingService {
                 })
                 .collect(Collectors.toList());
 
-        List<MeetingParticipantListMapper> waitingDtoList = waitingList
-                .stream()
+        List<MeetingParticipantListMapper> waitingDtoList = waitingList.stream()
                 .map(participant -> {
                     User participantUser = userRepository.findById(participant.getUserId())
                             .orElseThrow(UserNotFoundException::new);
@@ -163,7 +171,7 @@ public class MeetingService {
                 })
                 .collect(Collectors.toList());
 
-        return GetMeetingDetailRes.of(meeting, user, participantDtoList, waitingDtoList ,imageList);
+        return GetMeetingDetailRes.of(meeting, user, participantDtoList, waitingDtoList, imageList, participantValid);
     }
 
 //    private MeetingParticipantMapper mapToDto(MeetingParticipant meetingParticipant) {
