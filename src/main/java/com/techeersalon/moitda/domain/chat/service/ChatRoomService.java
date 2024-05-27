@@ -3,6 +3,7 @@ package com.techeersalon.moitda.domain.chat.service;
 import com.techeersalon.moitda.domain.chat.entity.ChatMessage;
 import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
 import com.techeersalon.moitda.domain.chat.dto.mapper.ChatMapper;
+import com.techeersalon.moitda.domain.chat.exception.ChatRoomNotFoundException;
 import com.techeersalon.moitda.domain.chat.repository.ChatMessageRepository;
 import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
@@ -39,7 +40,15 @@ public class ChatRoomService {
 
     /*채팅방에 유저 추가*/
     @Transactional
-    public void addUserToRoom(Long roomId, Long userId) {
+    public ChatRoomRes addUserToRoom(Long roomId, User user) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(ChatRoomNotFoundException::new);
+
+        chatRoom.getMembers().add(user);
+
+        chatRoomRepository.save(chatRoom);
+        ChatRoomRes chatRoomRes = chatMapper.toChatRoomDto(chatRoom);
+        return chatRoomRes;
     }
 
     @Transactional
@@ -53,7 +62,7 @@ public class ChatRoomService {
     @Transactional
     public List<ChatRoomRes> getChatRoomsByUser(User user) {
         List<ChatRoom> chatRooms = chatRoomRepository.findByMembers(user);
-        List<ChatRoomRes> chatRoomDtoList = ChatMapper.toChatRoomDtoList(chatRooms);
+        List<ChatRoomRes> chatRoomDtoList = chatMapper.toChatRoomDtoList(chatRooms);
         return chatRoomDtoList;
     }
 

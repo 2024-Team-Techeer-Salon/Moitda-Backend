@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -66,22 +67,22 @@ public class SecurityConfig {
                 .sessionManagement(configurer -> configurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
-                                "/", "/oauth2/**",
-                                "/index.html",
-                                "/swagger/**",
-                                "swagger-ui/**",
-                                "/api-docs/**",
-                                "/signup.html",
-                                "/users/**",
-                                "/actuator/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
-//                .authorizeHttpRequests(requests ->
-//                        requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
+//                .authorizeHttpRequests(authorize -> authorize
+//                        .requestMatchers(
+//                                "/", "/oauth2/**",
+//                                "/index.html",
+//                                "/ws/**",
+//                                "/swagger/**",
+//                                "swagger-ui/**",
+//                                "/api-docs/**",
+//                                "/signup.html",
+//                                "/users/**"
+//                        ).permitAll()
+//                        .anyRequest().authenticated()
 //                )
+                .authorizeHttpRequests(requests ->
+                        requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
+                )
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(endpoint -> endpoint
                                 .userService(customOAuth2UserService))

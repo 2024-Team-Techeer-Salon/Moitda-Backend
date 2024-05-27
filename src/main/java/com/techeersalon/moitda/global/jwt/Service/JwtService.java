@@ -116,11 +116,11 @@ public class JwtService {
         String headerValue = accessor.getFirstNativeHeader("Authorization");
         if (headerValue != null && headerValue.startsWith("Bearer ")) {
             String token = headerValue.substring(7); // "Bearer " 부분을 제외하고 JWT 토큰만 추출
-            log.info("Extracted JWT token: {}", token);
+            log.info("검출된 AT : ", token);
             return token;
         }
 
-        log.info("안됨");
+        log.info("token 추출x");
 
         return null;
     }
@@ -151,27 +151,6 @@ public class JwtService {
         }
     }
 
-    public UserDetails tokentoUserDetials(List<String> authorizationHeaders){
-        if (authorizationHeaders != null && !authorizationHeaders.isEmpty()) {
-            String jwtToken = authorizationHeaders.get(0).replace("Bearer ", "");
-
-            JwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
-                            new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName()))
-                    .build();
-
-            // JWT 토큰을 디코딩합니다.
-            Jwt jwt = jwtDecoder.decode(jwtToken);
-
-            // UserDetails를 생성하여 필요한 정보를 추가합니다.
-            UserDetails userDetails = User.builder()
-                    .username(jwt.getClaim("username")) // 예시: 토큰에서 username 클레임을 가져와 username으로 설정
-                    .password("") // 비밀번호는 토큰에서 가져오지 않으므로 빈 문자열로 설정
-                    .build();
-            // 이제 UserDetails에 정상적인 값이 추가되었습니다.
-            return userDetails;
-        }
-        return null;
-    }
 
     public Object[] extractEmailAndSocialType(String accessToken) {
         try {
