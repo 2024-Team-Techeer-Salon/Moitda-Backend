@@ -16,5 +16,4 @@ public class ChatMessageRes {
     private String profileImage;
     private String content;
     private String sendDate;
-    private boolean isRead;  // 읽음 여부
 }

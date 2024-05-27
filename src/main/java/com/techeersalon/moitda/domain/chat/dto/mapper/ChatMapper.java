@@ -7,9 +7,6 @@ import com.techeersalon.moitda.domain.chat.dto.request.ChatMessageReq;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
 import com.techeersalon.moitda.domain.chat.exception.MessageNotFoundException;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
-import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
-import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingPageNotFoundException;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.service.UserService;
@@ -47,6 +44,7 @@ public class ChatMapper {
         UserProfileRes userProfile = userService.findUserProfile(chatMessage.getUserid());
 
         return ChatMessageRes.builder()
+                .Id(chatMessage.getId())
                 .userid(chatMessage.getUserid())
                 .sender(userProfile.getUsername())
                 .profileImage(userProfile.getProfileImage())
@@ -77,7 +75,7 @@ public class ChatMapper {
     public List<ChatMessageRes> toChatMessageDtoList(List<ChatMessage> messages) {
         ChatMapper chatMapper = new ChatMapper();;
         return messages.stream()
-                .map(ChatMapper::toChatMessageDto)
+                .map(this::toChatMessageDto)
                 .collect(Collectors.toList());
     }
 
@@ -89,13 +87,4 @@ public class ChatMapper {
     }
 
 
-//     public static GetLatestMessageListResponseDto of(ChatMessage chatMessage){
-//        return GetLatestMessageListResponseDto.builder()
-//                .userid(chatMessage.getUserid())
-//                .sender(userService.findUserProfile(chatMessage.getUserid()).getUsername())
-//                .profileImage(userService.findUserProfile(chatMessage.getUserid()).getProfileImage())
-//                .content(chatMessage.getMessage())
-//                .sendDate(chatMessage.getSendDate())
-//                .build();
-//    }
 }

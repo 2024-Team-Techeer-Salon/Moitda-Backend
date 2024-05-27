@@ -62,7 +62,7 @@ public class ChatRoomService {
     @Transactional
     public List<ChatRoomRes> getChatRoomsByUser(User user) {
         List<ChatRoom> chatRooms = chatRoomRepository.findByMembers(user);
-        List<ChatRoomRes> chatRoomDtoList = ChatMapper.toChatRoomDtoList(chatRooms);
+        List<ChatRoomRes> chatRoomDtoList = chatMapper.toChatRoomDtoList(chatRooms);
         return chatRoomDtoList;
     }
 

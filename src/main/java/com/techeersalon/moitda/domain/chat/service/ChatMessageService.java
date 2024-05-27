@@ -3,17 +3,12 @@ package com.techeersalon.moitda.domain.chat.service;
 import com.techeersalon.moitda.domain.chat.dto.mapper.ChatMapper;
 import com.techeersalon.moitda.domain.chat.dto.request.ChatMessageReq;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
-import com.techeersalon.moitda.domain.chat.dto.response.GetLatestMessageListRes;
 import com.techeersalon.moitda.domain.chat.entity.ChatMessage;
 import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
 import com.techeersalon.moitda.domain.chat.exception.ChatRoomNotFoundException;
 import com.techeersalon.moitda.domain.chat.exception.MessageNotFoundException;
 import com.techeersalon.moitda.domain.chat.repository.ChatMessageRepository;
 import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
-import com.techeersalon.moitda.domain.meetings.dto.response.GetLatestMeetingListRes;
-import com.techeersalon.moitda.domain.meetings.entity.Meeting;
-import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
-import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingPageNotFoundException;
 import com.techeersalon.moitda.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -46,15 +39,18 @@ public class ChatMessageService {
 //    }
     /**
      * ChatMessage 생성
+     *
+     * @return
      */
     @Transactional
-    public void save(User sender, Long roomId, ChatMessageReq messageRequestDto) {
+    public ChatMessageRes createChatMessage(User sender, Long roomId, ChatMessageReq messageRequestDto) {
         ChatRoom chatRoomEntity = this.chatRoomRepository.findById(roomId).orElseThrow(
                 ChatRoomNotFoundException::new);
         //messageRequestDto.setRoomId(chatRoomEntity.getId());
 
-        ChatMessage message = chatMapper.toChatMessage(sender, roomId, messageRequestDto);
-        this.chatMessageRepository.save(message);
+        ChatMessage entity = chatMapper.toChatMessage(sender, roomId, messageRequestDto);
+        ChatMessage chatMessage = chatMessageRepository.save(entity);
+        return chatMapper.toChatMessageDto(chatMessage);
     }
 
 
@@ -66,9 +62,16 @@ public class ChatMessageService {
         this.chatMessageRepository.delete(chatMessageEntity);
     }
 
+//    /** ChatMessage 조회*/
+//    @Transactional
+//    public ChatMessageRes findChatMessage(ChatMessage chatMessage) {
+//        ChatMessage chatMessage = chatMessageRepository.findBy();
+//        return chatMapper.toChatMessageDto(chatMessage);
+//    }
+
     /*채팅방의 메시지 조회*/
     @Transactional
-    public List<ChatMessageRes> findChatMessage(Long roomId) {
+    public List<ChatMessageRes> findChatMessageList(Long roomId) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByMeetingId(roomId);
         return chatMapper.toChatMessageDtoList(chatMessages);
     }

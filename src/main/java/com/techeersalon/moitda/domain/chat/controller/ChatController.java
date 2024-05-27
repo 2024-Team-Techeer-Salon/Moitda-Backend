@@ -65,7 +65,23 @@ public class ChatController {
 
         // 채팅방이 존재하는지 확인
         if (chatRoomOptional.isPresent()) {
-            List<ChatMessageRes> chatmessages = chatMessageService.findChatMessage(roomid);
+            List<ChatMessageRes> chatmessages = chatMessageService.findChatMessageList(roomid);
+            return ResponseEntity.ok(SuccessResponse.of(SuccessCode.MESSAGE_GET_SUCCESS,chatmessages));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @Operation(description = "GetPagesByRoom", summary = "채팅방의 내역 페이지 조회")
+    @GetMapping("/rooms/chatlists/{room_id}")
+    public ResponseEntity<SuccessResponse> getPagesByChatRoom(@PathVariable("room_id") Long roomid,
+                                                              @RequestParam(value = "page", defaultValue = "0") int page,
+                                                              @RequestParam(value = "size", defaultValue = "10") int size) {
+        //room_id
+        Optional<ChatRoom> chatRoomOptional = chatRoomService.findById(roomid);
+
+        // 채팅방이 존재하는지 확인
+        if (chatRoomOptional.isPresent()) {
+            List<ChatMessageRes> chatmessages = chatMessageService.getLatestMessageList(roomid,page,size);
             return ResponseEntity.ok(SuccessResponse.of(SuccessCode.MESSAGE_GET_SUCCESS,chatmessages));
         }
         return ResponseEntity.notFound().build();

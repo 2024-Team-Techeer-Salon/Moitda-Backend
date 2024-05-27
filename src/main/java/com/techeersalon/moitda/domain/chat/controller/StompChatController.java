@@ -68,12 +68,13 @@ public class StompChatController {
 //        }
 //
         ChatMessage chatMessage = ChatMapper.toChatMessage(user, Long.valueOf(roomId), messageDto);
-        ChatMessageRes responseDto = chatMapper.toChatMessageDto(chatMessage);
+
+        ChatMessageRes responseDto = chatMessageService.createChatMessage(user, Long.valueOf(roomId), messageDto);
+
         /* 채팅방에 유저 추가하는 것만 하면 될 듯*/
         template.convertAndSend("/sub/chat/room/" + roomId,responseDto); /*채팅방으로*/
-        /*채팅 저장*/
-        chatMessageService.save(user, Long.valueOf(roomId), messageDto);
         log.info("pub success " + messageDto.getMessage());
+        /*채팅 저장*/
 
     }
 
