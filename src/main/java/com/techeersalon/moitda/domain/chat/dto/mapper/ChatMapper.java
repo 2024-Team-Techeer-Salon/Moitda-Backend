@@ -30,7 +30,7 @@ import static java.time.LocalTime.now;
 public class ChatMapper {
 
     @Autowired
-    private static UserService userService;
+    private UserService userService;
 
     public static ChatMessage toChatMessage(User user, Long meetingId, ChatMessageReq request) {
         return ChatMessage.builder()
@@ -42,9 +42,9 @@ public class ChatMapper {
                 .build();
     }
 
-    public static ChatMessageRes toChatMessageDto(ChatMessage chatMessage, Long userId) {
+    public ChatMessageRes toChatMessageDto(ChatMessage chatMessage) {
         // userId를 사용하여 사용자 정보를 조회합니다.
-        UserProfileRes userProfile = userService.findUserProfile(userId);
+        UserProfileRes userProfile = userService.findUserProfile(chatMessage.getUserid());
 
         return ChatMessageRes.builder()
                 .userid(chatMessage.getUserid())
@@ -67,21 +67,21 @@ public class ChatMapper {
                         //.stream().map(this::toMemberDetail).collect(Collectors.toList()))
                 .build();
     }
-    public static List<ChatRoomRes> toChatRoomDtoList(List<ChatRoom> rooms) {
+    public List<ChatRoomRes> toChatRoomDtoList(List<ChatRoom> rooms) {
         return rooms.stream()
                 .map(ChatMapper::toChatRoomDto)
                 .collect(Collectors.toList());
     }
 
 
-    public static List<ChatMessageRes> toChatMessageDtoList(List<ChatMessage> messages) {
+    public List<ChatMessageRes> toChatMessageDtoList(List<ChatMessage> messages) {
         ChatMapper chatMapper = new ChatMapper();;
         return messages.stream()
-                .map(message -> toChatMessageDto(message, message.getUserid()))
+                .map(ChatMapper::toChatMessageDto)
                 .collect(Collectors.toList());
     }
 
-    public static List<ChatMessageRes> PageToChatMessageDto(Page<ChatMessage> messages){
+    public List<ChatMessageRes> PageToChatMessageDto(Page<ChatMessage> messages){
         if (messages.isEmpty()) {
             throw new MessageNotFoundException();
         }

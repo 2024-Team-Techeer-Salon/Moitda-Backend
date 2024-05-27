@@ -77,7 +77,7 @@ public class ChatMessageService {
     @Transactional
     public List<ChatMessageRes> getLatestMessageList(Long meetingId, int page, int pageSize){
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
-        Page<ChatMessage> chatMessages = chatMessageRepository.findByMeetingId(meetingId, pageable);
+        Page<ChatMessage> chatMessages = chatMessageRepository.findPagesByMeetingId(meetingId, pageable);
 
         return chatMapper.PageToChatMessageDto(chatMessages);
         // return meetings.map(GetLatestMeetingListResponse::of);

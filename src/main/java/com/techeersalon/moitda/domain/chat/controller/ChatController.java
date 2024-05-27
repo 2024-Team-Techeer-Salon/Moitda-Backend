@@ -79,7 +79,7 @@ public class ChatController {
                 SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername());
         User user = optionalUser.get();
 
-        ChatRoomRes chatRoomRes = chatRoomService.addUserToRoom(roomid,user.getId());
+        ChatRoomRes chatRoomRes = chatRoomService.addUserToRoom(roomid,user);
         return ResponseEntity.ok(SuccessResponse.of(SuccessCode.USER_APPROVAL_SUCCESS, chatRoomRes));
     }
 
