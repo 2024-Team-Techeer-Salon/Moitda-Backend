@@ -10,6 +10,7 @@ import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.global.jwt.Service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -34,12 +35,6 @@ public class StompChatController {
     private final JwtService jwtService;
     private final ChatMapper chatMapper;
 
-//    @EventListener
-//    public void handleWebSocketConnectListener(StompHeaderAccessor headerAccessor) {
-//        headerAccessor.
-//        log.info("Received a new web socket connection");
-//    }
-
 //    @MessageMapping("")
 //    public void handleStompMessage(StompHeaderAccessor accessor) {
 //        // STOMP 메시지의 헤더에 액세스할 수 있습니다.
@@ -62,14 +57,25 @@ public class StompChatController {
         User user = userRepository.findBySocialTypeAndEmail(socialType, email).get();
 
         log.info("# roomId = {}", roomId);
+
+//        if (messageDto.getType() == ChatMessage.MessageType.ENTER) {
+//            /*이때 채팅 내역이 조회되어야 함*/
+//            //chatMessageService.findLatestMessageList(roomId,);
+//            }
+//            /*채팅 내역 조회 이걸로 해야할 거 같은데...*/
+//        }
+//        else{
+//        }
+//
         ChatMessage chatMessage = ChatMapper.toChatMessage(user, Long.valueOf(roomId), messageDto);
-        ChatMessageRes responseDto = chatMapper.toChatMessageDto(chatMessage);
-            /* 채팅방에 유저 추가하는 것만 하면 될 듯*/
+
+        ChatMessageRes responseDto = chatMessageService.createChatMessage(user, Long.valueOf(roomId), messageDto);
+
+        /* 채팅방에 유저 추가하는 것만 하면 될 듯*/
         template.convertAndSend("/sub/chat/room/" + roomId,responseDto); /*채팅방으로*/
-        /*채팅 저장*/
-        chatMessageService.save(user, Long.valueOf(roomId), messageDto);
         log.info("pub success " + messageDto.getMessage());
-        //return;
+        /*채팅 저장*/
+
     }
 
 //    @MessageMapping(value = "/room/founder/{memberId}")

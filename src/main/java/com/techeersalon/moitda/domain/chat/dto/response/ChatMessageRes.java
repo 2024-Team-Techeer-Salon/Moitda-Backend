@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ChatMessageRes {
+    private Long Id;
     private Long userid;
     private String sender;
     private String profileImage;

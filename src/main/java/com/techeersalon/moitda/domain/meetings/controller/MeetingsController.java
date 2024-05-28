@@ -57,26 +57,6 @@ public class MeetingsController {
         return ResponseEntity.ok(SuccessResponse.of(MEETING_GET_SUCCESS, response));
     }
 
-//    @Operation(summary = "latestMeetingsPage", description = "최신 모임 리스트 조회")
-//    @GetMapping("/search/latest")
-//
-//    public ResponseEntity<SuccessResponse> latestMeetingsList(@RequestParam(value = "page", defaultValue = "0") int page,
-//                                                              @RequestParam(value = "size", defaultValue = "10") int pageSize) {
-//
-//        List<GetLatestMeetingListRes> response = meetingService.latestAllMeetings(page, pageSize);
-//
-//        return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
-//    }
-
-//    @Operation(summary = "latestCategoryMeetingsPage", description = "카테고리별 최신 모임 리스트 조회")
-//    @GetMapping("/search/latest/{categoryId}")
-//    public ResponseEntity<SuccessResponse> latestCategoryMeetingsPage( @PathVariable Long categoryId,
-//                                                                       @RequestParam(value="page", defaultValue="0")int page,
-//                                                                       @RequestParam(value="size", defaultValue="10")int pageSize){
-//        List<GetLatestMeetingListRes> response = meetingService.latestCategoryMeetings(categoryId,page, pageSize);
-//
-//        return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
-//    }
 
     @Operation(summary = "nearMeetingsPage", description = "가까운 모임 리스트 조회")
     @GetMapping("/search/")
