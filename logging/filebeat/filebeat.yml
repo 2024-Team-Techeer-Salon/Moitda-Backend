@@ -1,0 +1,16 @@
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /etc/nginx/*.log
+
+logging.level: debug
+
+output.logstash:
+  enabled: true
+  hosts: ["logstash:5044"]
+
+setup.kibana:
+  host: "http://kibana:5601"
+  username: "elastic"
+  password: "1234"
