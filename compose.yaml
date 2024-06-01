@@ -14,6 +14,7 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
+      - ./logs:/var/log/spring-boot
 
   db:
     image: mysql:8.0
@@ -24,55 +25,3 @@ services:
       MYSQL_DATABASE: moitda
       MYSQL_ROOT_PASSWORD: "1234"
 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    container_name: elasticsearch
-    platform: linux/amd64
-    environment:
-      - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      #- "http.enabled=true"
-      - "http.cors.enabled=true"
-    ports:
-      - "9200:9200"
-    volumes:
-      - ./logging/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
-    container_name: logstash
-    platform: linux/amd64
-    volumes:
-      - ./logging/:/logging/
-      - ./logging/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - ./logging/logstash/pipeline:/usr/share/logstash/pipeline
-    ports:
-      - "5044:5044"
-    depends_on:
-      - elasticsearch
-    #command: /usr/share/logstash/bin/logstash-plugin install logstash-input-websocket
-    #command: sudo systemctl restart logstash
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
-    container_name: kibana
-    platform: linux/amd64
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
-
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:${STACK_VERSION}
-    container_name: filebeat
-    platform: linux/amd64
-    volumes:
-      - ./logging:/logging
-      - ./logging/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      #- ./nginx/log:/var/log/nginx
-    depends_on:
-      - logstash
-      - elasticsearch
-      - kibana
-    command: filebeat -e -c /usr/share/filebeat/filebeat.yml

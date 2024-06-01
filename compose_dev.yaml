@@ -67,6 +67,7 @@ services:
         - monitoring-network
   #    labels:
   #      org.label-schema.group: "monitoring"
+
   networks:
     monitoring-network:
       driver: bridge

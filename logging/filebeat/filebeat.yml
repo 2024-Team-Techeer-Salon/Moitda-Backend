@@ -2,9 +2,8 @@ filebeat.inputs:
   - type: log
     enabled: true
     paths:
-      - /etc/nginx/*.log
-
-logging.level: debug
+      #- /var/log/nginx/*.log
+      - /var/log/spring-boot/*.log
 
 output.logstash:
   enabled: true
