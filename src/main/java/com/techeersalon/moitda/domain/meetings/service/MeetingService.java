@@ -261,7 +261,7 @@ public class MeetingService {
 
     public GetSearchPageRes getMeetingsNearLocation(PointMapper pointMapper, Pageable pageable) {
         Point point = mappingPoint(pointMapper);
-        Page<Meeting> meetings = meetingRepository.findByLocationNear(point, pageable);
+        Page<Meeting> meetings = meetingRepository.findMeetingByDistance(point, pageable);
         return transformMeetingsToResponse(meetings);
     }
 

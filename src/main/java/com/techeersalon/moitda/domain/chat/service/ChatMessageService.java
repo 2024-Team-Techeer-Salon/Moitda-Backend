@@ -5,11 +5,17 @@ import com.techeersalon.moitda.domain.chat.dto.request.ChatMessageReq;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
 import com.techeersalon.moitda.domain.chat.entity.ChatMessage;
 import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
+import com.techeersalon.moitda.domain.chat.exception.ChatRoomNotFoundException;
+import com.techeersalon.moitda.domain.chat.exception.MessageNotFoundException;
 import com.techeersalon.moitda.domain.chat.repository.ChatMessageRepository;
 import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
 import com.techeersalon.moitda.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,15 +39,18 @@ public class ChatMessageService {
 //    }
     /**
      * ChatMessage 생성
+     *
+     * @return
      */
     @Transactional
-    public void save(User sender, Long roomId, ChatMessageReq messageRequestDto) {
+    public ChatMessageRes createChatMessage(User sender, Long roomId, ChatMessageReq messageRequestDto) {
         ChatRoom chatRoomEntity = this.chatRoomRepository.findById(roomId).orElseThrow(
-                () -> new IllegalArgumentException("해당 ChatRoom이 존재하지 않습니다. chatRoomId = " + roomId));
+                ChatRoomNotFoundException::new);
         //messageRequestDto.setRoomId(chatRoomEntity.getId());
 
-        ChatMessage message = chatMapper.toChatMessage(sender, roomId, messageRequestDto);
-        this.chatMessageRepository.save(message);
+        ChatMessage entity = chatMapper.toChatMessage(sender, roomId, messageRequestDto);
+        ChatMessage chatMessage = chatMessageRepository.save(entity);
+        return chatMapper.toChatMessageDto(chatMessage);
     }
 
 
@@ -49,27 +58,36 @@ public class ChatMessageService {
     @Transactional
     public void delete(final Long chatMessageId) {
         ChatMessage chatMessageEntity = this.chatMessageRepository.findById(chatMessageId).orElseThrow(
-                () -> new IllegalArgumentException("해당 ChatMessage가 존재하지 않습니다. chatMessageId = " + chatMessageId));
+                MessageNotFoundException::new);
         this.chatMessageRepository.delete(chatMessageEntity);
     }
 
+//    /** ChatMessage 조회*/
+//    @Transactional
+//    public ChatMessageRes findChatMessage(ChatMessage chatMessage) {
+//        ChatMessage chatMessage = chatMessageRepository.findBy();
+//        return chatMapper.toChatMessageDto(chatMessage);
+//    }
+
     /*채팅방의 메시지 조회*/
     @Transactional
-    public List<ChatMessageRes> findChatMessage(Long roomId) {
+    public List<ChatMessageRes> findChatMessageList(Long roomId) {
         List<ChatMessage> chatMessages = chatMessageRepository.findByMeetingId(roomId);
         return chatMapper.toChatMessageDtoList(chatMessages);
     }
 
     /*채팅방 메시지 조회 무한 스크롤*/
-//    @Transactional
-//    public Page<GetLatestMessageListResponseDto> findLatestMessageList(int page){
-//        List<Sort.Order> sorts = new ArrayList<>();
-//        sorts.add(Sort.Order.desc("createAt"));
-//        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
-//        Page<ChatMessage> chatMessages = chatMessageRepository.findAll(pageable);
-//
-//        return chatMessages.map(ChatMapper.of(chatMessages));
-//        // return meetings.map(GetLatestMeetingListResponse::of);
-//    }
+    @Transactional
+    public List<ChatMessageRes> getLatestMessageList(Long meetingId, int page, int pageSize){
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+        Page<ChatMessage> chatMessages = chatMessageRepository.findPagesByMeetingId(meetingId, pageable);
+
+        return chatMapper.PageToChatMessageDto(chatMessages);
+        // return meetings.map(GetLatestMeetingListResponse::of);
+    }
+
+
+
+
 
 }
