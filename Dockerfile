@@ -22,5 +22,12 @@ FROM openjdk:17
 COPY --from=builder build/libs/*.jar app.jar
 # builder 이미지에서 build/libs/*.jar 파일을 app.jar로 복사
 
+ARG JAR_FILE
+RUN mkdir -p /var/log/spring-boot
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]
+
+
+
+
