@@ -13,15 +13,33 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface MeetingRepository extends PagingAndSortingRepository<Meeting, Long>, JpaRepository<Meeting, Long>{
+public interface MeetingRepository extends PagingAndSortingRepository<Meeting, Long>, JpaRepository<Meeting, Long> {
 
-    //최신순
-    //Page<Meeting> findPageAll(Pageable pageable);
-    Page<Meeting> findPageByUserId(Long userId, Pageable pageable);
-    //Optional<Meeting> findById(Long id);
+    // jpql
+    @Query(
+            value = "SELECT me FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE me.userId = :userId AND me.endTime IS NOT NULL AND mp.isWaiting = false AND me.userId = mp.userId",
+            countQuery = "SELECT COUNT(me) FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE me.userId = :userId AND me.endTime IS NOT NULL AND mp.isWaiting = false AND me.userId = mp.userId"
+    )
+    Page<Meeting> findEndedCreatingRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
 
-//    @Query("SELECT m FROM Meeting m WHERE m.title LIKE %:keyword%")
-//    Page<Meeting> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
+    @Query(
+            value = "SELECT me FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE me.userId = :userId AND me.endTime IS NULL AND mp.isWaiting = false AND me.userId = mp.userId",
+            countQuery = "SELECT COUNT(me) FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE me.userId = :userId AND me.endTime IS NULL AND mp.isWaiting = false AND me.userId = mp.userId"
+    )
+    Page<Meeting> findOngoingCreatingRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query(
+            value = "SELECT me FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE mp.userId = :userId AND me.endTime IS NOT NULL AND mp.isWaiting = false AND me.userId != mp.userId",
+            countQuery = "SELECT COUNT(me) FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE mp.userId = :userId AND me.endTime IS NOT NULL AND mp.isWaiting = false AND me.userId != mp.userId"
+    )
+    Page<Meeting> findEndedParticipationRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query(
+            value = "SELECT me FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE mp.userId = :userId AND me.endTime IS NULL AND mp.isWaiting = false AND me.userId != mp.userId",
+            countQuery = "SELECT COUNT(me) FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE mp.userId = :userId AND me.endTime IS NULL AND mp.isWaiting = false AND me.userId != mp.userId"
+    )
+    Page<Meeting> findOngoingParticipationRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
+
     @Query(value = "SELECT * FROM meeting WHERE end_time IS NULL AND title LIKE %:keyword% ORDER BY ST_Distance_Sphere(location_point, :point)",
             countQuery = "SELECT count(*) FROM meeting WHERE end_time IS NULL AND title LIKE %:keyword%",
             nativeQuery = true)

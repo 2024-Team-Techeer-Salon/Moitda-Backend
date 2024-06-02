@@ -14,6 +14,7 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
+      - ./logs:/var/log/spring-boot
 
   db:
     image: mysql:8.0
@@ -24,6 +25,11 @@ services:
       MYSQL_DATABASE: moitda
       MYSQL_ROOT_PASSWORD: "1234"
 
-
-
-
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/:/etc/nginx/ # 왼쪽이 로컬 경로, 오른쪽이 도커 컨테이너 내부 경로
+    ports:
+      - 80:80
+    depends_on:
+      - backend
