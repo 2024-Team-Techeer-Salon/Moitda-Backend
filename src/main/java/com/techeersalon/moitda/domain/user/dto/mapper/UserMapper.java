@@ -3,6 +3,7 @@ package com.techeersalon.moitda.domain.user.dto.mapper;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
 import com.techeersalon.moitda.domain.user.dto.response.RecordsRes;
+import com.techeersalon.moitda.domain.user.dto.response.UserIdRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserMeetingRecordRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.entity.User;
@@ -27,11 +28,10 @@ public class UserMapper {
                 .build();
     }
 
-    public RecordsRes toUserMeetingRecord(List<Meeting> userMeetings, List<List<MeetingImage>> images) {
-        List<UserMeetingRecordRes> records = IntStream.range(0, userMeetings.size())
-                .mapToObj(i -> toEntity(userMeetings.get(i), images.get(i)))
-                .collect(Collectors.toList());
-        return RecordsRes.builder().userMeetingList(records).build();
+    public UserIdRes toUserId(User user) {
+        return UserIdRes.builder()
+                .userId(user.getId())
+                .build();
     }
 
     public UserMeetingRecordRes toEntity(Meeting meeting, List<MeetingImage> images) {

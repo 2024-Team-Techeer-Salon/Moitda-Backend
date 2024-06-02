@@ -214,26 +214,6 @@ public class MeetingService {
         MeetingParticipant participant = meetingParticipantRepository.save(entity);
 
         return CreateParticipantRes.from(participant.getId());
-//        if (!meetingParticipantRepository.existsByMeetingIdAndUserId(meetingId, loginUser.getId())) {
-//            meeting = this.getMeetingById(meetingId);
-//            if (meeting.getParticipantsCount() < meeting.getMaxParticipantsCount()) {
-//
-//                MeetingParticipant participant = MeetingParticipantMapper.toEntity(meeting);
-//
-//                if (!meeting.getApprovalRequired()) {
-//                    participant.notNeedToApprove();
-//                    meeting.increaseParticipantsCnt();
-//                }
-//
-//                meetingParticipantRepository.save(participant);
-//
-//            } else {
-//                throw new MeetingIsFullException();
-//            }
-//
-//        } else {
-//            throw new AlreadyParticipatingOrAppliedException();
-//        }
     }
 
     public void approvalParticipant(ApprovalParticipantReq dto) {
@@ -255,48 +235,37 @@ public class MeetingService {
         }
     }
 
-    //    public List<Meeting> getUserMeetingList(){
-//        Long loginUserId = userService.getLoginUser().getId();
-//        return meetingRepository.findByUserId(loginUserId);
-//    }
     /*
      * 미팅 리스트 조회 메소드
      * 간략화 된 미팅 내용을 최대 32개인 한 페이지로 준다.
      * */
-//    public List<GetLatestMeetingListRes> latestAllMeetings(int page, int pageSize) {
-//        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
-//        Page<Meeting> meetings = meetingRepository.findAll(pageable);
-//        return transformMeetingsToResponse(meetings);
-//    }
-//
-    public GetSearchPageRes latestUserRecordMeetings(Long userId, Pageable pageable) {
-        //Pageable pageable = PageRequest.of(pageable, Sort.by(Sort.Order.desc("createAt")));
-        Page<Meeting> meetings = meetingRepository.findPageByUserId(userId, pageable);
+    public GetSearchPageRes getUserMeetingCreatingRecords(Long userId, Pageable pageable, boolean isEnded) {
+        Page<Meeting> meetings;
+        if (isEnded) {
+            meetings = meetingRepository.findEndedCreatingRecordsByUserId(userId, pageable);
+        } else {
+            meetings = meetingRepository.findOngoingCreatingRecordsByUserId(userId, pageable);
+        }
         return transformMeetingsToResponse(meetings);
     }
 
-//
-//    public List<GetLatestMeetingListRes> latestCategoryMeetings(Long categoryId, int page, int pageSize) {
-//        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
-//        Page<Meeting> meetings = meetingRepository.findByCategoryId(categoryId, pageable);
-//        return transformMeetingsToResponse(meetings);
-//    }
-//
-//    public List<GetLatestMeetingListRes> distanceMeetings(PointMapper point, int page, int pageSize) {
-//        Point p = mappingPoint(point);
-//        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
-//        List<Meeting> meetings = meetingRepository.findMeetingByDistance(p, pageable).stream().toList();
-//        return transformMeetingsToResponse(meetings);
-//    }
-//
-//
+    public GetSearchPageRes getUserMeetingParticipationRecords(Long userId, Pageable pageable, Boolean isEnded) {
+        Page<Meeting> meetings;
+        if (isEnded != null && isEnded) {
+            meetings = meetingRepository.findEndedParticipationRecordsByUserId(userId, pageable);
+        } else {
+            meetings = meetingRepository.findOngoingParticipationRecordsByUserId(userId, pageable);
+        }
+        return transformMeetingsToResponse(meetings);
+    }
+
     public GetSearchPageRes getMeetingsNearLocation(PointMapper pointMapper, Pageable pageable) {
         Point point = mappingPoint(pointMapper);
         Page<Meeting> meetings = meetingRepository.findMeetingByDistance(point, pageable);
         return transformMeetingsToResponse(meetings);
     }
 
-    public GetSearchPageRes getMeetingsCategory (PointMapper pointMapper, Long categoryId,Pageable pageable) {
+    public GetSearchPageRes getMeetingsCategory(PointMapper pointMapper, Long categoryId, Pageable pageable) {
         Point point = mappingPoint(pointMapper);
         Page<Meeting> meetings = meetingRepository.findByLocationNearAndCategory(point, categoryId, pageable);
         return transformMeetingsToResponse(meetings);
@@ -432,15 +401,14 @@ public class MeetingService {
                 .collect(Collectors.toList());
     }
 
-    public GetSearchPageRes searchMeetingsByKeyword(String keyword, PointMapper pointMapper,Pageable pageable) {
+    public GetSearchPageRes searchMeetingsByKeyword(String keyword, PointMapper pointMapper, Pageable pageable) {
         Point point = mappingPoint(pointMapper);
         Page<Meeting> meetings = meetingRepository.findPageByKeyword(keyword, point, pageable);
         return transformMeetingsToResponse(meetings);
     }
 
 
-
-    private Point mappingPoint(PointMapper pointMapper){
+    private Point mappingPoint(PointMapper pointMapper) {
         GeometryFactory geometryFactory = new GeometryFactory();
         Coordinate coord = new Coordinate(pointMapper.getLongitude(), pointMapper.getLatitude());
         Point point = geometryFactory.createPoint(coord);
