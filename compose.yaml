@@ -24,6 +24,11 @@ services:
       MYSQL_DATABASE: moitda
       MYSQL_ROOT_PASSWORD: "1234"
 
-
-
-
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/:/etc/nginx/ # 왼쪽이 로컬 경로, 오른쪽이 도커 컨테이너 내부 경로
+    ports:
+      - 80:80
+    depends_on:
+      - backend
