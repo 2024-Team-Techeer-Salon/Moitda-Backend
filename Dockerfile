@@ -25,9 +25,10 @@ COPY --from=builder build/libs/*.jar app.jar
 ARG JAR_FILE
 RUN mkdir -p /var/log/spring-boot
 
+# wait-for-it.sh
+RUN microdnf install bash
+COPY wait-for-it.sh wait-for-it.sh
+RUN chmod +x wait-for-it.sh
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]
-
-
-
-
+#ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app.jar"]

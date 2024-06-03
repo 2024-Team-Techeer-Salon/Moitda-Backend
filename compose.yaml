@@ -5,18 +5,25 @@ services:
     container_name: backend-moitda
     restart: always
     depends_on:
-      - db
+      - mysqldb
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3307/moitda
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "8080:8080"
+    command:
+      - bash
+      - -c
+      - |
+        ./wait-for-it.sh mysqldb:3307 -s -t 15
+        java -Djava.security.egd=file:/dev/./urandom -jar /app.jar
+
     volumes:
       - .:/app
       - ./logs:/var/log/spring-boot
 
-  db:
+  mysqldb:
     image: mysql:8.0
     container_name: mysqldb
     ports:
