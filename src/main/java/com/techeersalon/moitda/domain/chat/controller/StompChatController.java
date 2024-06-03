@@ -78,6 +78,22 @@ public class StompChatController {
 
     }
 
+    // 클라이언트가 /chat.sendMessage 경로로 메시지를 보내면 이 메서드가 호출됩니다.
+//    @MessageMapping("/chat.sendMessage")
+//    @SendTo("/topic/public")
+//    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
+//        return chatMessage;
+//    }
+//
+//    // 새로운 사용자가 채팅에 참여하면 이 메서드가 호출됩니다.
+//    @MessageMapping("/chat.addUser")
+//    @SendTo("/topic/public")
+//    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+//        // 사용자의 이름을 세션에 저장합니다.
+//        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+//        return chatMessage;
+//    }
+
 //    @MessageMapping(value = "/room/founder/{memberId}")
 //    public void invite(@DestinationVariable String memberId, ChatRoomInviteDto inviteDto) {
 ////        Member member = new Member();

@@ -28,12 +28,12 @@ out/
 
 !**/prometheus/data
 !**/node-exporter/data
-!**/moitoring/grafana/alerting
-!**/moitoring/grafana/png
-!**/moitoring/grafana/plugins
-!**/moitoring/grafana/csv
-!**/moitoring/grafana/pdf
-!**/moitoring/grafana/grafana.db
+!**/monitoring/grafana/alerting
+!**/monitoring/grafana/png
+/monitoring/grafana/plugins
+!**/monitoring/grafana/csv
+!**/monitoring/grafana/pdf
+/monitoring/grafana/grafana.db
 
 
 ### NetBeans ###
