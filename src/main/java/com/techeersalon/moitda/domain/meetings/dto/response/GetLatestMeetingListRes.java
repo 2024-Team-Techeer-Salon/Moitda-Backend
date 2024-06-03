@@ -38,6 +38,8 @@ public class GetLatestMeetingListRes {
 
     private Double longitude;
 
+    private String appointmentTime;
+
 
     public static GetLatestMeetingListRes from(Meeting meeting, List<MeetingImage> images){
         String[] roadAddress = meeting.getRoadAddressName().split(" ");
@@ -65,6 +67,7 @@ public class GetLatestMeetingListRes {
                 .maxParticipantsCount(meeting.getMaxParticipantsCount())
                 .latitude(meeting.getLocationPoint().getY())
                 .longitude(meeting.getLocationPoint().getX())
+                .appointmentTime(meeting.getAppointmentTime())
                 .build();
     }
 

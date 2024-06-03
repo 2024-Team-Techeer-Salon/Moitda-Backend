@@ -98,6 +98,18 @@ public class MeetingsController {
         return ResponseEntity.ok(SuccessResponse.of(MEETING_SEARCH_SUCCESS, response));
     }
 
+    @Operation(summary = "getMeetingsByClosestDeadline", description = "가까운 모임 리스트 조회")
+    @GetMapping("/search/deadline")
+    public ResponseEntity<SuccessResponse> getMeetingsByClosestDeadline(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            Pageable pageable){
+        PointMapper pointMapper = PointMapper.from(latitude, longitude);
+        //Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
+        GetSearchPageRes response= meetingService.searchMeetingsByClosestDeadline(pointMapper, pageable);
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
+    }
+
     @Operation(summary = "deleteMeeting", description = "모임 삭제")
     @DeleteMapping("/{meetingId}")
     public ResponseEntity<SuccessResponse> deleteMeeting(@PathVariable Long meetingId) {

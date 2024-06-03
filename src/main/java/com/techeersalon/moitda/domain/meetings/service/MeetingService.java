@@ -407,6 +407,11 @@ public class MeetingService {
         return transformMeetingsToResponse(meetings);
     }
 
+    public GetSearchPageRes searchMeetingsByClosestDeadline(PointMapper pointMapper, Pageable pageable) {
+        Point point = mappingPoint(pointMapper);
+        Page<Meeting> meetings = meetingRepository.findPageByClosest(point, pageable);
+        return transformMeetingsToResponse(meetings);
+    }
 
     private Point mappingPoint(PointMapper pointMapper) {
         GeometryFactory geometryFactory = new GeometryFactory();
@@ -414,6 +419,4 @@ public class MeetingService {
         Point point = geometryFactory.createPoint(coord);
         return point;
     }
-
-
 }
