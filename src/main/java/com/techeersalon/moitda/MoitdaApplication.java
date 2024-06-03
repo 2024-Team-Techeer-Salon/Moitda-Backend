@@ -9,8 +9,6 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class MoitdaApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MoitdaApplication.class, args);
-	}
+	public static void main(String[] args) {SpringApplication.run(MoitdaApplication.class, args);}
 
 }
