@@ -35,8 +35,22 @@ services:
   nginx:
     image: nginx:latest
     volumes:
-      - ./nginx/:/etc/nginx/ # 왼쪽이 로컬 경로, 오른쪽이 도커 컨테이너 내부 경로
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80
     depends_on:
       - backend
+
+#  frontend: #프론트 엔드 서비스를 만듬
+#    build:
+#      context: ../Moitda-Frontend #프론트 엔드 소스코드는 이 경로에 있다.
+#      dockerfile: ../Moitda-Frontend/Dockerfile #빌드할때 프론트엔드 도커파일을 사용함.
+#      args:
+#        API_URL: "*"
+#    container_name: frontend
+#    volumes:
+#      - ./frontend:/frontend
+#      - build_folder:/frontend/dist
+#      - ./frontend/node_modules:/frontend/node_modules
+#    image: run
+#    tty: true
