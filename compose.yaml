@@ -5,18 +5,25 @@ services:
     container_name: backend-moitda
     restart: always
     depends_on:
-      - db
+      - mysqldb
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3307/moitda
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "8080:8080"
+    command:
+      - bash
+      - -c
+      - |
+        ./wait-for-it.sh mysqldb:3307 -s -t 15
+        java -Djava.security.egd=file:/dev/./urandom -jar /app.jar
+
     volumes:
       - .:/app
       - ./logs:/var/log/spring-boot
 
-  db:
+  mysqldb:
     image: mysql:8.0
     container_name: mysqldb
     ports:
@@ -55,8 +62,22 @@ services:
   nginx:
     image: nginx:latest
     volumes:
-      - ./nginx/:/etc/nginx/ # 왼쪽이 로컬 경로, 오른쪽이 도커 컨테이너 내부 경로
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80
     depends_on:
       - backend
+
+#  frontend: #프론트 엔드 서비스를 만듬
+#    build:
+#      context: ../Moitda-Frontend #프론트 엔드 소스코드는 이 경로에 있다.
+#      dockerfile: ../Moitda-Frontend/Dockerfile #빌드할때 프론트엔드 도커파일을 사용함.
+#      args:
+#        API_URL: "*"
+#    container_name: frontend
+#    volumes:
+#      - ./frontend:/frontend
+#      - build_folder:/frontend/dist
+#      - ./frontend/node_modules:/frontend/node_modules
+#    image: run
+#    tty: true
