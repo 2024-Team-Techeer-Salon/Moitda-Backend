@@ -40,18 +40,23 @@ public interface MeetingRepository extends PagingAndSortingRepository<Meeting, L
     )
     Page<Meeting> findOngoingParticipationRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    @Query(value = "SELECT * FROM meeting WHERE end_time IS NULL AND title LIKE %:keyword% ORDER BY ST_Distance_Sphere(location_point, :point)",
-            countQuery = "SELECT count(*) FROM meeting WHERE end_time IS NULL AND title LIKE %:keyword%",
+    @Query(value = "SELECT * FROM meeting WHERE end_time IS NULL AND ST_Distance_Sphere(location_point, :point) <= 1500 ORDER BY ST_Distance_Sphere(location_point, :point) ASC",
+            countQuery = "SELECT count(*) FROM meeting WHERE end_time IS NULL AND ST_Distance_Sphere(location_point, :point) <= 1500",
             nativeQuery = true)
-    Page<Meeting> findPageByKeyword(@Param("keyword") String keyword, @Param("point") Point point, Pageable pageable);
-    
-    @Query(value = "SELECT * FROM meeting WHERE end_time IS NULL ORDER BY ST_Distance_Sphere(location_point, :point) <= 1500",
-            countQuery = "SELECT count(*) FROM meeting WHERE end_time IS NULL",
-            nativeQuery = true)
-    Page<Meeting> findMeetingByDistance(@Param("point") Point point, Pageable pageable);
+    Page<Meeting> findMeetingByDistance(@Param("point")Point point, Pageable pageable);
 
-    @Query(value = "SELECT * FROM meeting WHERE Category_id = :category AND end_time IS NULL ORDER BY ST_Distance_Sphere(location_point, :point) ",
+    @Query(value = "SELECT * FROM meeting WHERE Category_id = :category AND end_time IS NULL AND ST_Distance_Sphere(location_point, :point) <= 1500 ORDER BY ST_Distance_Sphere(location_point, :point) ASC",
             countQuery = "SELECT count(*) FROM meeting WHERE Category_id = :category AND end_time IS NULL",
             nativeQuery = true)
-    Page<Meeting> findByLocationNearAndCategory(@Param("point") Point point, @Param("category") Long category, Pageable pageable);
+    Page<Meeting> findByLocationNearAndCategory(@Param("point")Point point, Long category, Pageable pageable);
+
+    @Query(value = "SELECT * FROM meeting WHERE end_time IS NULL AND appointment_time >= NOW() AND ST_Distance_Sphere(location_point, :point) <= 1500 ORDER BY ABS(TIMESTAMPDIFF(SECOND, appointment_time, NOW())) ASC ",
+            countQuery = "SELECT count(*) FROM meeting WHERE end_time IS NULL",
+            nativeQuery = true)
+    Page<Meeting> findPageByClosest(@Param("point")Point point, Pageable pageable);
+
+    @Query(value = "SELECT * FROM meeting WHERE end_time IS NULL AND title LIKE %:keyword% ORDER BY ST_Distance_Sphere(location_point, :point) ASC",
+            countQuery = "SELECT count(*) FROM meeting WHERE end_time IS NULL AND title LIKE %:keyword%",
+            nativeQuery = true)
+    Page<Meeting> findPageByKeyword(String keyword, @Param("point")Point point, Pageable pageable);
 }
