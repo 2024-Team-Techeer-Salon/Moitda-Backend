@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 @Component
 public class UserMapper {
 
-    public UserProfileRes toUserProfile(User user) {
+    public UserProfileRes toUserProfile(User user, boolean owner) {
         return UserProfileRes.builder()
                 .username(user.getUsername())
                 .mannerStat(user.getMannerStat())
@@ -25,6 +25,7 @@ public class UserMapper {
                 .gender(user.getGender())
                 .introduce(user.getIntroduce())
                 .location(user.getLocation())
+                .owner(owner)
                 .build();
     }
 
