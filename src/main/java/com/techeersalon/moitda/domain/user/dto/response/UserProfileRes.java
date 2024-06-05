@@ -19,5 +19,5 @@ public class UserProfileRes {
     private Gender gender;
     private String introduce;
     private String location;
-
+    private boolean owner;
 }

@@ -74,10 +74,17 @@ public class UserService {
     }
 
     public UserProfileRes findUserProfile(Long userId) {
+
+        // userId를 통해 찾은 유저 정보.
         Optional<User> optionalUser = userRepository.findById(userId);
-        User user = optionalUser
+        User foundUser = optionalUser
                 .orElseThrow(UserNotFoundException::new);
-        return userMapper.toUserProfile(user);
+
+        User user = this.getLoginUser();
+
+        boolean owner = user == foundUser;
+
+        return userMapper.toUserProfile(foundUser, owner);
     }
 
     public void updateUserProfile(UpdateUserReq updateUserReq, String profileUrl, String bannerUrl, MultipartFile profileImage, MultipartFile bannerImage) throws IOException {
