@@ -3,6 +3,8 @@ package com.techeersalon.moitda.global.config;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.global.jwt.JwtAuthenticationFilter;
 import com.techeersalon.moitda.global.jwt.Service.JwtService;
+import com.techeersalon.moitda.global.jwt.exception.JwtAccessDeniedHandler;
+import com.techeersalon.moitda.global.jwt.exception.JwtAuthenticationEntryPoint;
 import com.techeersalon.moitda.global.oauth.OAuth2LoginFailureHandler;
 import com.techeersalon.moitda.global.oauth.OAuth2LoginSuccessHandler;
 import com.techeersalon.moitda.global.oauth.Service.CustomOAuth2UserService;
@@ -20,8 +22,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -32,6 +32,8 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
@@ -67,29 +69,33 @@ public class SecurityConfig {
                 .sessionManagement(configurer -> configurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers(
-//                                "/", "/oauth2/**",
-//                                "/index.html",
-//                                "/ws/**",
-//                                "/swagger/**",
-//                                "swagger-ui/**",
-//                                "/api-docs/**",
-//                                "/signup.html",
-//                                "/users/**"
-//                        ).permitAll()
-//                        .anyRequest().authenticated()
-//                )
-                .authorizeHttpRequests(requests ->
-                        requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(
+                                "/",
+                                "/oauth2/**",
+                                "/index.html",
+                                "/ws/**",
+                                "/swagger/**",
+                                "swagger-ui/**",
+                                "/api-docs/**",
+                                "/signup.html",
+                                "/api/v1/reissue"
+                        ).permitAll()
+                        .anyRequest().authenticated()
                 )
+//                .authorizeHttpRequests(requests ->
+//                        requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
+//                )
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(endpoint -> endpoint
                                 .userService(customOAuth2UserService))
                         .successHandler(oAuth2LoginSuccessHandler) // 2.
                         .failureHandler(oAuth2LoginFailureHandler) // 3.
                 )
-
+                .exceptionHandling(authenticationManager ->authenticationManager
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userRepository), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
