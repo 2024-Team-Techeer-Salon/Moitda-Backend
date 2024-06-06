@@ -97,23 +97,23 @@ public class UserService {
         String[] urls = new String[2];
 
         // 프로필 이미지 처리
-        if (profileUrl == null) {
+        if (profileUrl == null && (profileImage != null && !profileImage.isEmpty())) {
             if (user.getProfileImage() != null) {
                 deleteExistingImage(user.getProfileImage(), baseProfilePath, "user/custom/profile/");
             }
             urls[0] = processImage(profileImage, "user/custom/profile/");
         } else {
-            urls[0] = profileUrl;
+            urls[0] = profileUrl != null ? profileUrl : user.getProfileImage();
         }
 
         // 배너 이미지 처리
-        if (bannerUrl == null) {
+        if (bannerUrl == null && (bannerImage != null && !bannerImage.isEmpty())) {
             if (user.getBannerImage() != null) {
                 deleteExistingImage(user.getBannerImage(), baseBannerPath, "user/custom/banner/");
             }
             urls[1] = processImage(bannerImage, "user/custom/banner/");
         } else {
-            urls[1] = bannerUrl;
+            urls[1] = bannerUrl != null ? bannerUrl : user.getBannerImage();
         }
 
         user.updateProfile(updateUserReq, urls[0], urls[1]);
