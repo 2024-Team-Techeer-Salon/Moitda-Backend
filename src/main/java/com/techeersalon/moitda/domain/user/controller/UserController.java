@@ -4,10 +4,13 @@ import com.techeersalon.moitda.domain.meetings.dto.response.GetSearchPageRes;
 import com.techeersalon.moitda.domain.meetings.service.MeetingService;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
+import com.techeersalon.moitda.domain.user.dto.request.UserTokenReq;
 import com.techeersalon.moitda.domain.user.dto.response.UserIdRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import com.techeersalon.moitda.global.common.SuccessResponse;
+import com.techeersalon.moitda.global.jwt.JwtToken;
+import com.techeersalon.moitda.global.jwt.Service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,7 +27,6 @@ import java.io.IOException;
 
 import static com.techeersalon.moitda.global.common.SuccessCode.*;
 
-
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "User", description = "User API")
@@ -32,6 +34,7 @@ import static com.techeersalon.moitda.global.common.SuccessCode.*;
 public class UserController {
     private final UserService userService;
     private final MeetingService meetingService;
+    private final JwtService jwtService;
 
     @Operation(summary = "추가정보 입력")
     @PostMapping("/users")
@@ -103,5 +106,13 @@ public class UserController {
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
         GetSearchPageRes meetingRecords = meetingService.getUserMeetingParticipationRecords(userId, pageable, isEnded);
         return ResponseEntity.ok(SuccessResponse.of(USER_MEETING_RECORD_GET_SUCCESS, meetingRecords));
+    }
+
+    @Operation(summary = "액세스 토큰 재발급")
+    @PostMapping("/reissue")
+    public ResponseEntity<SuccessResponse> reGenerateAccessToken(@RequestBody @Valid UserTokenReq userTokenReq) {
+
+        JwtToken newToken = userService.reissueToken(userTokenReq);
+        return ResponseEntity.ok(SuccessResponse.of(TOKEN_CREATE_SUCCESS, newToken));
     }
 }

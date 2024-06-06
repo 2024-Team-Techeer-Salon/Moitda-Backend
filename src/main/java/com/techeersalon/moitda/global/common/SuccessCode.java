@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum SuccessCode {
+    //token
+    TOKEN_CREATE_SUCCESS(HttpStatus.CREATED, "T001", "토큰 생성 완료"),
+
     //user
     USER_REGISTRATION_SUCCESS(HttpStatus.CREATED, "U001", "회원가입 성공"),
     USER_LOGOUT_SUCCESS(HttpStatus.OK, "U002", "로그아웃 성공"),

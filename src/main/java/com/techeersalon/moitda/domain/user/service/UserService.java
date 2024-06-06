@@ -9,14 +9,18 @@ import com.amazonaws.util.IOUtils;
 import com.techeersalon.moitda.domain.user.dto.mapper.UserMapper;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
+import com.techeersalon.moitda.domain.user.dto.request.UserTokenReq;
 import com.techeersalon.moitda.domain.user.dto.response.UserIdRes;
 import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.entity.Role;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.entity.User;
+import com.techeersalon.moitda.domain.user.exception.UnAuthorizedAccessException;
 import com.techeersalon.moitda.domain.user.exception.UserAlreadyRegisteredException;
 import com.techeersalon.moitda.domain.user.exception.UserNotFoundException;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
+import com.techeersalon.moitda.global.jwt.JwtToken;
+import com.techeersalon.moitda.global.jwt.Service.JwtService;
 import com.techeersalon.moitda.global.s3.exception.S3Exception;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +46,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final AmazonS3 amazonS3;
+    private final JwtService jwtService;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -92,23 +97,23 @@ public class UserService {
         String[] urls = new String[2];
 
         // 프로필 이미지 처리
-        if (profileUrl == null) {
+        if (profileUrl == null && (profileImage != null && !profileImage.isEmpty())) {
             if (user.getProfileImage() != null) {
                 deleteExistingImage(user.getProfileImage(), baseProfilePath, "user/custom/profile/");
             }
             urls[0] = processImage(profileImage, "user/custom/profile/");
         } else {
-            urls[0] = profileUrl;
+            urls[0] = profileUrl != null ? profileUrl : user.getProfileImage();
         }
 
         // 배너 이미지 처리
-        if (bannerUrl == null) {
+        if (bannerUrl == null && (bannerImage != null && !bannerImage.isEmpty())) {
             if (user.getBannerImage() != null) {
                 deleteExistingImage(user.getBannerImage(), baseBannerPath, "user/custom/banner/");
             }
             urls[1] = processImage(bannerImage, "user/custom/banner/");
         } else {
-            urls[1] = bannerUrl;
+            urls[1] = bannerUrl != null ? bannerUrl : user.getBannerImage();
         }
 
         user.updateProfile(updateUserReq, urls[0], urls[1]);
@@ -154,5 +159,37 @@ public class UserService {
         User loginUser = userRepository.findBySocialTypeAndEmail(SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername())
                 .orElseThrow(UserNotFoundException::new);
         return loginUser;
+    }
+
+    public JwtToken reissueToken(UserTokenReq userTokenReq) {
+        // Refresh Token 검증
+        if (!jwtService.isTokenValid(userTokenReq.getRefreshToken())) {
+            throw new UnAuthorizedAccessException();
+        }
+
+        Object[] emailAndSocialType = jwtService.extractEmailAndSocialType(userTokenReq.getAccessToken());
+        if (emailAndSocialType.length >= 2) {
+            String email = (String) emailAndSocialType[0];
+            SocialType socialType = (SocialType) emailAndSocialType[1];
+            User user = userRepository.findBySocialTypeAndEmail(socialType, email)
+                    .orElseThrow(UserNotFoundException::new);
+            String refreshToken = user.getRefreshToken();
+
+            // db에 리프레시 토큰 없을 경우(logout)
+            if (refreshToken == null || !refreshToken.equals(userTokenReq.getRefreshToken())) {
+                throw new UnAuthorizedAccessException();
+            }
+
+            String reissueAccessToken = jwtService.createAccessToken(email, socialType);
+            String reissueRefreshToken = jwtService.createRefreshToken();
+            user.updateRefreshToken(reissueRefreshToken);
+
+            return JwtToken.builder()
+                    .accessToken(reissueAccessToken)
+                    .refreshToken(reissueRefreshToken)
+                    .build();
+        }
+
+        throw new UnAuthorizedAccessException();
     }
 }
