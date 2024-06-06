@@ -35,6 +35,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
@@ -95,6 +97,10 @@ public class UserService {
     public void updateUserProfile(UpdateUserReq updateUserReq, String profileUrl, String bannerUrl, MultipartFile profileImage, MultipartFile bannerImage) throws IOException {
         User user = this.getLoginUser();
         String[] urls = new String[2];
+
+        // URL 디코딩 처리
+        profileUrl = profileUrl != null ? URLDecoder.decode(profileUrl, StandardCharsets.UTF_8.name()) : null;
+        bannerUrl = bannerUrl != null ? URLDecoder.decode(bannerUrl, StandardCharsets.UTF_8.name()) : null;
 
         // 프로필 이미지 처리
         if (profileUrl == null && (profileImage != null && !profileImage.isEmpty())) {
