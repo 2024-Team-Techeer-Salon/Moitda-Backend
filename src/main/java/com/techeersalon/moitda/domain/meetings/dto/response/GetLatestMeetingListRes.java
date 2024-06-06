@@ -30,6 +30,10 @@ public class GetLatestMeetingListRes {
 
     private String roadAddressName;
 
+    private String placeName;
+
+    private String detailedAddress;
+
     private Integer participantsCount;
 
     private Integer maxParticipantsCount;
@@ -63,6 +67,8 @@ public class GetLatestMeetingListRes {
                 .title(meeting.getTitle())
                 .imageUrl(url)
                 .roadAddressName(roadAddressName)
+                .placeName(meeting.getPlaceName())
+                .detailedAddress(meeting.getDetailedAddress())
                 .participantsCount(meeting.getParticipantsCount())
                 .maxParticipantsCount(meeting.getMaxParticipantsCount())
                 .latitude(meeting.getLocationPoint().getY())
