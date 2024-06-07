@@ -3,29 +3,22 @@ package com.techeersalon.moitda.global.jwt.Service;
 import com.techeersalon.moitda.domain.user.entity.SocialType;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
-import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -86,20 +79,6 @@ public class JwtService {
                 .compact();
     }
 
-
-    public void sendAccessToken(HttpServletResponse response, String accessToken) {
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setHeader(accessHeader, accessToken);
-        log.info("재발급된 Access Token : {}", accessToken);
-    }
-
-    public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
-        response.setStatus(HttpServletResponse.SC_OK);
-        setAccessTokenHeader(response, accessToken);
-        setRefreshTokenHeader(response, refreshToken);
-        log.info("Access Token, Refresh Token 헤더 설정 완료");
-    }
-
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader(refreshHeader))
                 .filter(refreshToken -> refreshToken.startsWith(BEARER))
@@ -123,22 +102,6 @@ public class JwtService {
         log.info("token 추출x");
 
         return null;
-    }
-
-    public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
-        response.setHeader(accessHeader, accessToken);
-    }
-
-    public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
-        response.setHeader(refreshHeader, refreshToken);
-    }
-
-    public void updateRefreshToken(String email, SocialType socialType, String refreshToken) {
-        userRepository.findBySocialTypeAndEmail(socialType, email)
-                .ifPresentOrElse(
-                        user -> user.updateRefreshToken(refreshToken),
-                        () -> new Exception("일치하는 회원이 없습니다.")
-                );
     }
 
     public boolean isTokenValid(String token) {
@@ -180,10 +143,9 @@ public class JwtService {
                     .build()
                     .parseClaimsJws(accessToken)
                     .getBody();
-        } catch (Exception e) {
-            // 디코딩 실패 시 예외 처리
-            e.printStackTrace();
-            return null;
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰 예외 처리
+            return e.getClaims();
         }
     }
 }

@@ -242,8 +242,8 @@ class UserServiceTest {
 
         doReturn(user).when(userService).getLoginUser();
         doReturn(user).when(userRepository).save(any());
-        doNothing().when(userService).processImage(any(), eq("user/custom/profile/"));
-        doNothing().when(userService).processImage(any(), eq("user/custom/banner/"));
+        doReturn("newProfileImageUrl").when(userService).processImage(any(), eq("user/custom/profile/"));
+        doReturn("newBannerImageUrl").when(userService).processImage(any(), eq("user/custom/banner/"));
 
         //when
         userService.updateUserProfile(updateUserReq, profileUrl, bannerUrl, profileImage, bannerImage);
@@ -252,8 +252,8 @@ class UserServiceTest {
         assertThat(user.getUsername()).isEqualTo(updateUserReq.getUsername());
         assertThat(user.getIntroduce()).isEqualTo(updateUserReq.getIntroduce());
         assertThat(user.getLocation()).isEqualTo(updateUserReq.getLocation());
-        assertThat(user.getProfileImage()).isNull();
-        assertThat(user.getBannerImage()).isNull();
+        assertThat(user.getProfileImage()).isEqualTo("newProfileImageUrl");
+        assertThat(user.getBannerImage()).isEqualTo("newBannerImageUrl");
     }
     @Test
     @DisplayName("넘어온 url = Null, 새로 업로드 될 데이터가 없을 경우.")
