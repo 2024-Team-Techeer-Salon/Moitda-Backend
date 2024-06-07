@@ -213,6 +213,7 @@ class UserServiceTest {
         User user = User.builder()
                 .id(1L)
                 .email("email")
+                .profileImage("hello")
                 .role(Role.USER)
                 .mannerStat(40)
                 .refreshToken("refreshToken")
@@ -226,6 +227,7 @@ class UserServiceTest {
 
         String profileUrl = null;
         String bannerUrl = null;
+
         MultipartFile profileImage = new MockMultipartFile(
                 "profileImage", // field name
                 "profileImage.jpg", // original file name
@@ -242,6 +244,7 @@ class UserServiceTest {
 
         doReturn(user).when(userService).getLoginUser();
         doReturn(user).when(userRepository).save(any());
+        doNothing().when(userService).deleteExistingImage(any(), any(), any());
         doReturn("newProfileImageUrl").when(userService).processImage(any(), eq("user/custom/profile/"));
         doReturn("newBannerImageUrl").when(userService).processImage(any(), eq("user/custom/banner/"));
 
@@ -262,6 +265,7 @@ class UserServiceTest {
         User user = User.builder()
                 .id(1L)
                 .email("email")
+                .profileImage("hello")
                 .role(Role.USER)
                 .mannerStat(40)
                 .refreshToken("refreshToken")
@@ -278,6 +282,7 @@ class UserServiceTest {
 
         doReturn(user).when(userService).getLoginUser();
         doReturn(user).when(userRepository).save(any());
+//        doNothing().when(userService).deleteExistingImage(any(), any(), any());
 
         //when
         userService.updateUserProfile(updateUserReq, profileUrl, bannerUrl, null, null);
@@ -286,7 +291,7 @@ class UserServiceTest {
         assertThat(user.getUsername()).isEqualTo(updateUserReq.getUsername());
         assertThat(user.getIntroduce()).isEqualTo(updateUserReq.getIntroduce());
         assertThat(user.getLocation()).isEqualTo(updateUserReq.getLocation());
-        assertThat(user.getProfileImage()).isNull();
+        assertThat(user.getProfileImage()).isEqualTo("hello");
         assertThat(user.getBannerImage()).isNull();
     }
 
@@ -297,6 +302,7 @@ class UserServiceTest {
         User user = User.builder()
                 .id(1L)
                 .email("email")
+                .profileImage("hello")
                 .role(Role.USER)
                 .mannerStat(40)
                 .refreshToken("refreshToken")
