@@ -66,7 +66,8 @@ public class User extends BaseEntity {
     private String refreshToken;
 
     @Builder
-    private User(String username, String email, String profileImage, String bannerImage, LocalDate dataOfBirth, Gender gender, String introduce, Integer mannerStat, String location, Role role, SocialType socialType, String refreshToken) {
+    private User(Long id, String username, String email, String profileImage, String bannerImage, LocalDate dataOfBirth, Gender gender, String introduce, Integer mannerStat, String location, Role role, SocialType socialType, String refreshToken) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.profileImage = profileImage;
