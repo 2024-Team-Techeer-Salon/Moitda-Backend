@@ -17,28 +17,16 @@ public interface MeetingRepository extends PagingAndSortingRepository<Meeting, L
 
     // jpql
     @Query(
-            value = "SELECT me FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE me.userId = :userId AND me.endTime IS NOT NULL AND mp.isWaiting = false AND me.userId = mp.userId",
-            countQuery = "SELECT COUNT(me) FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE me.userId = :userId AND me.endTime IS NOT NULL AND mp.isWaiting = false AND me.userId = mp.userId"
+            value = "SELECT me FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE me.userId = :userId AND mp.isWaiting = false AND me.userId = mp.userId",
+            countQuery = "SELECT COUNT(me) FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE me.userId = :userId AND mp.isWaiting = false AND me.userId = mp.userId"
     )
-    Page<Meeting> findEndedCreatingRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
+    Page<Meeting> findCreatingRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query(
-            value = "SELECT me FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE me.userId = :userId AND me.endTime IS NULL AND mp.isWaiting = false AND me.userId = mp.userId",
-            countQuery = "SELECT COUNT(me) FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE me.userId = :userId AND me.endTime IS NULL AND mp.isWaiting = false AND me.userId = mp.userId"
+            value = "SELECT me FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE mp.userId = :userId AND mp.isWaiting = false AND me.userId != mp.userId",
+            countQuery = "SELECT COUNT(me) FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE mp.userId = :userId AND mp.isWaiting = false AND me.userId != mp.userId"
     )
-    Page<Meeting> findOngoingCreatingRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
-
-    @Query(
-            value = "SELECT me FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE mp.userId = :userId AND me.endTime IS NOT NULL AND mp.isWaiting = false AND me.userId != mp.userId",
-            countQuery = "SELECT COUNT(me) FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE mp.userId = :userId AND me.endTime IS NOT NULL AND mp.isWaiting = false AND me.userId != mp.userId"
-    )
-    Page<Meeting> findEndedParticipationRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
-
-    @Query(
-            value = "SELECT me FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE mp.userId = :userId AND me.endTime IS NULL AND mp.isWaiting = false AND me.userId != mp.userId",
-            countQuery = "SELECT COUNT(me) FROM Meeting me JOIN MeetingParticipant mp ON me.id = mp.meetingId WHERE mp.userId = :userId AND me.endTime IS NULL AND mp.isWaiting = false AND me.userId != mp.userId"
-    )
-    Page<Meeting> findOngoingParticipationRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
+    Page<Meeting> findParticipationRecordsByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query(value = "SELECT * FROM meeting WHERE end_time IS NULL AND ST_Distance_Sphere(location_point, :point) <= 1500 ORDER BY ST_Distance_Sphere(location_point, :point) ASC",
             countQuery = "SELECT count(*) FROM meeting WHERE end_time IS NULL AND ST_Distance_Sphere(location_point, :point) <= 1500",

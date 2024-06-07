@@ -89,22 +89,20 @@ public class UserController {
     @Operation(summary = "회원모임 생성내역 조회")
     @GetMapping("/users/{user_id}/records/created")
     public ResponseEntity<SuccessResponse> getUserMeetingCreatingRecords(@PathVariable("user_id") Long userId,
-                                                                         @RequestParam("end") boolean isEnded,
                                                                          @RequestParam(value = "page", defaultValue = "0") int page,
                                                                          @RequestParam(value = "size", defaultValue = "10") int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
-        GetSearchPageRes meetingRecords = meetingService.getUserMeetingCreatingRecords(userId, pageable, isEnded);
+        GetSearchPageRes meetingRecords = meetingService.getUserMeetingCreatingRecords(userId, pageable);
         return ResponseEntity.ok(SuccessResponse.of(USER_MEETING_RECORD_GET_SUCCESS, meetingRecords));
     }
 
     @Operation(summary = "회원모임 참여내역 조회")
     @GetMapping("/users/{user_id}/records/participated")
     public ResponseEntity<SuccessResponse> getUserMeetingParticipationRecords(@PathVariable("user_id") Long userId,
-                                                                              @RequestParam("end") boolean isEnded,
                                                                               @RequestParam(value = "page", defaultValue = "0") int page,
                                                                               @RequestParam(value = "size", defaultValue = "10") int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("createAt")));
-        GetSearchPageRes meetingRecords = meetingService.getUserMeetingParticipationRecords(userId, pageable, isEnded);
+        GetSearchPageRes meetingRecords = meetingService.getUserMeetingParticipationRecords(userId, pageable);
         return ResponseEntity.ok(SuccessResponse.of(USER_MEETING_RECORD_GET_SUCCESS, meetingRecords));
     }
 
