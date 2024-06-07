@@ -126,13 +126,13 @@ public class UserService {
         userRepository.save(user);
     }
 
-    private void deleteExistingImage(String imageUrl, String basePath, String s3Folder) throws UnsupportedEncodingException {
+    void deleteExistingImage(String imageUrl, String basePath, String s3Folder) throws UnsupportedEncodingException {
         String encodedString = imageUrl.replace(basePath, "");
         String decodedString = URLDecoder.decode(encodedString, "UTF-8");
         amazonS3.deleteObject(new DeleteObjectRequest(bucketName, s3Folder + decodedString));
     }
 
-    private String processImage(MultipartFile image, String s3Folder) throws IOException {
+    String processImage(MultipartFile image, String s3Folder) throws IOException {
         if (image == null || image.isEmpty()) {
             throw new IllegalArgumentException("Image file must not be null or empty");
         }
