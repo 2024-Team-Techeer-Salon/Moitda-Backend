@@ -239,23 +239,15 @@ public class MeetingService {
      * 미팅 리스트 조회 메소드
      * 간략화 된 미팅 내용을 최대 32개인 한 페이지로 준다.
      * */
-    public GetSearchPageRes getUserMeetingCreatingRecords(Long userId, Pageable pageable, boolean isEnded) {
-        Page<Meeting> meetings;
-        if (isEnded) {
-            meetings = meetingRepository.findEndedCreatingRecordsByUserId(userId, pageable);
-        } else {
-            meetings = meetingRepository.findOngoingCreatingRecordsByUserId(userId, pageable);
-        }
+    public GetSearchPageRes getUserMeetingCreatingRecords(Long userId, Pageable pageable) {
+        Page<Meeting> meetings = meetingRepository.findCreatingRecordsByUserId(userId, pageable);
+
         return transformMeetingsToResponse(meetings);
     }
 
-    public GetSearchPageRes getUserMeetingParticipationRecords(Long userId, Pageable pageable, Boolean isEnded) {
-        Page<Meeting> meetings;
-        if (isEnded != null && isEnded) {
-            meetings = meetingRepository.findEndedParticipationRecordsByUserId(userId, pageable);
-        } else {
-            meetings = meetingRepository.findOngoingParticipationRecordsByUserId(userId, pageable);
-        }
+    public GetSearchPageRes getUserMeetingParticipationRecords(Long userId, Pageable pageable) {
+        Page<Meeting> meetings = meetingRepository.findParticipationRecordsByUserId(userId, pageable);
+
         return transformMeetingsToResponse(meetings);
     }
 
