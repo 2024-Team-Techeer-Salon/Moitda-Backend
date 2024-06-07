@@ -44,19 +44,21 @@ public class GetLatestMeetingListRes {
 
     private String appointmentTime;
 
+    private String endTime;
 
-    public static GetLatestMeetingListRes from(Meeting meeting, List<MeetingImage> images){
+
+    public static GetLatestMeetingListRes from(Meeting meeting, List<MeetingImage> images) {
         String[] roadAddress = meeting.getRoadAddressName().split(" ");
         String roadAddressName, url;
         // 앞에 두 단어만 roadAddressName으로 설정
-        try{
+        try {
             roadAddressName = roadAddress[0] + " " + roadAddress[1];
-        }catch(Exception e){
+        } catch (Exception e) {
             roadAddressName = meeting.getRoadAddressName();
         }
-        try{
+        try {
             url = images.get(0).getImageUrl();
-        }catch(Exception e) {
+        } catch (Exception e) {
             url = null;
         }
 
@@ -74,11 +76,7 @@ public class GetLatestMeetingListRes {
                 .latitude(meeting.getLocationPoint().getY())
                 .longitude(meeting.getLocationPoint().getX())
                 .appointmentTime(meeting.getAppointmentTime())
+                .endTime(meeting.getEndTime())
                 .build();
     }
-
-//    public static Page<GetLatestMeetingListRes> listOf(Page<Meeting> meetingPage) {
-//
-//        return meetingPage.map(GetLatestMeetingListRes::from);
-//    }
 }
