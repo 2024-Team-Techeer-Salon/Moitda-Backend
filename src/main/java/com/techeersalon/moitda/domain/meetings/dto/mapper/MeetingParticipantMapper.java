@@ -21,6 +21,7 @@ public class MeetingParticipantMapper {
                 .userId(meeting.getUserId())
                 .username(meeting.getUsername())
                 .isWaiting(Boolean.TRUE)
+                .isReviewed(Boolean.FALSE)
                 .build();
     }
 
@@ -30,6 +31,7 @@ public class MeetingParticipantMapper {
                 .userId(user.getId())
                 .username(user.getUsername())
                 .isWaiting(Boolean.TRUE)
+                .isReviewed(Boolean.FALSE)
                 .build();
     }
 }

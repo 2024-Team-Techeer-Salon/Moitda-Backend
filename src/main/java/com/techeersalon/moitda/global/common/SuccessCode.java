@@ -40,6 +40,7 @@ public enum SuccessCode {
     USER_APPROVAL_SUCCESS(HttpStatus.OK,"CR002", "유저 채팅방 가입 성공"),
     //review
     REVIEW_CREATE_SUCCESS(HttpStatus.CREATED, "R001", "후기 생성 성공"),
+    REVIEW_STATUS_SUCCESS(HttpStatus.OK, "R002", "리뷰 참여 여부 조회 성공"),
 
     ;
     private HttpStatus status;

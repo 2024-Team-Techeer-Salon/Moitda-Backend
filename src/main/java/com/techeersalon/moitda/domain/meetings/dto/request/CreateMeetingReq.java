@@ -73,5 +73,4 @@ public class CreateMeetingReq {
                 .build();
     }
 
-    // 초기 데이터 생성용 생성자
 }
