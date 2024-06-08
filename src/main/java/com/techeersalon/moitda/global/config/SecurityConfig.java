@@ -49,7 +49,10 @@ public class SecurityConfig {
                 "http://jxy.me",
                 "http://apic.app",
                 "file://",
-                "https://jiangxy.github.io"
+                "https://jiangxy.github.io",
+                "http://localhost",
+                "https://moitda.site",
+                "http://moitda.site"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
