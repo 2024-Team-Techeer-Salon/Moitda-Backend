@@ -14,4 +14,6 @@ public interface MeetingParticipantRepository extends JpaRepository<MeetingParti
     Boolean existsByMeetingIdAndUserId(Long meetingId, Long UserId);
 
     Optional<MeetingParticipant> findByMeetingId(Long Meeting);
+
+    MeetingParticipant findByMeetingIdAndUserId(Long meetingId, Long userId);
 }

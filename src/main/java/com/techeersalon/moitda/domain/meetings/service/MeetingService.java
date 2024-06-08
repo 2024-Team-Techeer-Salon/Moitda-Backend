@@ -20,6 +20,7 @@ import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingPageNotF
 import com.techeersalon.moitda.domain.meetings.exception.participant.AlreadyParticipatingOrAppliedException;
 import com.techeersalon.moitda.domain.meetings.exception.participant.MeetingParticipantNotFoundException;
 import com.techeersalon.moitda.domain.meetings.exception.participant.NotAuthorizedToAppproveException;
+import com.techeersalon.moitda.domain.meetings.exception.review.AlreadyReviewedException;
 import com.techeersalon.moitda.domain.meetings.exception.review.InvalidRatingScoreException;
 import com.techeersalon.moitda.domain.meetings.exception.review.MeetingNotEndedException;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingImageRepository;
@@ -68,9 +69,6 @@ public class MeetingService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
-
-    // 한 페이지당 meeting 데이터 개수
-    //private final int pageSize = 32;
 
     /*
      * 미팅 생성 메소드
@@ -338,10 +336,17 @@ public class MeetingService {
         Long meetingId = createReviewReq.getMeetingId();
         Optional<Meeting> meetingOptional = meetingRepository.findById(meetingId);
         Meeting meeting = meetingOptional.orElseThrow(MeetingNotFoundException::new);
+        User loginUser = userService.getLoginUser();
 
         if (meeting.getEndTime() == null) {
             throw new MeetingNotEndedException();
         }
+        // userId를 통해 participant table을 조회해서 userId가 같은지
+        MeetingParticipant meetingParticipant = meetingParticipantRepository.findByMeetingIdAndUserId(meetingId, loginUser.getId());
+        if (meetingParticipant.getIsReviewed()) {
+            throw new AlreadyReviewedException();
+        }
+
         List<CreateReviewReq.Review> reviews = createReviewReq.getReviews();
 
         for (CreateReviewReq.Review review : reviews) {
@@ -353,7 +358,10 @@ public class MeetingService {
 
             int adjustedMannerStat = adjustUserMannerStat(user.getMannerStat(), rating);
             user.updateMannerStat(adjustedMannerStat);
+
+            meetingParticipant.updateReviewed();
             userRepository.save(user);
+            meetingParticipantRepository.save(meetingParticipant);
         }
     }
 
@@ -410,5 +418,13 @@ public class MeetingService {
         Coordinate coord = new Coordinate(pointMapper.getLongitude(), pointMapper.getLatitude());
         Point point = geometryFactory.createPoint(coord);
         return point;
+    }
+
+    public boolean hasReviewedMeeting(Long meetingId) {
+
+        User loginUser = userService.getLoginUser();
+
+        MeetingParticipant meetingParticipant = meetingParticipantRepository.findByMeetingIdAndUserId(meetingId, loginUser.getId());
+        return meetingParticipant.getIsReviewed();
     }
 }
