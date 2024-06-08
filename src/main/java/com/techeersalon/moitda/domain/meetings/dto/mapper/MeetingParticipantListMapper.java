@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MeetingParticipantListMapper {
-    private Long meetingParticipantId;
+    private Long userId;
     private String username;
     private String profileImage;
     private Boolean isWaiting;
@@ -20,7 +20,7 @@ public class MeetingParticipantListMapper {
     public static MeetingParticipantListMapper from(MeetingParticipant meetingParticipant, User user) {
 
         return MeetingParticipantListMapper.builder()
-                .meetingParticipantId(meetingParticipant.getId())
+                .userId(meetingParticipant.getUserId())
                 .username(meetingParticipant.getUsername())
                 .profileImage(user.getProfileImage())
                 .isWaiting(meetingParticipant.getIsWaiting())
