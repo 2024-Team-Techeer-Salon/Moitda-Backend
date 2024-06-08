@@ -41,7 +41,7 @@ public class ChatMapper {
 
     public ChatMessageRes toChatMessageDto(ChatMessage chatMessage) {
         // userId를 사용하여 사용자 정보를 조회합니다.
-        UserProfileRes userProfile = userService.findUserProfile(chatMessage.getUserid());
+        UserProfileRes userProfile = userService.findUserProfileForChat(chatMessage.getUserid());
 
         return ChatMessageRes.builder()
                 .Id(chatMessage.getId())
