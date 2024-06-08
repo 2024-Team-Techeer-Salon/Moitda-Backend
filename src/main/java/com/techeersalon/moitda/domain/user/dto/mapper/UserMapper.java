@@ -22,6 +22,18 @@ public class UserMapper {
                 .build();
     }
 
+    public UserProfileRes toUserProfileForChat(User user) {
+        return UserProfileRes.builder()
+                .username(user.getUsername())
+                .mannerStat(user.getMannerStat())
+                .profileImage(user.getProfileImage())
+                .bannerImage(user.getBannerImage())
+                .gender(user.getGender())
+                .introduce(user.getIntroduce())
+                .location(user.getLocation())
+                .build();
+    }
+
     public UserIdRes toUserId(User user) {
         return UserIdRes.builder()
                 .userId(user.getId())
