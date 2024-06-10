@@ -1,0 +1,132 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          naver:
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
+            client-authentication-method: ${NAVER_CLIENT_AUTHENTICATION_METHOD}
+            scope:
+              - email
+
+            client-name: Naver
+            redirect-uri: ${NAVER_REDIRECT_URI}
+            authorization-grant-type: authorization_code
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            client-authentication-method: ${KAKAO_CLIENT_AUTHENTICATION_METHOD}
+            scope:
+              - account_email
+            client-name: Kakao
+            redirect-uri: ${KAKAO_REDIRECT_URI}
+            authorization-grant-type: authorization_code
+
+          google:
+            clientId: ${GOOGLE_CLIENT_ID}
+            clientSecret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: ${GOOGLE_REDIRECT_URI}
+            scope:
+              - email
+
+        provider:
+          naver:
+            authorization_uri: ${NAVER_AUTHORIZATION_URI}
+            token_uri: ${NAVER_TOKEN_URI}
+            user-info-uri: ${USER_INFO_URI}
+            user_name_attribute: ${USER_NAME_ATTRIBUTE}
+          kakao:
+            authorization_uri: ${KAKAO_AUTHORIZATION_URI}
+            token_uri: ${KAKAO_TOKEN_URI}
+            user-info-uri: ${KAKAO_USER_INFO_URI}
+            user_name_attribute: ${KAKAO_USER_NAME_ATTRIBUTE}
+  application:
+    name: moitda
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/moitda
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+      show_sql: true
+      dialect: org.hibernate.spatial.dialect.mysql.MySQL8SpatialDialect
+  web:
+    resources:
+      static-locations: classpath:/static/
+  mvc:
+    exception-handling:
+      default-error-view:
+        status-code: 404
+        message: "Resource Not Found"
+  servlet:
+    multipart:
+      max-file-size: -1 # 단일 파일 크기 제한
+      max-request-size: -1 # 전체 요청 크기 제한
+
+springdoc:
+  version: '@project.version@'
+  api-docs:
+    path: /api-docs
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    operations-sorter: alpha
+    tags-sorter: alpha
+    path: /swagger
+    disable-swagger-default-url: true
+    display-query-params-without-oauth2: true
+    doc-expansion: none
+  paths-to-match:
+
+jwt:
+  secretKey: ${JWT_SECRET_KEY}
+
+  access:
+    expiration: 3600000 # 1시간(60분) (1000L(ms -> s) * 60L(s -> m) * 60L(m -> h))
+    header: Authorization
+
+  refresh:
+    expiration: 1209600000 #  (1000L(ms -> s) * 60L(s -> m) * 60L(m -> h) * 24L(h -> 하루) * 14(2주))
+    header: Authorization-refresh
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}
+    region:
+      static: ${AWS_S3_REGION}
+    stack:
+      auto: false
+
+baseProfilePath:
+  ${AWS_S3_BASE_PROFILE_IMAGE_URL}
+
+baseBannerPath:
+  ${AWS_S3_BASE_BANNER_IMAGE_URL}
+
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    name: ${LOGGING_PATH}
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+
+#server:
+#  port:8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" #  이 설정은 모든 Actuator 엔드포인트를 외부에 노출
+      base-path: /actuator # Actuator 엔드포인트의 기본 경로 지정
+  #  server:
+  #    port: 9090 # Actuator 엔드포인트가 서비스될 서버의 포트

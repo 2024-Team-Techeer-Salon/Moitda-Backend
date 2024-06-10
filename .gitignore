@@ -48,8 +48,7 @@ out/
 
 /src/main/resources/secret.properties
 
-/src/main/resources/application.yml
 
 .env
 
-logs/
+logs/*.log

@@ -1,0 +1,27 @@
+<configuration>
+    <!-- Console Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!-- File Appender -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">\
+        <file>${LOGGING_PATH}/springboot.log</file> <!-- 현재 log 파일의 기본 이름 -->
+        <append>true</append>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <maxHistory>30</maxHistory> <!-- 유지되는 로그 파일의 최대 일 수 -->
+            <totalSizeCap>1GB</totalSizeCap> <!-- 로그 파일의 최대 크기 -->
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} - %msg%n</pattern>
+        </encoder>
+
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
