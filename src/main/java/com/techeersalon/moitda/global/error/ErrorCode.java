@@ -33,8 +33,10 @@ public enum ErrorCode {
     // 채팅방
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND,"CR001","채팅방을 찾을 수 없습니다."),
     MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND,"CM001","메시지를 찾을 수 없습니다"),
+
     // 평가
     INVALID_RATING_SCORE(HttpStatus.BAD_REQUEST, "R001", "평가 점수는 1부터 5까지만 가능합니다."),
+    ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, "R002", "이미 리뷰를 마쳤습니다.")
 
     ;
 

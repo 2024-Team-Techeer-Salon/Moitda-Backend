@@ -80,6 +80,15 @@ public class UserService {
         return userMapper.toUserId(user);
     }
 
+    public UserProfileRes findUserProfileForChat(Long userId) {
+
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User user = optionalUser
+                .orElseThrow(UserNotFoundException::new);
+        return userMapper.toUserProfileForChat(user);
+            }
+
+
     public UserProfileRes findUserProfile(Long userId) {
 
         // userId를 통해 찾은 유저 정보.

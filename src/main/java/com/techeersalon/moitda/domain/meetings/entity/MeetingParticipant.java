@@ -34,7 +34,14 @@ public class MeetingParticipant extends BaseEntity {
     @Column(name = "is_waiting", nullable = false)
     private Boolean isWaiting;
 
+    @Column(name = "is_reviewed", nullable = false)
+    private Boolean isReviewed;
+
     public void notNeedToApprove() {
         this.isWaiting = false;
+    }
+
+    public void updateReviewed() {
+        this.isReviewed = true;
     }
 }

@@ -151,7 +151,7 @@ public class MeetingsController {
     }
 
     @Operation(summary = "reviewParticipants", description = "후기 작성")
-    @PostMapping("reviews")
+    @PostMapping("/reviews")
     public ResponseEntity<SuccessResponse> createReview(@RequestBody @Valid CreateReviewReq createReviewReq) {
 
         meetingService.createReview(createReviewReq);
@@ -176,5 +176,10 @@ public class MeetingsController {
         return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_LIST_GET_SUCCESS, response));
     }
 
-
+    @Operation(summary = "hasReviewedMeeting", description = "사용자가 특정 모임에 대해 리뷰를 작성했는지 여부 확인")
+    @GetMapping("/reviews/{meetingId}")
+    public ResponseEntity<SuccessResponse> hasReviewedMeeting(@PathVariable Long meetingId) {
+        boolean hasReviewed = meetingService.hasReviewedMeeting(meetingId);
+        return ResponseEntity.ok(SuccessResponse.of(REVIEW_STATUS_SUCCESS, hasReviewed));
+    }
 }
