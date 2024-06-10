@@ -51,4 +51,4 @@ out/
 
 .env
 
-logs/
+logs/*.log
