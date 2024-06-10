@@ -1,8 +1,6 @@
 FROM openjdk:17 AS builder
 VOLUME /tmp
 
-COPY .env /app/.env
-
 COPY ./gradlew .
 # gradlew 복사
 COPY ./gradle gradle
