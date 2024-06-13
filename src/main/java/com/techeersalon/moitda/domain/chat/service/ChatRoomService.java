@@ -8,7 +8,9 @@ import com.techeersalon.moitda.domain.chat.repository.ChatMessageRepository;
 import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
 import com.techeersalon.moitda.domain.user.entity.User;
+import com.techeersalon.moitda.domain.user.exception.UserNotFoundException;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
+import com.techeersalon.moitda.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,15 +25,20 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMapper chatMapper;
+    private final UserService userService;
     private final UserRepository userRepository;
 
 
-    /** ChatRoom 생성 */
+    /**
+     * ChatRoom 생성
+     */
     @Transactional
     public ChatRoom createChatRoom(Long meetingId) {
+        User user = userService.getLoginUser();
         ChatRoom newChatRoom = ChatRoom.builder()
                 .meetingId(meetingId) // 이름 설정
                 .build();
+        newChatRoom.addMember(user);
         chatRoomRepository.save(newChatRoom);
 
         return newChatRoom;
@@ -40,15 +47,18 @@ public class ChatRoomService {
 
     /*채팅방에 유저 추가*/
     @Transactional
-    public ChatRoomRes addUserToRoom(Long roomId, User user) {
+    public ChatRoomRes addUserToRoom(Long roomId, Long userId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(ChatRoomNotFoundException::new);
 
-        chatRoom.getMembers().add(user);
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User user = optionalUser
+                .orElseThrow(UserNotFoundException::new);
+
+        chatRoom.addMember(user);
 
         chatRoomRepository.save(chatRoom);
-        ChatRoomRes chatRoomRes = chatMapper.toChatRoomDto(chatRoom);
-        return chatRoomRes;
+        return chatMapper.toChatRoomDto(chatRoom);
     }
 
     @Transactional
@@ -60,18 +70,22 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public List<ChatRoomRes> getChatRoomsByUser(User user) {
+    public List<ChatRoomRes> getChatRoomsByUser() {
+        User user = userService.getLoginUser();
         List<ChatRoom> chatRooms = chatRoomRepository.findByMembers(user);
-        List<ChatRoomRes> chatRoomDtoList = chatMapper.toChatRoomDtoList(chatRooms);
-        return chatRoomDtoList;
+        return chatMapper.toChatRoomDtoList(chatRooms);
     }
 
     @Transactional
-    public void deleteRoomAndMessages(Long roomId){
+    public void deleteRoomAndMessages(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElse(null);
+        System.out.println(chatRoom.getId());
         chatRoomRepository.delete(chatRoom);
+        System.out.println(chatRoom.getId());
+
         //chatRoom.delete();
         List<ChatMessage> chatMessageList = chatMessageRepository.findByMeetingId(roomId);
+        System.out.println(chatMessageList);
         //chatMessage.delete();
         chatMessageRepository.deleteAll(chatMessageList);
     }
@@ -79,7 +93,6 @@ public class ChatRoomService {
 //    public boolean duplicatedUserChatRoom(Member member) {
 //        return userChatRoomRepository.existsByMemberId(member.getId());
 //    }
-
 
 
 //    public void updateLastReadChat(Long roomId, Long userId) {

@@ -5,19 +5,13 @@ import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
 import com.techeersalon.moitda.domain.chat.service.ChatMessageService;
 import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
-import com.techeersalon.moitda.domain.user.entity.SocialType;
-import com.techeersalon.moitda.domain.user.entity.User;
-import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.global.common.SuccessCode;
 import com.techeersalon.moitda.global.common.SuccessResponse;
-import com.techeersalon.moitda.global.jwt.Service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,77 +27,47 @@ public class ChatController {
 
     private final ChatMessageService chatMessageService;
     private final ChatRoomService chatRoomService;
-    private final UserRepository userRepository;
-    private final JwtService tokenProvider;
 
     // 나중에 합쳐야 할 수도?
     /*이건 유저의 채팅방 id 조회를 하는 로직을 저쪽에서 짜면 필요없을 수도*/
-    //@Transactional
-    @Operation( description = "ChatRoomList read", summary= "유저의 채팅방 목록 조회")
+    @Operation(description = "ChatRoomList read", summary = "유저의 채팅방 목록 조회")
     @GetMapping("/list")
-    public ResponseEntity<SuccessResponse> getChatRoomList(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<SuccessResponse> getChatRoomList() {
 
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<User> optionalUser = userRepository.findBySocialTypeAndEmail(
-                SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername());
-        User user = optionalUser.get();
+        List<ChatRoomRes> chatRoomDtos = chatRoomService.getChatRoomsByUser();
 
-        List<ChatRoomRes> chatRoomDtos = chatRoomService.getChatRoomsByUser(user);
-
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.USER_ROOM_GET_SUCCESS,chatRoomDtos));
-    }
-
-    /*채팅방의 채팅 내역 조회*/
-    @Operation(description = "GetMessagesByRoom", summary = "채팅방의 채팅 내역 조회")
-    @GetMapping("/rooms/chatmessages/{room_id}")
-    public ResponseEntity<SuccessResponse> getChatMessagesByChatRoom(@PathVariable("room_id") Long roomid) {
-        //room_id
-        Optional<ChatRoom> chatRoomOptional = chatRoomService.findById(roomid);
-
-        // 채팅방이 존재하는지 확인
-        if (chatRoomOptional.isPresent()) {
-            List<ChatMessageRes> chatmessages = chatMessageService.findChatMessageList(roomid);
-            return ResponseEntity.ok(SuccessResponse.of(SuccessCode.MESSAGE_GET_SUCCESS,chatmessages));
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.USER_ROOM_GET_SUCCESS, chatRoomDtos));
     }
 
     @Operation(description = "GetPagesByRoom", summary = "채팅방의 내역 페이지 조회")
     @GetMapping("/rooms/chatlists/{room_id}")
-    public ResponseEntity<SuccessResponse> getPagesByChatRoom(@PathVariable("room_id") Long roomid,
+    public ResponseEntity<SuccessResponse> getPagesByChatRoom(@PathVariable("room_id") Long roomId,
                                                               @RequestParam(value = "page", defaultValue = "0") int page,
                                                               @RequestParam(value = "size", defaultValue = "10") int size) {
         //room_id
-        Optional<ChatRoom> chatRoomOptional = chatRoomService.findById(roomid);
+        Optional<ChatRoom> chatRoomOptional = chatRoomService.findById(roomId);
 
         // 채팅방이 존재하는지 확인
         if (chatRoomOptional.isPresent()) {
-            List<ChatMessageRes> chatmessages = chatMessageService.getLatestMessageList(roomid,page,size);
-            return ResponseEntity.ok(SuccessResponse.of(SuccessCode.MESSAGE_GET_SUCCESS,chatmessages));
+            List<ChatMessageRes> chatmessages = chatMessageService.getLatestMessageList(roomId, page, size);
+            return ResponseEntity.ok(SuccessResponse.of(SuccessCode.MESSAGE_GET_SUCCESS, chatmessages));
         }
         return ResponseEntity.notFound().build();
     }
 
-    @Operation(description = "",summary="채팅방에 유저 추가")
+    @Operation(description = "", summary = "채팅방에 유저 추가")
     @PatchMapping("/rooms/{room_id}")
-    public ResponseEntity<SuccessResponse> addUsertoChatRoom(@PathVariable("room_id") Long roomid){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Optional<User> optionalUser = userRepository.findBySocialTypeAndEmail(
-                SocialType.valueOf(userDetails.getPassword()), userDetails.getUsername());
-        User user = optionalUser.get();
+    public ResponseEntity<SuccessResponse> addUsertoChatRoom(@PathVariable("room_id") Long roomId, @RequestBody @Valid Long userId) {
 
-        ChatRoomRes chatRoomRes = chatRoomService.addUserToRoom(roomid,user);
+        ChatRoomRes chatRoomRes = chatRoomService.addUserToRoom(roomId, userId);
         return ResponseEntity.ok(SuccessResponse.of(SuccessCode.USER_APPROVAL_SUCCESS, chatRoomRes));
     }
 
     /*채팅방 삭제 이때 채팅방 메시지도 동시에 삭제되어야 함*/
-    @Operation(description="ChatRoom delete", summary = "채팅방 삭제")
+    @Operation(description = "ChatRoom delete", summary = "채팅방 삭제")
     @DeleteMapping("/rooms/{room_id}")
-    public ResponseEntity<SuccessResponse> deleteChatRoom(@PathVariable("room_id") Long roomid){
-        chatRoomService.deleteRoomAndMessages(roomid);
+    public ResponseEntity<SuccessResponse> deleteChatRoom(@PathVariable("room_id") Long roomId) {
+        chatRoomService.deleteRoomAndMessages(roomId);
 
         return ResponseEntity.ok(SuccessResponse.of(SuccessCode.MEETING_DELETE_SUCCESS));
     }
@@ -114,12 +78,7 @@ public class ChatController {
 }
 
 
-
-
-
-
-
-    // 사용자가 웹 소켓 연결을 끊으면 실행됨
+// 사용자가 웹 소켓 연결을 끊으면 실행됨
 //    @EventListener
 //    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
 //        StompHeaderAccessor headerAccesor = StompHeaderAccessor.wrap(event.getMessage());

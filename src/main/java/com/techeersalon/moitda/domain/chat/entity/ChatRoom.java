@@ -15,7 +15,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE chatroom SET is_deleted = true WHERE chatroom_id = ?")
+@SQLDelete(sql = "UPDATE chat_room SET is_deleted = true WHERE chatroom_id = ?")
 @Where(clause = "is_deleted = false")
 public class ChatRoom extends BaseEntity {
     @Id
@@ -26,7 +26,12 @@ public class ChatRoom extends BaseEntity {
     @Column(name = "meeting_Id", nullable = false)
     private Long meetingId;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(
+            name = "chatroom_user",
+            joinColumns = @JoinColumn(name = "chatroom_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private final List<User> members = new ArrayList<>();
 
     // Lombok의 @Builder를 사용할 때 필드 추가를 반영하기 위한 빌더 패턴 설정
@@ -37,7 +42,16 @@ public class ChatRoom extends BaseEntity {
         if (members != null) {
             this.members.addAll(members);
         }
+    }
 
+    public void addMember(User user) {
+        this.members.add(user);
+        user.getChatRooms().add(this);
+    }
+
+    public void removeMember(User user) {
+        this.members.remove(user);
+        user.getChatRooms().remove(this);
     }
 
 }
