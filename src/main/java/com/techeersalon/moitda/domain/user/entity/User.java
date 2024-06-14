@@ -1,5 +1,6 @@
 package com.techeersalon.moitda.domain.user.entity;
 
+import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
 import com.techeersalon.moitda.global.common.BaseEntity;
@@ -12,12 +13,14 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE user SET is_deleted = true WHERE user_id = ?")
+@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE user_id = ?")
 @Where(clause = "is_deleted = false")
 public class User extends BaseEntity {
 
@@ -64,6 +67,9 @@ public class User extends BaseEntity {
 
     @Column(name = "refresh_token")
     private String refreshToken;
+
+    @ManyToMany(mappedBy = "members")
+    private final List<ChatRoom> chatRooms = new ArrayList<>();
 
     @Builder
     private User(Long id, String username, String email, String profileImage, String bannerImage, LocalDate dataOfBirth, Gender gender, String introduce, Integer mannerStat, String location, Role role, SocialType socialType, String refreshToken) {

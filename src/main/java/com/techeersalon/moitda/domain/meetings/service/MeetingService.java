@@ -16,6 +16,7 @@ import com.techeersalon.moitda.domain.meetings.entity.MeetingImage;
 import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
 import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingIsFullException;
 import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingNotFoundException;
+import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingOwnerLeavingException;
 import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingPageNotFoundException;
 import com.techeersalon.moitda.domain.meetings.exception.participant.AlreadyParticipatingOrAppliedException;
 import com.techeersalon.moitda.domain.meetings.exception.participant.MeetingParticipantNotFoundException;
@@ -426,5 +427,30 @@ public class MeetingService {
 
         MeetingParticipant meetingParticipant = meetingParticipantRepository.findByMeetingIdAndUserId(meetingId, loginUser.getId());
         return meetingParticipant.getIsReviewed();
+    }
+
+    public void removeParticipantFromMeeting(Long meetingId, Long userId) {
+
+        // MeetingParticipant 검색 및 삭제
+        MeetingParticipant meetingParticipant = meetingParticipantRepository.findByMeetingIdAndUserId(meetingId, userId);
+
+        Optional<Meeting> optionalMeeting = meetingRepository.findById(meetingId);
+        Meeting meeting = optionalMeeting
+                .orElseThrow(MeetingNotFoundException::new);
+
+        if (meetingParticipant != null) {
+            // 방장인지 확인
+            if (meetingParticipant.getUserId() == meeting.getUserId()) {
+                throw new MeetingOwnerLeavingException();
+            }
+        } else {
+            // 참가자를 찾지 못한 경우 예외 처리
+            throw new MeetingParticipantNotFoundException();
+        }
+
+        meetingParticipantRepository.delete(meetingParticipant);
+
+        // Meeting 업데이트
+        meeting.decreaseParticipantsCnt();
     }
 }

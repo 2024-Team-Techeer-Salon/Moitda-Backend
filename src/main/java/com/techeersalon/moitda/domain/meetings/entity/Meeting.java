@@ -76,7 +76,11 @@ public class Meeting extends BaseEntity {
         this.participantsCount++;
     }
 
-    public void updateInfo(ChangeMeetingInfoReq dto){
+    public void decreaseParticipantsCnt() {
+        this.participantsCount--;
+    }
+
+    public void updateInfo(ChangeMeetingInfoReq dto) {
         GeometryFactory geometryFactory = new GeometryFactory();
         Coordinate coord = new Coordinate(dto.getLongitude(), dto.getLatitude());
         Point point = geometryFactory.createPoint(coord);

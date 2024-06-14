@@ -47,4 +47,6 @@ public interface MeetingRepository extends PagingAndSortingRepository<Meeting, L
             countQuery = "SELECT count(*) FROM meeting WHERE end_time IS NULL AND title LIKE %:keyword%",
             nativeQuery = true)
     Page<Meeting> findPageByKeyword(String keyword, @Param("point")Point point, Pageable pageable);
+
+    Meeting findByUserId(Long meetingId);
 }
