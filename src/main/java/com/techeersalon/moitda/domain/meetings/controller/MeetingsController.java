@@ -143,6 +143,13 @@ public class MeetingsController {
         return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_CREATE_SUCCESS, response));
     }
 
+    @Operation(summary = "deleteParticipantFromMeeting", description = "유저 제거")
+    @DeleteMapping("/participant/{meetingId}")
+    public ResponseEntity<SuccessResponse> removeParticipantFromMeeting(@PathVariable Long meetingId, @RequestBody @Valid Long userId) {
+        meetingService.removeParticipantFromMeeting(meetingId, userId);
+        return ResponseEntity.ok(SuccessResponse.of(PARTICIPANT_DELETE_SUCCESS));
+    }
+
     @Operation(summary = "ApprovalOfMeetingParticipants", description = "신청 승인 거절")
     @PatchMapping("/participant")
     public ResponseEntity<SuccessResponse> ApprovalOfMeetingParticipants(@Validated @RequestBody ApprovalParticipantReq dto) {
@@ -157,17 +164,6 @@ public class MeetingsController {
         meetingService.createReview(createReviewReq);
         return ResponseEntity.ok(SuccessResponse.of(REVIEW_CREATE_SUCCESS));
     }
-
-//    @Operation(summary = "distanceMeetingsPage", description = "범위 모임 리스트 조회")
-//    @GetMapping("/search/distance")
-//    public ResponseEntity<SuccessResponse> distanceMeetingsPage(@RequestParam("latitude") Double latitude, @RequestParam("longitude") Double longitude,
-//                                                                @RequestParam(value="page", defaultValue="0")int page,
-//                                                                @RequestParam(value="size", defaultValue="10")int pageSize){
-//        PointMapper pointMapper = PointMapper.from(latitude, longitude);
-//        List<GetLatestMeetingListRes> response = meetingService.distanceMeetings(pointMapper,page, pageSize);
-//
-//        return ResponseEntity.ok(SuccessResponse.of(MEETING_PAGING_GET_SUCCESS, response));
-//    }
 
     @Operation(summary = "getMeetingParticipants", description = "모임 신청자 리스트 조회")
     @GetMapping("/{meetingId}/participants")

@@ -3,10 +3,14 @@ package com.techeersalon.moitda.domain.chat.service;
 import com.techeersalon.moitda.domain.chat.entity.ChatMessage;
 import com.techeersalon.moitda.domain.chat.entity.ChatRoom;
 import com.techeersalon.moitda.domain.chat.dto.mapper.ChatMapper;
+import com.techeersalon.moitda.domain.chat.exception.AlreadyParticipatingException;
 import com.techeersalon.moitda.domain.chat.exception.ChatRoomNotFoundException;
+import com.techeersalon.moitda.domain.chat.exception.RoomOwnerCannotLeaveException;
 import com.techeersalon.moitda.domain.chat.repository.ChatMessageRepository;
 import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
+import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.exception.UserNotFoundException;
 import com.techeersalon.moitda.domain.user.repository.UserRepository;
@@ -20,6 +24,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -27,7 +32,7 @@ public class ChatRoomService {
     private final ChatMapper chatMapper;
     private final UserService userService;
     private final UserRepository userRepository;
-
+    private final MeetingRepository meetingRepository;
 
     /**
      * ChatRoom 생성
@@ -55,6 +60,11 @@ public class ChatRoomService {
         User user = optionalUser
                 .orElseThrow(UserNotFoundException::new);
 
+        // 이미 참가한 사용자인지 확인
+        if (chatRoom.getMembers().contains(user)) {
+            throw new AlreadyParticipatingException();
+        }
+
         chatRoom.addMember(user);
 
         chatRoomRepository.save(chatRoom);
@@ -79,15 +89,28 @@ public class ChatRoomService {
     @Transactional
     public void deleteRoomAndMessages(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElse(null);
-        System.out.println(chatRoom.getId());
         chatRoomRepository.delete(chatRoom);
-        System.out.println(chatRoom.getId());
 
-        //chatRoom.delete();
         List<ChatMessage> chatMessageList = chatMessageRepository.findByMeetingId(roomId);
-        System.out.println(chatMessageList);
-        //chatMessage.delete();
+
         chatMessageRepository.deleteAll(chatMessageList);
+    }
+
+    public void removeUserFromRoom(Long roomId, Long userId) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(ChatRoomNotFoundException::new);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        Meeting meeting = meetingRepository.findByUserId(chatRoom.getMeetingId());
+        // 방장이 채팅방 나가는 경우 예외 처리.
+        if (meeting.getUserId() == user.getId()) {
+            throw new RoomOwnerCannotLeaveException();
+        }
+
+        chatRoom.removeMember(user);
+
     }
 
 //    public boolean duplicatedUserChatRoom(Member member) {

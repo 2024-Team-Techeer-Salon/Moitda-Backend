@@ -10,7 +10,6 @@ import com.techeersalon.moitda.domain.user.dto.response.UserProfileRes;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import com.techeersalon.moitda.global.common.SuccessResponse;
 import com.techeersalon.moitda.global.jwt.JwtToken;
-import com.techeersalon.moitda.global.jwt.Service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,7 +33,6 @@ import static com.techeersalon.moitda.global.common.SuccessCode.*;
 public class UserController {
     private final UserService userService;
     private final MeetingService meetingService;
-    private final JwtService jwtService;
 
     @Operation(summary = "추가정보 입력")
     @PostMapping("/users")

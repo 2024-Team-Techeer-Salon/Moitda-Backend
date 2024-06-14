@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static com.techeersalon.moitda.global.common.SuccessCode.*;
+
 
 @Tag(name = "ChatMessageController", description = "채팅 관련 API")
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class ChatController {
 
         List<ChatRoomRes> chatRoomDtos = chatRoomService.getChatRoomsByUser();
 
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.USER_ROOM_GET_SUCCESS, chatRoomDtos));
+        return ResponseEntity.ok(SuccessResponse.of(USER_ROOM_GET_SUCCESS, chatRoomDtos));
     }
 
     @Operation(description = "GetPagesByRoom", summary = "채팅방의 내역 페이지 조회")
@@ -50,7 +52,7 @@ public class ChatController {
         // 채팅방이 존재하는지 확인
         if (chatRoomOptional.isPresent()) {
             List<ChatMessageRes> chatmessages = chatMessageService.getLatestMessageList(roomId, page, size);
-            return ResponseEntity.ok(SuccessResponse.of(SuccessCode.MESSAGE_GET_SUCCESS, chatmessages));
+            return ResponseEntity.ok(SuccessResponse.of(MESSAGE_GET_SUCCESS, chatmessages));
         }
         return ResponseEntity.notFound().build();
     }
@@ -60,7 +62,15 @@ public class ChatController {
     public ResponseEntity<SuccessResponse> addUsertoChatRoom(@PathVariable("room_id") Long roomId, @RequestBody @Valid Long userId) {
 
         ChatRoomRes chatRoomRes = chatRoomService.addUserToRoom(roomId, userId);
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.USER_APPROVAL_SUCCESS, chatRoomRes));
+        return ResponseEntity.ok(SuccessResponse.of(USER_APPROVAL_SUCCESS, chatRoomRes));
+    }
+
+    @Operation(description = "", summary = "채팅방 유저 삭제")
+    @DeleteMapping("/rooms/{room_id}/user")
+    public ResponseEntity<SuccessResponse> removeUserFromRoom(@PathVariable("room_id") Long roomId, @RequestBody @Valid Long userId) {
+
+        chatRoomService.removeUserFromRoom(roomId, userId);
+        return ResponseEntity.ok(SuccessResponse.of(USER_REMOVAL_SUCCESS));
     }
 
     /*채팅방 삭제 이때 채팅방 메시지도 동시에 삭제되어야 함*/
@@ -69,7 +79,7 @@ public class ChatController {
     public ResponseEntity<SuccessResponse> deleteChatRoom(@PathVariable("room_id") Long roomId) {
         chatRoomService.deleteRoomAndMessages(roomId);
 
-        return ResponseEntity.ok(SuccessResponse.of(SuccessCode.MEETING_DELETE_SUCCESS));
+        return ResponseEntity.ok(SuccessResponse.of(MEETING_DELETE_SUCCESS));
     }
 
 //    @Operation(summary = "GetRoomByUser", description = "유저의 채팅방 조회")
