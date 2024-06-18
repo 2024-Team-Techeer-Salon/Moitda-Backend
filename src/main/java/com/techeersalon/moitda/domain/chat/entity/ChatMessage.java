@@ -32,7 +32,10 @@ public class ChatMessage extends BaseEntity {
     @Column(name = "send_Date")
     private String sendDate;
 
-//    public enum MessageType {
-//        ENTER, TALK
-//    }
+    public enum MessageType {
+        ENTER, TALK
+    }
+
+    private MessageType messageType;
+
 }

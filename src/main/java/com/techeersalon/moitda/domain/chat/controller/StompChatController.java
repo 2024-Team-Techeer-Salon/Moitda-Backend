@@ -14,6 +14,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,28 +23,23 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class StompChatController {
+
     @Autowired
     private final SimpMessagingTemplate template; //특정 Broker로 메세지를 전달
     private final ChatMessageService chatMessageService;
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final ChatMapper chatMapper;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-//    @MessageMapping("")
-//    public void handleStompMessage(StompHeaderAccessor accessor) {
-//        // STOMP 메시지의 헤더에 액세스할 수 있습니다.
-//        accessor.getMessage();
-//        String sessionId = accessor.getSessionId();
-//        String destination = accessor.getDestination();
-//
-//        // 추가적인 처리를 수행할 수 있습니다.
-//    }
+
     @MessageMapping(value = "/chat/room/{roomId}")
     @SendToUser("/sub/chat/room/{roomId}")
     public void send_message(StompHeaderAccessor headerAccessor,
@@ -68,11 +64,12 @@ public class StompChatController {
 //        }
 //
         ChatMessage chatMessage = ChatMapper.toChatMessage(user, Long.valueOf(roomId), messageDto);
+        if (ChatMessage.MessageType.ENTER.equals(chatMessage.getMessageType()))
+            log.info("/sub/chat/room/" + roomId, LocalDateTime.now());
 
         ChatMessageRes responseDto = chatMessageService.createChatMessage(user, Long.valueOf(roomId), messageDto);
-
         /* 채팅방에 유저 추가하는 것만 하면 될 듯*/
-        template.convertAndSend("/sub/chat/room/" + roomId,responseDto); /*채팅방으로*/
+        redisTemplate.convertAndSend("/sub/chat/room/" + roomId,responseDto); /*채팅방으로*/
         log.info("pub success " + messageDto.getMessage());
         /*채팅 저장*/
 
