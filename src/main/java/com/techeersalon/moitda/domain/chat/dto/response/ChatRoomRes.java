@@ -13,7 +13,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ChatRoomRes {
     private Long id;
-    //private Long meetingId;
+    private String lastMessage;
     private List<MemberDetail> members; // 채팅방 멤버 정보
 
     @Getter

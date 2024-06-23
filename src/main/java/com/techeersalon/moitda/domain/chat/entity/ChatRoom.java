@@ -34,6 +34,9 @@ public class ChatRoom extends BaseEntity {
     )
     private final List<User> members = new ArrayList<>();
 
+    @Column(name = "last_Message")
+    private String lastMessage;
+
     // Lombok의 @Builder를 사용할 때 필드 추가를 반영하기 위한 빌더 패턴 설정
     @Builder
     public ChatRoom(Long id, Long meetingId, List<ChatMessage> chatMessageList, List<User> members) {

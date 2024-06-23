@@ -34,6 +34,7 @@ public class ChatMapper {
                 .userid(user.getId())
                 .meetingId(meetingId)
                 .message(request.getMessage())
+                .messageType(request.getType())
                 .sendDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 //.sendDate(LocalDateTime.from(now()))
                 .build();

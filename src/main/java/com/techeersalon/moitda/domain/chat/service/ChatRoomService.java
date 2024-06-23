@@ -113,6 +113,10 @@ public class ChatRoomService {
 
     }
 
+    public void updateLastMessage(){
+
+    }
+
 //    public boolean duplicatedUserChatRoom(Member member) {
 //        return userChatRoomRepository.existsByMemberId(member.getId());
 //    }
