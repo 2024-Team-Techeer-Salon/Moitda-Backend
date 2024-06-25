@@ -1,0 +1,11 @@
+# 네트워크 설정
+network.host: 0.0.0.0
+
+# HTTP 설정
+http.port: 9200
+
+# cors에러가 떠서 local에서는 보안 설정 비활성화
+xpack.security.enabled: false
+#xpack.security.enrollment.enabled: false
+#xpack.security.http.ssl.enabled: false
+#xpack.security.transport.ssl.enabled: false

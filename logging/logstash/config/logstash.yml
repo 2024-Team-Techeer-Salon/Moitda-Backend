@@ -1,0 +1,4 @@
+path.logs: /var/log/logstash
+http.host: "0.0.0.0"
+http.port: 9600
+http.enabled: true

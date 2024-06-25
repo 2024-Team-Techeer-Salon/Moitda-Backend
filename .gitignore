@@ -1,0 +1,54 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+!**/prometheus/data
+!**/node-exporter/data
+!**/monitoring/grafana/alerting
+!**/monitoring/grafana/png
+/monitoring/grafana/plugins
+!**/monitoring/grafana/csv
+!**/monitoring/grafana/pdf
+/monitoring/grafana/grafana.db
+
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+/src/main/resources/secret.properties
+
+
+.env
+
+logs/*.log
