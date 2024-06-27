@@ -41,7 +41,6 @@ public class StompChatController {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final ChatMapper chatMapper;
-    private final RedisTemplate<String, Object> redisTemplate;
     private final RedisPublisher redisPub;
     private final ChatRoomService chatRoomService;
     private final UserService userService;
@@ -56,7 +55,7 @@ public class StompChatController {
         template.convertAndSend("/sub/room/" + memberId, chatRoomDtos);
     }
 
-
+    /*Message 보내기*/
     @MessageMapping(value = "/chat/room/{roomId}")
     @SendTo("/sub/chat/room/{roomId}")
     public void send_message(StompHeaderAccessor headerAccessor,
@@ -71,36 +70,20 @@ public class StompChatController {
 
         log.info("# roomId = {}", roomId);
 
-//        if (messageDto.getType() == ChatMessage.MessageType.ENTER) {
-//            /*이때 채팅 내역이 조회되어야 함*/
-//            //chatMessageService.findLatestMessageList(roomId,);
-//            }
-//            /*채팅 내역 조회 이걸로 해야할 거 같은데...*/ 
-//        }
-//        else{
-//        }
-//
+
         ChatMessage chatMessage = ChatMapper.toChatMessage(user, Long.valueOf(roomId), messageDto);
+        /*MessageType이 Enter = 즉 User가 채팅방에 새로 들어왔을 */
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getMessageType()))
             log.info("/sub/chat/room/" + roomId, LocalDateTime.now());
 
-        ChatMessageRes responseDto = chatMessageService.createChatMessage(user, Long.valueOf(roomId), messageDto);
+        ChatMessageRes chatMessageRes = chatMessageService.createChatMessage(user, Long.valueOf(roomId), messageDto);
+        log.info("message create");
         /* 채팅방에 유저 추가하는 것만 하면 될 듯*/
-        redisPub.publish(ChannelTopic.of(roomId),chatMessage); /*채팅방으로*/
+        redisPub.publish(ChannelTopic.of(roomId),chatMessageRes); /*채팅방으로*/
         log.info("pub success " + messageDto.getMessage());
         /*채팅 저장*/
 
     }
-
-    // 클라이언트가 /chat.sendMessage 경로로 메시지를 보내면 이 메서드가 호출됩니다.
-//    @MessageMapping("/chat.sendMessage")
-//    @SendTo("/topic/public")
-//    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
-//        return chatMessage;
-//    }
-//
-
-
 
 
 }

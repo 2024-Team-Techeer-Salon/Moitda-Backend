@@ -113,9 +113,25 @@ public class ChatRoomService {
 
     }
 
-    public void updateLastMessage(){
-
-    }
+//    @Transactional
+//    public void updateUserReadPosition(String roomId, String userId, String lastMessageId, boolean setRead) {
+//        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+//        hashOperations.put("userLastRead:" + roomId, userId, lastMessageId);
+//
+//        long lastMsgId = Long.parseLong(lastMessageId);
+//        ChatMessage message = messageRepository.findById(lastMsgId).orElse(null);
+//        if (message != null) {
+//            message.setRead(true);
+//            messageRepository.saveAndFlush(message); // 데이터베이스에 즉시 반영
+//        }
+//        // 캐시 갱신
+//        redisTemplate.expire("userLastRead:" + roomId, 10, TimeUnit.MINUTES);
+//    }
+//
+//    public String getUserLastReadPosition(String roomId, String userId) {
+//        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+//        return hashOperations.get("userLastRead:" + roomId, userId);
+//    }
 
 //    public boolean duplicatedUserChatRoom(Member member) {
 //        return userChatRoomRepository.existsByMemberId(member.getId());

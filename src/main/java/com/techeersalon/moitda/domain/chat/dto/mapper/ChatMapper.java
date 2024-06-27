@@ -35,7 +35,6 @@ public class ChatMapper {
                 .meetingId(meetingId)
                 .message(request.getMessage())
                 .messageType(request.getType())
-                .sendDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 //.sendDate(LocalDateTime.from(now()))
                 .build();
     }
@@ -50,7 +49,7 @@ public class ChatMapper {
                 .sender(userProfile.getUsername())
                 .profileImage(userProfile.getProfileImage())
                 .content(chatMessage.getMessage())
-                .sendDate(chatMessage.getSendDate())
+                .sendDate(String.valueOf(chatMessage.getCreateAt()))
                 .build();
     }
 

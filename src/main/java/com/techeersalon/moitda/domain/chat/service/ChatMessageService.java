@@ -12,31 +12,38 @@ import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
 import com.techeersalon.moitda.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class ChatMessageService {
 
+
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMapper chatMapper;
-    private final int pageSize = 32;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final ChatMessageRepository messageRepository;
+    private final RedisMessageListenerContainer redisMessageListener;
 
 
-//    /** ChatMessage 조회 */
-//    @Transactional
-//    public ChatMessageResponseDto findById(final Long chatMessageId) {
-//        ChatMessage chatMessageEntity = this.chatMessageRepository.findById(chatMessageId).orElseThrow(
-//                () -> new IllegalArgumentException("해당 ChatMessage가 존재하지 않습니다. chatMessageId = " + chatMessageId));
-//        return new ChatMessageResponseDto(chatMessageEntity);
-//    }
+    public void addChannelTopic(String roomId) {
+        ChannelTopic topic = new ChannelTopic("chatroom:" + roomId);
+        redisMessageListener.addMessageListener((MessageListener) this, topic);
+    }
+
     /**
      * ChatMessage 생성
      *
@@ -47,7 +54,7 @@ public class ChatMessageService {
         ChatRoom chatRoomEntity = this.chatRoomRepository.findById(roomId).orElseThrow(
                 ChatRoomNotFoundException::new);
         //messageRequestDto.setRoomId(chatRoomEntity.getId());
-
+        addChannelTopic(String.valueOf(roomId));
         ChatMessage entity = chatMapper.toChatMessage(sender, roomId, messageRequestDto);
         ChatMessage chatMessage = chatMessageRepository.save(entity);
         return chatMapper.toChatMessageDto(chatMessage);
@@ -62,12 +69,7 @@ public class ChatMessageService {
         this.chatMessageRepository.delete(chatMessageEntity);
     }
 
-//    /** ChatMessage 조회*/
-//    @Transactional
-//    public ChatMessageRes findChatMessage(ChatMessage chatMessage) {
-//        ChatMessage chatMessage = chatMessageRepository.findBy();
-//        return chatMapper.toChatMessageDto(chatMessage);
-//    }
+
 
     /*채팅방의 메시지 조회*/
     @Transactional
@@ -86,8 +88,13 @@ public class ChatMessageService {
         // return meetings.map(GetLatestMeetingListResponse::of);
     }
 
+    public void pubMsgChannel(String channel, ChatMessage message){
+
+    }
 
 
 
+    public void updateLastReadChat(String sessionId, LocalDateTime disconnectTime) {
 
+    }
 }

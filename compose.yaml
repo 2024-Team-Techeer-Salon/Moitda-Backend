@@ -38,6 +38,9 @@ services:
     container_name: redis
     image: redis
     restart: always
+    environment:
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
     ports:
       - "6379:6379"
 #  redis_container:
