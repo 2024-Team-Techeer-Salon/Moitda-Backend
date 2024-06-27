@@ -19,7 +19,7 @@ public class RedisPublisher {
 
     public void publish(ChannelTopic topic, ChatMessageRes message) {
         log.info("publish input");
-        redisTemplate.convertAndSend(String.valueOf(topic), message);
+        redisTemplate.convertAndSend(topic.getTopic(), message);
         log.info("publish output");
     }
 }

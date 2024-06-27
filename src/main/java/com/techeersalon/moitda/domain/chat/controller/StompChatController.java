@@ -57,7 +57,7 @@ public class StompChatController {
 
     /*Message 보내기*/
     @MessageMapping(value = "/chat/room/{roomId}")
-    @SendTo("/sub/chat/room/{roomId}")
+//    @SendTo("/sub/chat/room/{roomId}")
     public void send_message(StompHeaderAccessor headerAccessor,
                              @DestinationVariable String roomId,
                              @Payload ChatMessageReq messageDto) {
@@ -79,7 +79,7 @@ public class StompChatController {
         ChatMessageRes chatMessageRes = chatMessageService.createChatMessage(user, Long.valueOf(roomId), messageDto);
         log.info("message create");
         /* 채팅방에 유저 추가하는 것만 하면 될 듯*/
-        redisPub.publish(ChannelTopic.of(roomId),chatMessageRes); /*채팅방으로*/
+        redisPub.publish(ChannelTopic.of("roomId"+roomId),chatMessageRes); /*채팅방으로*/
         log.info("pub success " + messageDto.getMessage());
         /*채팅 저장*/
 

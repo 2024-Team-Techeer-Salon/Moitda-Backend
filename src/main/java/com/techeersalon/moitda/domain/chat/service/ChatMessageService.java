@@ -34,15 +34,9 @@ public class ChatMessageService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMapper chatMapper;
-    private final RedisTemplate<String, String> redisTemplate;
-    private final ChatMessageRepository messageRepository;
-    private final RedisMessageListenerContainer redisMessageListener;
 
 
-    public void addChannelTopic(String roomId) {
-        ChannelTopic topic = new ChannelTopic("chatroom:" + roomId);
-        redisMessageListener.addMessageListener((MessageListener) this, topic);
-    }
+
 
     /**
      * ChatMessage 생성
@@ -54,7 +48,7 @@ public class ChatMessageService {
         ChatRoom chatRoomEntity = this.chatRoomRepository.findById(roomId).orElseThrow(
                 ChatRoomNotFoundException::new);
         //messageRequestDto.setRoomId(chatRoomEntity.getId());
-        addChannelTopic(String.valueOf(roomId));
+//        addChannelTopic(String.valueOf(roomId));
         ChatMessage entity = chatMapper.toChatMessage(sender, roomId, messageRequestDto);
         ChatMessage chatMessage = chatMessageRepository.save(entity);
         return chatMapper.toChatMessageDto(chatMessage);

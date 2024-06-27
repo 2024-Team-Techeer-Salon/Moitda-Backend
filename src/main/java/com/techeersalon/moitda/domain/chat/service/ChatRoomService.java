@@ -17,9 +17,14 @@ import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -33,6 +38,13 @@ public class ChatRoomService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final MeetingRepository meetingRepository;
+    private final RedisMessageListenerContainer redisMessageListener;
+    private HashOperations<String, String, ChatRoom> opsHashChatRoom;
+    private Map<String, ChannelTopic> topics;
+    public void addChannelTopic(String roomId) {
+        ChannelTopic topic = new ChannelTopic("chatroom:" + roomId);
+        redisMessageListener.addMessageListener((MessageListener) this, topic);
+    }
 
     /**
      * ChatRoom 생성
@@ -45,6 +57,7 @@ public class ChatRoomService {
                 .build();
         newChatRoom.addMember(user);
         chatRoomRepository.save(newChatRoom);
+        addChannelTopic(String.valueOf(meetingId));
 
         return newChatRoom;
     }
