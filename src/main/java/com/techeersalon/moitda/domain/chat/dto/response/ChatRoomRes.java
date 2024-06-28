@@ -23,7 +23,6 @@ public class ChatRoomRes {
     public static class MemberDetail {
         private Long id;
         private String name;
-        private LocalDateTime disconnectTime;
     }
 
 }

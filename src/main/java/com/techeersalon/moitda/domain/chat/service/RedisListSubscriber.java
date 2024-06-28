@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -32,14 +33,19 @@ public class RedisListSubscriber implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         try {
             log.info("subscribe input");
-            User user = userService.getLoginUser();
+            String userId = redisTemplate.getStringSerializer().deserialize(message.getChannel());
             String publishList = redisTemplate.getStringSerializer().deserialize(message.getBody());
             List<ChatRoomRes> chatRoomRes = objectMapper.readValue(publishList, List.class);
-
-            log.info("Sending message to STOMP channel: /sub/chat/room/{}",user.getId());
-            messageSendingOperations.convertAndSend("/sub/chat/room/" + user.getId(), chatRoomRes); /*메세지 보내기*/
+            String number = extractNumber(userId);
+            log.info("Sending message to STOMP channel: /sub/room/{}",number);
+            messageSendingOperations.convertAndSend("/sub/room/" + number, chatRoomRes); /*메세지 보내기*/
         } catch (Exception e) {
             log.error("Error processing message: {}", e.getMessage(), e);
         }
+    }
+
+    public static String extractNumber(String input) {
+        // 정규 표현식을 사용하여 문자열에서 숫자를 추출
+        return input.replaceAll("[^0-9]", "");
     }
 }

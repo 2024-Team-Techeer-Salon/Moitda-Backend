@@ -1,12 +1,9 @@
 package com.techeersalon.moitda.domain.chat.service;
 
-import com.techeersalon.moitda.domain.chat.dto.request.ChatMessageReq;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
-import com.techeersalon.moitda.domain.chat.entity.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
