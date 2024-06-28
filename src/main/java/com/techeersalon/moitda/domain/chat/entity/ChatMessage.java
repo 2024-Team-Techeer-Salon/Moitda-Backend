@@ -29,10 +29,12 @@ public class ChatMessage extends BaseEntity {
     @Column(name = "meeting_Id")
     private Long meetingId;
 
-    @Column(name = "send_Date")
-    private String sendDate;
 
-//    public enum MessageType {
-//        ENTER, TALK
-//    }
+    public enum MessageType {
+        ENTER, TALK
+    }
+
+    @Column(nullable = false)
+    private MessageType messageType;
+
 }

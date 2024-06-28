@@ -66,6 +66,10 @@ spring:
     multipart:
       max-file-size: -1 # 단일 파일 크기 제한
       max-request-size: -1 # 전체 요청 크기 제한
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 springdoc:
   version: '@project.version@'
@@ -121,6 +125,7 @@ logging:
 
 #server:
 #  port:8080
+
 
 management:
   endpoints:

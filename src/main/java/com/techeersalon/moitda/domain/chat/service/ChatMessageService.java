@@ -12,31 +12,32 @@ import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
 import com.techeersalon.moitda.domain.user.entity.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class ChatMessageService {
 
+
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMapper chatMapper;
-    private final int pageSize = 32;
 
 
-//    /** ChatMessage 조회 */
-//    @Transactional
-//    public ChatMessageResponseDto findById(final Long chatMessageId) {
-//        ChatMessage chatMessageEntity = this.chatMessageRepository.findById(chatMessageId).orElseThrow(
-//                () -> new IllegalArgumentException("해당 ChatMessage가 존재하지 않습니다. chatMessageId = " + chatMessageId));
-//        return new ChatMessageResponseDto(chatMessageEntity);
-//    }
+
+
     /**
      * ChatMessage 생성
      *
@@ -46,10 +47,9 @@ public class ChatMessageService {
     public ChatMessageRes createChatMessage(User sender, Long roomId, ChatMessageReq messageRequestDto) {
         ChatRoom chatRoomEntity = this.chatRoomRepository.findById(roomId).orElseThrow(
                 ChatRoomNotFoundException::new);
-        //messageRequestDto.setRoomId(chatRoomEntity.getId());
-
         ChatMessage entity = chatMapper.toChatMessage(sender, roomId, messageRequestDto);
         ChatMessage chatMessage = chatMessageRepository.save(entity);
+        this.updateLastChatMessage(roomId, chatMessage.getId());
         return chatMapper.toChatMessageDto(chatMessage);
     }
 
@@ -62,12 +62,7 @@ public class ChatMessageService {
         this.chatMessageRepository.delete(chatMessageEntity);
     }
 
-//    /** ChatMessage 조회*/
-//    @Transactional
-//    public ChatMessageRes findChatMessage(ChatMessage chatMessage) {
-//        ChatMessage chatMessage = chatMessageRepository.findBy();
-//        return chatMapper.toChatMessageDto(chatMessage);
-//    }
+
 
     /*채팅방의 메시지 조회*/
     @Transactional
@@ -86,8 +81,15 @@ public class ChatMessageService {
         // return meetings.map(GetLatestMeetingListResponse::of);
     }
 
+    public void updateLastChatMessage(Long roomId, Long messageId){
+        ChatRoom chatRoom = this.chatRoomRepository.findById(roomId).orElseThrow(
+                ChatRoomNotFoundException::new);
+        chatRoom.setLastMessageId(messageId);
+        this.chatRoomRepository.save(chatRoom);
 
+    }
 
+    public void updateLastReadChat(String channel, LocalDateTime disconnectTime) {
 
-
+    }
 }

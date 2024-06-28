@@ -86,9 +86,6 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-//                .authorizeHttpRequests(requests ->
-//                        requests.anyRequest().permitAll() // 모든 요청을 모든 사용자에게 허용
-//                )
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(endpoint -> endpoint
                                 .userService(customOAuth2UserService))

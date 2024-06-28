@@ -34,7 +34,7 @@ public class ChatMapper {
                 .userid(user.getId())
                 .meetingId(meetingId)
                 .message(request.getMessage())
-                .sendDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .messageType(request.getType())
                 //.sendDate(LocalDateTime.from(now()))
                 .build();
     }
@@ -49,13 +49,15 @@ public class ChatMapper {
                 .sender(userProfile.getUsername())
                 .profileImage(userProfile.getProfileImage())
                 .content(chatMessage.getMessage())
-                .sendDate(chatMessage.getSendDate())
+                .sendDate(String.valueOf(chatMessage.getCreateAt()))
+                .roomId(chatMessage.getMeetingId())
                 .build();
     }
 
     public static ChatRoomRes toChatRoomDto(ChatRoom chatRoom) {
         return ChatRoomRes.builder()
                 .id(chatRoom.getId())
+                .lastMessage(chatRoom.getLastMessageId())
                 .members(chatRoom.getMembers().stream()
                         .map(user -> ChatRoomRes.MemberDetail.builder()
                                 .id(user.getId())

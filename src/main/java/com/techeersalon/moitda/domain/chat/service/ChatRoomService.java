@@ -17,9 +17,14 @@ import com.techeersalon.moitda.domain.user.repository.UserRepository;
 import com.techeersalon.moitda.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -33,6 +38,13 @@ public class ChatRoomService {
     private final UserService userService;
     private final UserRepository userRepository;
     private final MeetingRepository meetingRepository;
+    private final RedisMessageListenerContainer redisMessageListener;
+    private HashOperations<String, String, ChatRoom> opsHashChatRoom;
+    private Map<String, ChannelTopic> topics;
+    public void addChannelTopic(String roomId) {
+        ChannelTopic topic = new ChannelTopic("chatroom:" + roomId);
+        redisMessageListener.addMessageListener((MessageListener) this, topic);
+    }
 
     /**
      * ChatRoom 생성
@@ -45,6 +57,7 @@ public class ChatRoomService {
                 .build();
         newChatRoom.addMember(user);
         chatRoomRepository.save(newChatRoom);
+//        addChannelTopic("roomId"+String.valueOf(meetingId));
 
         return newChatRoom;
     }
@@ -80,8 +93,7 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public List<ChatRoomRes> getChatRoomsByUser() {
-        User user = userService.getLoginUser();
+    public List<ChatRoomRes> getChatRoomsByUser(User user) {
         List<ChatRoom> chatRooms = chatRoomRepository.findByMembers(user);
         return chatMapper.toChatRoomDtoList(chatRooms);
     }
@@ -112,6 +124,26 @@ public class ChatRoomService {
         chatRoom.removeMember(user);
 
     }
+
+//    @Transactional
+//    public void updateUserReadPosition(String roomId, String userId, String lastMessageId, boolean setRead) {
+//        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+//        hashOperations.put("userLastRead:" + roomId, userId, lastMessageId);
+//
+//        long lastMsgId = Long.parseLong(lastMessageId);
+//        ChatMessage message = messageRepository.findById(lastMsgId).orElse(null);
+//        if (message != null) {
+//            message.setRead(true);
+//            messageRepository.saveAndFlush(message); // 데이터베이스에 즉시 반영
+//        }
+//        // 캐시 갱신
+//        redisTemplate.expire("userLastRead:" + roomId, 10, TimeUnit.MINUTES);
+//    }
+//
+//    public String getUserLastReadPosition(String roomId, String userId) {
+//        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+//        return hashOperations.get("userLastRead:" + roomId, userId);
+//    }
 
 //    public boolean duplicatedUserChatRoom(Member member) {
 //        return userChatRoomRepository.existsByMemberId(member.getId());
