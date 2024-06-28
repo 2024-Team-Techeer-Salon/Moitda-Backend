@@ -57,6 +57,7 @@ public class ChatMapper {
     public static ChatRoomRes toChatRoomDto(ChatRoom chatRoom) {
         return ChatRoomRes.builder()
                 .id(chatRoom.getId())
+                .lastMessage(chatRoom.getLastMessageId())
                 .members(chatRoom.getMembers().stream()
                         .map(user -> ChatRoomRes.MemberDetail.builder()
                                 .id(user.getId())

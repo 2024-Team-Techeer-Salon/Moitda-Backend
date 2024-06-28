@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @Builder
 @Entity
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -56,5 +57,7 @@ public class ChatRoom extends BaseEntity {
         this.members.remove(user);
         user.getChatRooms().remove(this);
     }
+
+
 
 }

@@ -5,6 +5,8 @@ import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
 import com.techeersalon.moitda.domain.chat.service.ChatMessageService;
 import com.techeersalon.moitda.domain.chat.service.ChatRoomService;
+import com.techeersalon.moitda.domain.user.entity.User;
+import com.techeersalon.moitda.domain.user.service.UserService;
 import com.techeersalon.moitda.global.common.SuccessCode;
 import com.techeersalon.moitda.global.common.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,14 +31,15 @@ public class ChatController {
 
     private final ChatMessageService chatMessageService;
     private final ChatRoomService chatRoomService;
+    private final UserService userService;
 
     // 나중에 합쳐야 할 수도?
     /*이건 유저의 채팅방 id 조회를 하는 로직을 저쪽에서 짜면 필요없을 수도*/
     @Operation(description = "ChatRoomList read", summary = "유저의 채팅방 목록 조회")
     @GetMapping("/list")
     public ResponseEntity<SuccessResponse> getChatRoomList() {
-
-        List<ChatRoomRes> chatRoomDtos = chatRoomService.getChatRoomsByUser();
+        User user = userService.getLoginUser();
+        List<ChatRoomRes> chatRoomDtos = chatRoomService.getChatRoomsByUser(user);
 
         return ResponseEntity.ok(SuccessResponse.of(USER_ROOM_GET_SUCCESS, chatRoomDtos));
     }

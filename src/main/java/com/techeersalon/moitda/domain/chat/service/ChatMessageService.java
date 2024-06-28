@@ -47,10 +47,9 @@ public class ChatMessageService {
     public ChatMessageRes createChatMessage(User sender, Long roomId, ChatMessageReq messageRequestDto) {
         ChatRoom chatRoomEntity = this.chatRoomRepository.findById(roomId).orElseThrow(
                 ChatRoomNotFoundException::new);
-        //messageRequestDto.setRoomId(chatRoomEntity.getId());
-//        addChannelTopic(String.valueOf(roomId));
         ChatMessage entity = chatMapper.toChatMessage(sender, roomId, messageRequestDto);
         ChatMessage chatMessage = chatMessageRepository.save(entity);
+        this.updateLastChatMessage(roomId, chatMessage.getId());
         return chatMapper.toChatMessageDto(chatMessage);
     }
 
@@ -82,13 +81,15 @@ public class ChatMessageService {
         // return meetings.map(GetLatestMeetingListResponse::of);
     }
 
-    public void pubMsgChannel(String channel, ChatMessage message){
+    public void updateLastChatMessage(Long roomId, Long messageId){
+        ChatRoom chatRoom = this.chatRoomRepository.findById(roomId).orElseThrow(
+                ChatRoomNotFoundException::new);
+        chatRoom.setLastMessageId(messageId);
+        this.chatRoomRepository.save(chatRoom);
 
     }
 
-
-
-    public void updateLastReadChat(String sessionId, LocalDateTime disconnectTime) {
+    public void updateLastReadChat(String channel, LocalDateTime disconnectTime) {
 
     }
 }

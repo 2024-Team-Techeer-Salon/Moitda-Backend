@@ -1,5 +1,6 @@
 package com.techeersalon.moitda.domain.chat.controller;
 
+import com.techeersalon.moitda.domain.chat.dto.request.ChatRoomReq;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
 import com.techeersalon.moitda.domain.chat.entity.ChatMessage;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatMessageRes;
@@ -48,11 +49,18 @@ public class StompChatController {
 
     /*사용자 채팅 리스트 불러오기*/
     @MessageMapping(value = "/room/{memberId}")
-    public void enter(@DestinationVariable String memberId) {
-        User user = userService.getLoginUser();
-        List<ChatRoomRes> chatRoomDtos = chatRoomService.getChatRoomsByUser();
+    public void enter(StompHeaderAccessor headerAccessor,
+                      @DestinationVariable String memberId
+                      ) {
+        List<String> authorizationHeaders = headerAccessor.getNativeHeader("Authorization");
+        String jwtToken = authorizationHeaders.get(0).replace("Bearer ", "");
+        Object[] objects = jwtService.extractEmailAndSocialType(jwtToken);
+        SocialType socialType = (SocialType) objects[1];
+        String email = (String) objects[0];
+        User user = userRepository.findBySocialTypeAndEmail(socialType, email).get();
+        List<ChatRoomRes> chatRoomDtos = chatRoomService.getChatRoomsByUser(user);
         log.info("room list");
-        template.convertAndSend("/sub/room/" + memberId, chatRoomDtos);
+        redisPub.publish_list(ChannelTopic.of("memberId"+memberId), chatRoomDtos);
     }
 
     /*Message 보내기*/

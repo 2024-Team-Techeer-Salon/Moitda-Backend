@@ -57,7 +57,7 @@ public class ChatRoomService {
                 .build();
         newChatRoom.addMember(user);
         chatRoomRepository.save(newChatRoom);
-        addChannelTopic(String.valueOf(meetingId));
+//        addChannelTopic("roomId"+String.valueOf(meetingId));
 
         return newChatRoom;
     }
@@ -93,8 +93,7 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public List<ChatRoomRes> getChatRoomsByUser() {
-        User user = userService.getLoginUser();
+    public List<ChatRoomRes> getChatRoomsByUser(User user) {
         List<ChatRoom> chatRooms = chatRoomRepository.findByMembers(user);
         return chatMapper.toChatRoomDtoList(chatRooms);
     }

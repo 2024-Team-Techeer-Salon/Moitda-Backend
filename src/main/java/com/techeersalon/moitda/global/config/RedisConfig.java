@@ -1,18 +1,16 @@
 package com.techeersalon.moitda.global.config;
 
-import com.techeersalon.moitda.domain.chat.service.RedisSubscriber;
+import com.techeersalon.moitda.domain.chat.service.RedisListSubscriber;
+import com.techeersalon.moitda.domain.chat.service.RedisMessageSubscriber;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
-import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -30,10 +28,14 @@ public class RedisConfig {
     }
 
     @Bean
-    RedisMessageListenerContainer redisContainer(RedisSubscriber redisSubscriber) {
+    RedisMessageListenerContainer redisContainer(RedisMessageSubscriber redisSubscriber1,
+                                                 RedisListSubscriber redisSubscriber2) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory());
-        container.addMessageListener(redisSubscriber, new PatternTopic("roomId*"));
+        container.addMessageListener(redisSubscriber1, new RoomIdPatternTopic());
+
+// memberId* 패턴에 대한 리스너 추가
+        container.addMessageListener(redisSubscriber2, new MemberIdPatternTopic());
         return container;
     }
 
@@ -49,6 +51,19 @@ public class RedisConfig {
 
         return redisTemplate;
     }
+
+    class RoomIdPatternTopic extends PatternTopic {
+        public RoomIdPatternTopic() {
+            super("roomId*");
+        }
+    }
+
+    class MemberIdPatternTopic extends PatternTopic {
+        public MemberIdPatternTopic() {
+            super("memberId*");
+        }
+    }
+
 
 
 }
