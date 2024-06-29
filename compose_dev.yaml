@@ -1,3 +1,7 @@
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -12,14 +16,14 @@ services:
     command:
       - '--web.enable-lifecycle'
       - '--storage.tsdb.path=/prometheus'
-      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--config.file=/prometheus/prometheus.yml'
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
     privileged: true
     networks:
       - monitoring-network
-    #    labels:
-    #      org.label-schema.group: "monitoring"
+    labels:
+      org.label-schema.group: "monitoring"
 
   grafana:
     image: grafana/grafana:latest
@@ -42,8 +46,25 @@ services:
       - ./monitoring/grafana:/var/lib/grafana
       - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-    #    labels:
-    #      org.label-schema.group: "monitoring"
+    labels:
+      org.label-schema.group: "monitoring"
+
+  alertmanager:
+    image: prom/alertmanager:v0.20.0
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager:/etc/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    networks:
+      - monitoring-network
+    labels:
+      org.label-schema.group: "monitoring"
+
 
   node-exporter:
     image: prom/node-exporter
@@ -59,14 +80,62 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.textfile.directory=/etc/node-exporter/'
     ports:
-      - 9100:9100
+      - "9100:9100"
     restart: always
     deploy:
       mode: global
     networks:
       - monitoring-network
-  #    labels:
-  #      org.label-schema.group: "monitoring"
+    labels:
+      org.label-schema.group: "monitoring"
+
+  cadvisor:
+    image: gcr.io/google-containers/cadvisor:v0.34.0
+    container_name: cadvisor
+    platform: linux/amd64
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    networks:
+      - monitoring-network
+    labels:
+      org.label-schema.group: "monitoring"
+
+  pushgateway:
+    image: prom/pushgateway:v1.2.0
+    container_name: pushgateway
+    restart: unless-stopped
+    ports:
+      - "9091:9091"
+    networks:
+      - monitoring-network
+    labels:
+      org.label-schema.group: "monitoring"
+
+  caddy:
+    image: stefanprodan/caddy
+    container_name: caddy
+    ports:
+      - "3000:3000"
+      - "9090:9090"
+      - "9093:9093"
+      - "9091:9091"
+    volumes:
+      - ./caddy:/etc/caddy
+    environment:
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - monitoring-network
+    labels:
+      org.label-schema.group: "monitoring"
+
 networks:
   monitoring-network:
     driver: bridge
