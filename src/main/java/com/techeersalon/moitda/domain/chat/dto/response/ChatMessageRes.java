@@ -16,5 +16,4 @@ public class ChatMessageRes {
     private String profileImage;
     private String content;
     private String sendDate;
-    private Long roomId;
 }

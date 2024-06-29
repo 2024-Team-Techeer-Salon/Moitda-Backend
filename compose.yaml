@@ -64,14 +64,14 @@ services:
 #    restart: always
 #    command: redis-server /usr/local/conf/redis.conf
 
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - 80:80
-    depends_on:
-      - backend
+#  nginx:
+#    image: nginx:latest
+#    volumes:
+#      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+#    ports:
+#      - 80:80
+#    depends_on:
+#      - backend
 
 #  frontend: #프론트 엔드 서비스를 만듬
 #    build:

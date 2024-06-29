@@ -11,6 +11,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
+import static com.techeersalon.moitda.domain.chat.service.RedisListSubscriber.extractNumber;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -25,12 +27,12 @@ public class RedisMessageSubscriber implements MessageListener{
     public void onMessage(Message message, byte[] pattern) {
         try {
             log.info("subscribe input");
-
+            String patternchannel = redisTemplate.getStringSerializer().deserialize(message.getChannel());
             String publishMessage = redisTemplate.getStringSerializer().deserialize(message.getBody());
             ChatMessageRes chatMessageRes = objectMapper.readValue(publishMessage, ChatMessageRes.class);
-
-            log.info("Sending message to STOMP channel: /sub/chat/room/{}", chatMessageRes.getRoomId());
-            messageSendingOperations.convertAndSend("/sub/chat/room/" + chatMessageRes.getRoomId(), chatMessageRes); /*메세지 보내기*/
+            String channel = extractNumber(patternchannel);
+            log.info("Sending message to STOMP channel: /sub/chat/room/{}", channel);
+            messageSendingOperations.convertAndSend("/sub/chat/room/" + channel, chatMessageRes); /*메세지 보내기*/
         } catch (Exception e) {
             log.error("Error processing message: {}", e.getMessage(), e);
         }
