@@ -50,7 +50,6 @@ public class ChatMapper {
                 .profileImage(userProfile.getProfileImage())
                 .content(chatMessage.getMessage())
                 .sendDate(String.valueOf(chatMessage.getCreateAt()))
-                .roomId(chatMessage.getMeetingId())
                 .build();
     }
 
