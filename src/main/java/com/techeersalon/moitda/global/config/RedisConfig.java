@@ -33,8 +33,6 @@ public class RedisConfig {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory());
         container.addMessageListener(redisSubscriber1, new RoomIdPatternTopic());
-
-// memberId* 패턴에 대한 리스너 추가
         container.addMessageListener(redisSubscriber2, new MemberIdPatternTopic());
         return container;
     }

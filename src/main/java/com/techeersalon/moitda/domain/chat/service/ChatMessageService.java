@@ -45,8 +45,7 @@ public class ChatMessageService {
      */
     @Transactional
     public ChatMessageRes createChatMessage(User sender, Long roomId, ChatMessageReq messageRequestDto) {
-        ChatRoom chatRoomEntity = this.chatRoomRepository.findById(roomId).orElseThrow(
-                ChatRoomNotFoundException::new);
+        this.chatRoomRepository.findById(roomId).orElseThrow(ChatRoomNotFoundException::new);
         ChatMessage entity = chatMapper.toChatMessage(sender, roomId, messageRequestDto);
         ChatMessage chatMessage = chatMessageRepository.save(entity);
         this.updateLastChatMessage(roomId, chatMessage.getId());
@@ -84,7 +83,7 @@ public class ChatMessageService {
     public void updateLastChatMessage(Long roomId, Long messageId){
         ChatRoom chatRoom = this.chatRoomRepository.findById(roomId).orElseThrow(
                 ChatRoomNotFoundException::new);
-        chatRoom.setLastMessageId(messageId);
+        chatRoom.updateLastMessageId(messageId);
         this.chatRoomRepository.save(chatRoom);
 
     }
