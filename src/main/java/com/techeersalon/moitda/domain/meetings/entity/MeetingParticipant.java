@@ -44,4 +44,8 @@ public class MeetingParticipant extends BaseEntity {
     public void updateReviewed() {
         this.isReviewed = true;
     }
+
+    public void updateUsername(String username) {
+        this.username = username;
+    }
 }

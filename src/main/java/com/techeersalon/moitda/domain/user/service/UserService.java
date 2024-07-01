@@ -6,6 +6,10 @@ import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
+import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.meetings.entity.MeetingParticipant;
+import com.techeersalon.moitda.domain.meetings.repository.MeetingParticipantRepository;
+import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
 import com.techeersalon.moitda.domain.user.dto.mapper.UserMapper;
 import com.techeersalon.moitda.domain.user.dto.request.SignUpReq;
 import com.techeersalon.moitda.domain.user.dto.request.UpdateUserReq;
@@ -49,6 +53,8 @@ public class UserService {
     private final UserMapper userMapper;
     private final AmazonS3 amazonS3;
     private final JwtService jwtService;
+    private final MeetingRepository meetingRepository;
+    private final MeetingParticipantRepository meetingParticipantRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -86,7 +92,7 @@ public class UserService {
         User user = optionalUser
                 .orElseThrow(UserNotFoundException::new);
         return userMapper.toUserProfileForChat(user);
-            }
+    }
 
 
     public UserProfileRes findUserProfile(Long userId) {
@@ -133,6 +139,19 @@ public class UserService {
 
         user.updateProfile(updateUserReq, urls[0], urls[1]);
         userRepository.save(user);
+
+        List<Meeting> meetings = meetingRepository.getMeetingsByUserId(user.getId());
+        List<MeetingParticipant> meetingParticipantList = meetingParticipantRepository.getParticipantsByUserId(user.getId());
+
+        meetings.forEach(meeting -> {
+            meeting.updateUsername(user.getUsername());
+            meetingRepository.save(meeting);
+        });
+
+        meetingParticipantList.forEach(meetingParticipant -> {
+            meetingParticipant.updateUsername(user.getUsername());
+            meetingParticipantRepository.save(meetingParticipant);
+        });
     }
 
     void deleteExistingImage(String imageUrl, String basePath, String s3Folder) throws UnsupportedEncodingException {
