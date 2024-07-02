@@ -58,6 +58,9 @@ public class ChatRoom extends BaseEntity {
         user.getChatRooms().remove(this);
     }
 
+    public void updateLastMessageId(Long messageId){
+        this.lastMessageId = messageId;
+    }
 
 
 }
