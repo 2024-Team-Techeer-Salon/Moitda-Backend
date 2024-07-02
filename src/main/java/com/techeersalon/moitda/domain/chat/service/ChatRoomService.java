@@ -10,6 +10,7 @@ import com.techeersalon.moitda.domain.chat.repository.ChatMessageRepository;
 import com.techeersalon.moitda.domain.chat.repository.ChatRoomRepository;
 import com.techeersalon.moitda.domain.chat.dto.response.ChatRoomRes;
 import com.techeersalon.moitda.domain.meetings.entity.Meeting;
+import com.techeersalon.moitda.domain.meetings.exception.meeting.MeetingNotFoundException;
 import com.techeersalon.moitda.domain.meetings.repository.MeetingRepository;
 import com.techeersalon.moitda.domain.user.entity.User;
 import com.techeersalon.moitda.domain.user.exception.UserNotFoundException;
@@ -115,7 +116,9 @@ public class ChatRoomService {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
 
-        Meeting meeting = meetingRepository.findByUserId(chatRoom.getMeetingId());
+        Optional<Meeting> meetingOptional = meetingRepository.findById(chatRoom.getMeetingId());
+        Meeting meeting = meetingOptional.orElseThrow(MeetingNotFoundException::new);
+
         // 방장이 채팅방 나가는 경우 예외 처리.
         if (meeting.getUserId() == user.getId()) {
             throw new RoomOwnerCannotLeaveException();

@@ -106,4 +106,8 @@ public class Meeting extends BaseEntity {
             throw new MaxParticipantsNotExceededException();
         }
     }
+
+    public void updateUsername(String username) {
+        this.username = username;
+    }
 }

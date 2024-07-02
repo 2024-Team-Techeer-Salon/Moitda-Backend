@@ -11,6 +11,8 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface MeetingRepository extends PagingAndSortingRepository<Meeting, Long>, JpaRepository<Meeting, Long> {
@@ -48,5 +50,5 @@ public interface MeetingRepository extends PagingAndSortingRepository<Meeting, L
             nativeQuery = true)
     Page<Meeting> findPageByKeyword(String keyword, @Param("point")Point point, Pageable pageable);
 
-    Meeting findByUserId(Long meetingId);
+    List<Meeting> getMeetingsByUserId(Long userId);
 }
